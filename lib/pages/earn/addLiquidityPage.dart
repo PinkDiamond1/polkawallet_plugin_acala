@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
 import 'package:polkawallet_plugin_acala/common/components/connectionChecker.dart';
-import 'package:polkawallet_plugin_acala/common/components/insufficientKARWarn.dart';
+import 'package:polkawallet_plugin_acala/common/components/insufficientACAWarn.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/swap/swapPage.dart';
 import 'package:polkawallet_plugin_acala/pages/swap/swapTokenInput.dart';
@@ -143,7 +143,7 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
       if ((index == 0 && _maxInputLeft == null) ||
           (index == 1 && _maxInputRight == null)) {
         BigInt available = Fmt.balanceInt(balance?.amount ?? '0');
-        // limit user's input for tx fee if token is KAR
+        // limit user's input for tx fee if token is ACA
         if (balance!.symbol == acala_token_ids[0]) {
           final accountED = PluginFmt.getAccountED(widget.plugin);
           available -= accountED +
@@ -456,7 +456,7 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
                         visible: nativeBalance - accountED <
                             Fmt.balanceInt((_fee?.partialFee ?? 0).toString()) *
                                 BigInt.two,
-                        child: InsufficientKARWarn(),
+                        child: InsufficientACAWarn(),
                       ),
                       SwapTokenInput(
                         title: 'token 1',

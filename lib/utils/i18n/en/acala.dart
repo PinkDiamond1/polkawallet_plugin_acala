@@ -207,7 +207,7 @@ const Map<String, String> enDex = {
       'Editing cross-chain destination address is not recommended.\nAdvanced users only.',
   'transfer.exist': 'existential deposit',
   'transfer.fee': 'estimated transfer fee',
-  'warn.fee': 'The transaction may fail due to insufficient KAR balance.',
+  'warn.fee': 'The transaction may fail due to insufficient ACA balance.',
   'v3.switchDefi': 'Switch to Defi',
   'v3.switchBack': 'Switch Back',
   'v3.totalBalance': 'Total Balance',

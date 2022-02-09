@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_acala/pages/earn/earnPage.dart';
-import 'package:polkawallet_plugin_acala/pages/gov/democracyPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homa/homaPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
 import 'package:polkawallet_plugin_acala/pages/swap/swapPage.dart';
@@ -154,67 +153,5 @@ class _DefiWidgetState extends State<DefiWidget> {
         ),
       );
     });
-  }
-}
-
-class NFTWidget extends StatelessWidget {
-  NFTWidget(this.plugin);
-
-  final PluginAcala plugin;
-
-  @override
-  Widget build(BuildContext context) {
-    final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common');
-
-    return Container(
-      child: Column(
-        children: [
-          GestureDetector(
-            child: PluginItemCard(
-              margin: EdgeInsets.only(bottom: 16),
-              title: dic!['nft.title']!,
-              describe: dic['nft.brief'],
-              icon: Image.asset(
-                  "packages/polkawallet_plugin_karura/assets/images/icon_nft.png",
-                  width: 18),
-            ),
-            onTap: () => Navigator.of(context).pushNamed(DemocracyPage.route),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class GovernanceWidget extends StatefulWidget {
-  GovernanceWidget(this.plugin);
-  final PluginAcala plugin;
-
-  @override
-  _GovernanceWidgetState createState() => _GovernanceWidgetState();
-}
-
-class _GovernanceWidgetState extends State<GovernanceWidget> {
-  @override
-  Widget build(BuildContext context) {
-    final dicGov = I18n.of(context)!.getDic(i18n_full_dic_acala, 'gov');
-
-    return Container(
-      child: Column(
-        children: [
-          GestureDetector(
-            child: PluginItemCard(
-              margin: EdgeInsets.only(bottom: 16),
-              title: dicGov!['democracy']!,
-              describe: dicGov['democracy.brief'],
-              icon: Image.asset(
-                  "packages/polkawallet_plugin_karura/assets/images/icon_democracy.png",
-                  width: 18),
-            ),
-            onTap: () => Navigator.of(context).pushNamed(DemocracyPage.route),
-          ),
-        ],
-      ),
-    );
   }
 }

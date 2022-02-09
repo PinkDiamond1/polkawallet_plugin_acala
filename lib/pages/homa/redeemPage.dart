@@ -50,8 +50,6 @@ class _RedeemPageState extends State<RedeemPage> {
   final stakeToken = relay_chain_token_symbol;
   List<int>? decimals;
 
-  late double karBalance;
-
   late int stakeDecimal;
 
   late double minRedeem;
@@ -64,10 +62,6 @@ class _RedeemPageState extends State<RedeemPage> {
 
     symbols = widget.plugin.networkState.tokenSymbol;
     decimals = widget.plugin.networkState.tokenDecimals;
-
-    karBalance = Fmt.balanceDouble(
-        widget.plugin.balances.native!.availableBalance.toString(),
-        decimals![symbols!.indexOf("L$stakeToken")]);
 
     stakeDecimal = decimals![symbols!.indexOf("L$stakeToken")];
 
@@ -309,6 +303,8 @@ class _RedeemPageState extends State<RedeemPage> {
             decimals![symbols!.indexOf('L$relay_chain_token_symbol')],
             lengthMax: 4);
 
+        final nativeBalance = AssetsUtils.getBalanceFromTokenNameId(
+            widget.plugin, widget.plugin.networkState.tokenSymbol![0]);
         final lTokenBalance =
             widget.plugin.store!.assets.tokenBalanceMap["L$stakeToken"]!;
         final max = _getMaxAmount();
@@ -360,7 +356,11 @@ class _RedeemPageState extends State<RedeemPage> {
                             decimals: lTokenBalance.decimals),
                         tokenIconsMap: widget.plugin.tokenIcons,
                         onInputChange: (v) => _onSupplyAmountChange(v, max),
-                        onSetMax: karBalance > 0.1 ? (v) => _onSetMax(v) : null,
+                        onSetMax: Fmt.balanceDouble(nativeBalance!.amount!,
+                                    nativeBalance.decimals!) >
+                                0.1
+                            ? (v) => _onSetMax(v)
+                            : null,
                         onClear: () {
                           setState(() {
                             _amountPayCtrl.text = '';

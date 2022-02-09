@@ -1,6 +1,5 @@
 const Map<String, String> enCommon = {
   'acala': 'Polkadot Defi Hub',
-  'karura': 'Kusama Defi Hub',
   'transfer': 'Transfer',
   'send': 'Send',
   'receive': 'Receive',
@@ -43,7 +42,7 @@ const Map<String, String> enCommon = {
       'Leverage your digital assets by depositing them as collateral to mint kUSD.',
   'swap.title': 'Swap',
   'swap.brief':
-      'Swap tokens or provide liquidity in Karura Decentralized Exchange.',
+      'Swap tokens or provide liquidity in Acala Decentralized Exchange.',
   'earn.title': 'Earn',
   'earn.brief':
       'Earn rewards by staking your LP tokens or collaterizing your assets.',

@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_acala/api/types/swapOutputData.dart';
-import 'package:polkawallet_plugin_acala/common/components/insufficientKARWarn.dart';
+import 'package:polkawallet_plugin_acala/common/components/insufficientACAWarn.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/swap/bootstrapPage.dart';
 import 'package:polkawallet_plugin_acala/pages/swap/swapPage.dart';
@@ -499,7 +499,7 @@ class _SwapFormState extends State<SwapForm> {
                 children: <Widget>[
                   Visibility(
                     visible: isNativeTokenLow,
-                    child: InsufficientKARWarn(),
+                    child: InsufficientACAWarn(),
                   ),
                   SwapTokenInput(
                     title: dic['dex.pay'],

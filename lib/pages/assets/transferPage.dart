@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:polkawallet_plugin_acala/common/components/insufficientKARWarn.dart';
+import 'package:polkawallet_plugin_acala/common/components/insufficientACAWarn.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/currencySelectPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
@@ -117,7 +117,7 @@ class _TransferPageState extends State<TransferPage> {
                   }
                 ],
                 // params.weight
-                xcm_dest_weight_kusama
+                xcm_dest_weight_v2
               ]
             : [
                 widget.keyring.current.address,
@@ -347,11 +347,7 @@ class _TransferPageState extends State<TransferPage> {
             // params.dest
             isV2XCM ? {'V1': dest} : dest,
             // params.weight
-            isV2XCM
-                ? xcm_dest_weight_v2
-                : isToParent
-                    ? xcm_dest_weight_kusama
-                    : xcm_dest_weight_karura
+            xcm_dest_weight_v2
           ],
         );
       }
@@ -774,7 +770,7 @@ class _TransferPageState extends State<TransferPage> {
                             )),
                         Visibility(
                           visible: isNativeTokenLow,
-                          child: InsufficientKARWarn(),
+                          child: InsufficientACAWarn(),
                         ),
                         Visibility(
                             visible: isCrossChain,

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/earn/earnDetailPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
@@ -97,7 +98,7 @@ class _EarnDexListState extends State<EarnDexList> {
           dexPools[i].rewardsLoyalty = rewards * (1 - loyaltyBonus!) +
               savingRewards * (1 - savingLoyaltyBonus!);
 
-          if (dexPools[i].tokenNameId!.indexOf("KAR") >= 0) {
+          if (dexPools[i].tokenNameId!.indexOf(acala_token_ids[0]) >= 0) {
             datas.add(dexPools[i]);
           } else {
             otherDatas.add(dexPools[i]);

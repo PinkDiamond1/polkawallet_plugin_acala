@@ -51,8 +51,6 @@ const cross_chain_xcm_fees = {
     }
   }
 };
-const xcm_dest_weight_kusama = '3000000000';
-const xcm_dest_weight_karura = '600000000';
 const xcm_dest_weight_v2 = '5000000000';
 
 const acala_token_ids = [

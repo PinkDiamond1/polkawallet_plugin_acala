@@ -15,7 +15,7 @@ class HomaTxDetailPage extends StatelessWidget {
   final PluginAcala plugin;
   final Keyring keyring;
 
-  static final String route = '/karura/homa/tx';
+  static final String route = '/acala/homa/tx';
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,8 @@ class HomaTxDetailPage extends StatelessWidget {
     final decimals = plugin.networkState.tokenDecimals!;
     final symbols = plugin.networkState.tokenSymbol!;
 
-    final TxHomaData tx = ModalRoute.of(context)!.settings.arguments as TxHomaData;
+    final TxHomaData tx =
+        ModalRoute.of(context)!.settings.arguments as TxHomaData;
 
     final symbol = relay_chain_token_symbol;
     final nativeDecimal = decimals[symbols.indexOf(symbol)];

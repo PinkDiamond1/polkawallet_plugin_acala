@@ -54,9 +54,11 @@ class _DemocracyState extends State<Democracy> {
 
     _queryDemocracyLocks();
 
-    setState(() {
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   void _submitCancelVote(int id) {
@@ -148,7 +150,9 @@ class _DemocracyState extends State<Democracy> {
                 //     ));
               }
               bool isLock = false;
-              if (_locks.length > 0 && list!.length > 0 && i < list.length + 1) {
+              if (_locks.length > 0 &&
+                  list!.length > 0 &&
+                  i < list.length + 1) {
                 _locks.forEach((element) {
                   if (BigInt.parse(element['referendumId']) ==
                       list[i - 1].index) {

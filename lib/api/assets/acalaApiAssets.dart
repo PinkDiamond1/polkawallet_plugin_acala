@@ -17,7 +17,7 @@ class AcalaApiAssets {
       return service.plugin.store!.assets.allTokens.toList();
     }
 
-    final res = (await service.getAllTokenSymbols())!
+    final res = ((await service.getAllTokenSymbols()) ?? [])
         .map((e) => TokenBalanceData(
             id: e['id'],
             type: e['type'],

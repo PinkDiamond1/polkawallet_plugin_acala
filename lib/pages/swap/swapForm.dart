@@ -468,7 +468,7 @@ class _SwapFormState extends State<SwapForm> {
         final balancePair =
             AssetsUtils.getBalancePairFromTokenNameId(widget.plugin, swapPair);
         final nativeBalance = Fmt.balanceInt(
-            widget.plugin.balances.native!.availableBalance.toString());
+            widget.plugin.balances.native?.availableBalance.toString());
         final accountED = PluginFmt.getAccountED(widget.plugin);
         final nativeKeepAlive = accountED +
             Fmt.balanceInt((_fee?.partialFee ?? 0).toString()) * BigInt.two;

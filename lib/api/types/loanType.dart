@@ -109,7 +109,7 @@ class LoanData extends _LoanData {
     data.token = AssetsUtils.tokenDataFromCurrencyId(plugin, json['currency']);
     final stableCoinDecimals =
         plugin.store!.assets.tokenBalanceMap[acala_stable_coin]!.decimals!;
-    final collateralDecimals = data.token!.decimals!;
+    final collateralDecimals = data.token?.decimals ?? 12;
     data.type = type;
     data.price = tokenPrice;
     data.stableCoinPrice = Fmt.tokenInt('1', stableCoinDecimals);

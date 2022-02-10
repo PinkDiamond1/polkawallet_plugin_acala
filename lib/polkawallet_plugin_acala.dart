@@ -456,4 +456,9 @@ class PluginAcala extends PolkawalletPlugin {
       _subscribeTokenBalances(acc);
     }
   }
+
+  @override
+  Future<void> dispose() async {
+    _service?.loan.unsubscribeAccountLoans();
+  }
 }

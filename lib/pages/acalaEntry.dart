@@ -23,6 +23,9 @@ class AcalaEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bodyHeight = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.top -
+        kToolbarHeight;
     return Scaffold(
       appBar: AppBar(
         title: Text('Acala'),
@@ -33,6 +36,7 @@ class AcalaEntry extends StatelessWidget {
         width: double.infinity,
         height: double.infinity,
         child: Stack(
+          alignment: Alignment.bottomLeft,
           children: [
             Image.asset(
               "packages/polkawallet_plugin_acala/assets/images/acala_entry_bg.png",
@@ -40,10 +44,10 @@ class AcalaEntry extends StatelessWidget {
               fit: BoxFit.fill,
             ),
             Image.asset(
-                "packages/polkawallet_plugin_acala/assets/images/acala_entry_3.png"),
+              "packages/polkawallet_plugin_acala/assets/images/acala_entry_3.png",
+            ),
             Padding(
-                padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).size.height * 0.4),
+                padding: EdgeInsets.only(bottom: bodyHeight * 0.4),
                 child: Align(
                     alignment: Alignment.centerRight,
                     child: ClipRect(
@@ -53,8 +57,7 @@ class AcalaEntry extends StatelessWidget {
                             child: Image.asset(
                                 "packages/polkawallet_plugin_acala/assets/images/acala_entry_1.png"))))),
             Padding(
-                padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).size.height * 0.25),
+                padding: EdgeInsets.only(bottom: bodyHeight * 0.25),
                 child: ClipRect(
                     child: Align(
                         widthFactor: 0.85,
@@ -62,8 +65,7 @@ class AcalaEntry extends StatelessWidget {
                         child: Image.asset(
                             "packages/polkawallet_plugin_acala/assets/images/acala_entry_2.png")))),
             Container(
-              padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height * 0.12),
+              padding: EdgeInsets.only(top: bodyHeight * 0.12),
               width: double.infinity,
               alignment: Alignment.topCenter,
               child: Text(

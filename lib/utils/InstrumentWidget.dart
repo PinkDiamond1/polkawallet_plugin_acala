@@ -24,6 +24,7 @@ class InstrumentWidget extends StatefulWidget {
 class _InstrumentWidgetState extends State<InstrumentWidget> {
   InstrumentItemWidgetController controller = InstrumentItemWidgetController();
   int index = 0;
+  bool isTapDown = false;
 
   @override
   void initState() {
@@ -99,6 +100,21 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                       Container(
                         margin: EdgeInsets.only(top: 15.h),
                         child: GestureDetector(
+                            onTapDown: (detail) {
+                              setState(() {
+                                isTapDown = true;
+                              });
+                            },
+                            onTapCancel: () {
+                              setState(() {
+                                isTapDown = false;
+                              });
+                            },
+                            onTapUp: (detail) {
+                              setState(() {
+                                isTapDown = false;
+                              });
+                            },
                             onTap: widget.datas.length < 2 || !widget.enabled
                                 ? null
                                 : () {
@@ -142,8 +158,12 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                                           1.0
                                         ],
                                         colors: [
-                                          Color(0xFFBEB9B2),
-                                          Color(0xFF74716C),
+                                          Color(isTapDown
+                                              ? 0xFFBEB9B2
+                                              : 0xFFFFFAF1),
+                                          Color(isTapDown
+                                              ? 0xFF74716C
+                                              : 0xFFB1ADA7),
                                         ])),
                                 child: Center(
                                   child: Text(
@@ -154,7 +174,9 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                                         .textTheme
                                         .headline5
                                         ?.copyWith(
-                                            color: Color(0xFF757371),
+                                            color: isTapDown
+                                                ? Colors.white
+                                                : Color(0xFF757371),
                                             fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -168,13 +190,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
               ],
             )),
         Container(
-          margin: EdgeInsets.only(top: 4, bottom: 8),
-          child: Text(widget.datas[index].prompt,
-              style: TextStyle(
-                  fontFamily: "SF_Pro",
-                  fontSize: 10,
-                  fontWeight: FontWeight.w400,
-                  color: Theme.of(context).textSelectionTheme.selectionColor)),
+          height: 10,
         ),
         getRoundedCardItem(),
       ],

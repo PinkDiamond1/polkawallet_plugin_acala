@@ -204,18 +204,14 @@ class PluginAcala extends PolkawalletPlugin {
     final List<InstrumentData> datas = [];
     InstrumentData totalBalance1 = InstrumentData(0, [],
         title: I18n.of(context)!
-            .getDic(i18n_full_dic_acala, 'acala')!["v3.myDefi"]!,
-        prompt: I18n.of(context)!
-            .getDic(i18n_full_dic_acala, 'acala')!["v3.switchBack"]!);
+            .getDic(i18n_full_dic_acala, 'acala')!["v3.myDefi"]!);
     datas.add(totalBalance1);
 
     final total = data.map((e) => e.value).reduce((a, b) => a! + b!);
     InstrumentData totalBalance = InstrumentData(total ?? 0, [],
         currencySymbol: _currencySymbol(priceCurrency),
         title: I18n.of(context)!
-            .getDic(i18n_full_dic_acala, 'acala')!["v3.myDefi"]!,
-        prompt: I18n.of(context)!
-            .getDic(i18n_full_dic_acala, 'acala')!["v3.switchBack"]!);
+            .getDic(i18n_full_dic_acala, 'acala')!["v3.myDefi"]!);
     data.forEach((element) {
       totalBalance.items.add(InstrumentItemData(
           _instrumentColor(element.category),

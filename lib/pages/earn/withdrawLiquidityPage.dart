@@ -408,8 +408,10 @@ class _WithdrawLiquidityPageState extends State<WithdrawLiquidityPage> {
                                 size: 18,
                               ),
                               onTap: () {
-                                WidgetsBinding.instance!.addPostFrameCallback(
-                                    (_) => _amountCtrl.clear());
+                                setState(() {
+                                  _maxShare = null;
+                                  _amountCtrl.text = '';
+                                });
                               },
                             ),
                           ),

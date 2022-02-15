@@ -25,9 +25,9 @@ class AcalaApiLoan {
         await (service.queryTotalCDPs(pools) as Future<List<dynamic>>);
     int index = 0;
     return res.map((e) {
-      e['tokenNameId'] =
-          AssetsUtils.tokenDataFromCurrencyId(service.plugin, pools[index]!)
-              ?.tokenNameId;
+      e['tokenNameId'] = AssetsUtils.tokenDataFromCurrencyId(
+              service.plugin, pools[index] ?? Map<dynamic, dynamic>())
+          ?.tokenNameId;
       index++;
       return TotalCDPData.fromJson(e);
     }).toList();

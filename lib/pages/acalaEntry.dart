@@ -131,23 +131,6 @@ class _DefiWidgetState extends State<DefiWidget> {
                   Navigator.of(context).pushNamed(_liveModuleRoutes[e]!);
                 } else {
                   Navigator.of(context).pushNamed(AcalaEntry.route);
-                  // showCupertinoDialog(
-                  //   context: context,
-                  //   builder: (context) {
-                  //     return CupertinoAlertDialog(
-                  //       title: Text(dic['upgrading']!),
-                  //       content: Text(dic['upgrading.context']!),
-                  //       actions: <Widget>[
-                  //         CupertinoDialogAction(
-                  //           child: Text(dic['upgrading.btn']!),
-                  //           onPressed: () {
-                  //             Navigator.of(context).pop();
-                  //           },
-                  //         ),
-                  //       ],
-                  //     );
-                  //   },
-                  // );
                 }
               },
             );

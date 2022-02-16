@@ -1,7 +1,6 @@
 import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
 import 'package:polkawallet_plugin_acala/api/types/homaNewEnvData.dart';
 import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
-import 'package:polkawallet_plugin_acala/api/types/stakingPoolInfoData.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/store/index.dart';
@@ -18,23 +17,6 @@ class ServiceLoan {
   final Keyring keyring;
   final AcalaApi? api;
   final PluginStore? store;
-
-  void _calcLiquidTokenPriceOld(
-      Map<String, BigInt> prices, HomaLitePoolInfoData poolInfo) {
-    // LDOT price may lost precision here
-    final relayToken = relay_chain_token_symbol;
-    final exchangeRate = poolInfo.staked! > BigInt.zero
-        ? (poolInfo.liquidTokenIssuance! / poolInfo.staked!)
-        : Fmt.balanceDouble(
-            plugin.networkConst['homaLite']['defaultExchangeRate'],
-            acala_price_decimals);
-    prices['L$relayToken'] = Fmt.tokenInt(
-        (Fmt.bigIntToDouble(
-                    prices[relayToken], plugin.networkState.tokenDecimals![0]) /
-                exchangeRate)
-            .toString(),
-        plugin.networkState.tokenDecimals![0]);
-  }
 
   void _calcLiquidTokenPrice(
       Map<String, BigInt> prices, HomaNewEnvData homaEnv) {
@@ -107,6 +89,8 @@ class ServiceLoan {
         try {
           store?.assets.setMarketPrices(
               {'lcDOT': Fmt.bigIntToDouble(prices[lcDOTNameId], 18)});
+          // then update LP token price
+          plugin.service?.assets.calcLPTokenPrices();
         } catch (_) {
           // ignore
         }

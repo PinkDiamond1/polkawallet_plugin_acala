@@ -117,7 +117,8 @@ class PluginAcala extends PolkawalletPlugin {
   @override
   List<HomeNavItem> getNavItems(BuildContext context, Keyring keyring) {
     final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common')!;
-    final modulesConfig = store?.setting.liveModules;
+    final modulesConfig =
+        store?.setting.remoteConfig['modules'] ?? config_modules;
     final nftEnabled = (modulesConfig?.keys.length ?? 0) > 0 &&
         (modulesConfig?['nft'] ?? {})['enabled'] == true;
     return nftEnabled
@@ -392,9 +393,10 @@ class PluginAcala extends PolkawalletPlugin {
 
       _store!.assets.loadCache(acc.pubKey);
       final tokens = _store!.assets.tokenBalanceMap.values.toList();
-      if (service!.plugin.store!.setting.tokensConfig['invisible'] != null) {
-        final invisible =
-            List.of(service!.plugin.store!.setting.tokensConfig['invisible']);
+      final tokensConfig =
+          service!.plugin.store!.setting.remoteConfig['tokens'] ?? {};
+      if (tokensConfig['invisible'] != null) {
+        final invisible = List.of(tokensConfig['invisible']);
         if (invisible.length > 0) {
           tokens.removeWhere(
               (token) => invisible.contains(token.symbol?.toUpperCase()));
@@ -426,10 +428,8 @@ class PluginAcala extends PolkawalletPlugin {
 
     _loadCacheData(keyring.current);
 
-    _service!.fetchLiveModules();
-
     // fetch tokens config here for subscribe all tokens balances
-    _service!.fetchTokensConfig();
+    _service!.fetchRemoteConfig();
   }
 
   @override

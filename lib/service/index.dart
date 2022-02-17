@@ -1,6 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:polkawallet_plugin_acala/common/constants/base.dart';
-import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/service/serviceAssets.dart';
 import 'package:polkawallet_plugin_acala/service/serviceEarn.dart';
@@ -47,19 +45,10 @@ class PluginService {
     return password;
   }
 
-  Future<void> fetchLiveModules() async {
-    final res = await WalletApi.getLiveModules();
+  Future<void> fetchRemoteConfig() async {
+    final res = await WalletApi.getRemoteConfig();
     if (res != null) {
-      plugin.store!.setting.setLiveModules(res);
-    } else {
-      plugin.store!.setting.setLiveModules(config_modules);
-    }
-  }
-
-  Future<void> fetchTokensConfig() async {
-    final res = await WalletApi.getTokensConfig();
-    if (res != null) {
-      plugin.store!.setting.setTokensConfig(res);
+      plugin.store!.setting.setRemoteConfig(res);
     }
   }
 }

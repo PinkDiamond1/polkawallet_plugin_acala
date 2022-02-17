@@ -38,9 +38,10 @@ class AcalaApiAssets {
   Future<void> subscribeTokenBalances(
       String? address, Function(List<TokenBalanceData>) callback) async {
     final tokens = await getAllTokenSymbols();
-    if (service.plugin.store!.setting.tokensConfig['invisible'] != null) {
-      final invisible =
-          List.of(service.plugin.store!.setting.tokensConfig['invisible']);
+    final tokensConfig =
+        service.plugin.store!.setting.remoteConfig['tokens'] ?? {};
+    if (tokensConfig['invisible'] != null) {
+      final invisible = List.of(tokensConfig['invisible']);
       if (invisible.length > 0) {
         tokens.removeWhere((token) =>
             invisible.contains(token.tokenNameId) ||
@@ -75,11 +76,9 @@ class AcalaApiAssets {
           currencyId: e['currencyId'],
           minBalance: e['minBalance'],
           name: PluginFmt.tokenView(e['symbol']),
-          fullName:
-              service.plugin.store!.setting.tokensConfig['tokenName'] != null
-                  ? service.plugin.store!.setting.tokensConfig['tokenName']
-                      [e['symbol']]
-                  : null,
+          fullName: tokensConfig['tokenName'] != null
+              ? tokensConfig['tokenName'][e['symbol']]
+              : null,
           decimals: decimal,
           amount: e['balance']['free'].toString(),
           locked: e['balance']['frozen'].toString(),

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/earn/earnPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homa/homaPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
@@ -104,7 +105,9 @@ class _DefiWidgetState extends State<DefiWidget> {
   Widget build(BuildContext context) {
     return Observer(builder: (_) {
       final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common');
-      final modulesConfig = widget.plugin.store!.setting.liveModules;
+      final modulesConfig =
+          widget.plugin.store?.setting.remoteConfig['modules'] ??
+              config_modules;
       List liveModules = [];
       if (modulesConfig.keys.length > 0) {
         liveModules = modulesConfig.keys.toList().sublist(1);

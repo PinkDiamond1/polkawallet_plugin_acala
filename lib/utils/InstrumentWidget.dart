@@ -89,7 +89,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                           child: Text(
                               widget.hideBalance
                                   ? "******"
-                                  : "${widget.datas[index].currencySymbol}${Fmt.priceFloor(widget.datas[index].sumValue, lengthMax: widget.datas[index].lengthMax)}",
+                                  : "${widget.datas[index].currencySymbol}${Fmt.priceFloorFormatter(widget.datas[index].sumValue, lengthMax: widget.datas[index].lengthMax)}",
                               style: TextStyle(
                                   fontFamily: "SF_Pro",
                                   fontSize: 18,

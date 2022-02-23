@@ -48,7 +48,6 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
 
   void _onAmount1Change(
     String value,
-    LoanType loanType,
     BigInt? price,
     int? stableCoinDecimals,
     int? collateralDecimals, {
@@ -86,7 +85,7 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
         return {
           'detail': {
             dic!['loan.deposit']: Text(
-              '${_amountCtrl.text.trim()} ${PluginFmt.tokenView(loan!.token!.symbol)}',
+              '${_amountCtrl.text.trim()} ${PluginFmt.tokenView(params.token.symbol)}',
               style: Theme.of(context).textTheme.headline1,
             ),
           },
@@ -100,7 +99,7 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
         return {
           'detail': {
             dic!['loan.withdraw']: Text(
-              '${_amountCtrl.text.trim()} ${PluginFmt.tokenView(loan!.token!.symbol)}',
+              '${_amountCtrl.text.trim()} ${PluginFmt.tokenView(params.token.symbol)}',
               style: Theme.of(context).textTheme.headline1,
             ),
           },
@@ -143,7 +142,7 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
 
       final loan = widget.plugin.store!.loan.loans[params.token.tokenNameId];
       setState(() {
-        _amountCollateral = loan!.collaterals;
+        _amountCollateral = loan?.collaterals ?? BigInt.zero;
         _token = params.token;
       });
     });
@@ -234,12 +233,12 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
                             hintText: assetDic!['amount'],
                             labelText:
                                 '${assetDic['amount']} (${assetDic['amount.available']}: $availableView $symbolView)',
-                            suffix: loan!.token!.symbol !=
+                            suffix: token.symbol !=
                                         widget.plugin.networkState
                                             .tokenSymbol![0] &&
                                     (params.actionType ==
                                             LoanDepositPage.actionTypeDeposit ||
-                                        loan.debits == BigInt.zero)
+                                        loan?.debits == BigInt.zero)
                                 ? GestureDetector(
                                     child: Text(
                                       dic['loan.max']!,
@@ -257,7 +256,6 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
                                       });
                                       _onAmount1Change(
                                         availableView,
-                                        loan.type,
                                         price,
                                         balancePair[1]!.decimals,
                                         balancePair[0]!.decimals,
@@ -276,7 +274,6 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
                           validator: (v) => _validateAmount1(v!, available),
                           onChanged: (v) => _onAmount1Change(
                             v,
-                            loan.type,
                             price,
                             balancePair[1]!.decimals,
                             balancePair[0]!.decimals,

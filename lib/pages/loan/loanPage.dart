@@ -493,7 +493,8 @@ class CollateralIncentiveList extends StatelessWidget {
           final collateralValue = Fmt.bigIntToDouble(
               loans![token.tokenNameId]?.collateralInUSD, collateralDecimals!);
           double apy = 0;
-          if (totalCDPs![token.tokenNameId]!.collateral > BigInt.zero &&
+          if (((totalCDPs![token.tokenNameId])?.collateral ?? BigInt.zero) >
+                  BigInt.zero &&
               marketPrices![token.symbol] != null &&
               incentives![token.tokenNameId] != null) {
             incentives![token.tokenNameId]!.forEach((e) {
@@ -520,7 +521,10 @@ class CollateralIncentiveList extends StatelessWidget {
           final reward = rewards![token.tokenNameId];
           final rewardView = reward != null && reward.reward!.length > 0
               ? reward.reward!.map((e) {
-                  final amount = double.parse(e['amount']);
+                  double amount = double.parse(e['amount']);
+                  if (amount < 0) {
+                    amount = 0;
+                  }
                   if (amount > 0.0001) {
                     canClaim = true;
                   }

@@ -251,4 +251,7 @@ const Map<String, String> enDex = {
   'v3.loan.max': 'max',
   'v3.earn.staked': 'My Staked',
   'v3.earn.stakedValue': 'Staked Value',
+  'homa.fast.describe':
+      'Fast redeem will try to redeem as fast as the system can, but it may failed by some reasons, if fast redeem failed, the system will not charge the fast redeem fee.',
+  'dex.swap.describe': 'Redeem through swap will charge the trading fee.',
 };

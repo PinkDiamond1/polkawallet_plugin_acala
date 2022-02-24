@@ -237,4 +237,6 @@ const Map<String, String> zhDex = {
   'v3.loan.max': '最大值',
   'v3.earn.staked': '我的质押',
   'v3.earn.stakedValue': '质押值',
+  'homa.fast.describe': '系统会尽快进行提取，但有可能因为某些原因导致提取失败。如果快速提取失败，系统将不会收取快速提取费。',
+  'dex.swap.describe': '通过【兑换】进行提取将收取交易费',
 };

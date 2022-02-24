@@ -7,7 +7,8 @@ import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/v3/txDetail.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginTxDetail.dart';
+import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
 class HomaTxDetailPage extends StatelessWidget {
@@ -31,7 +32,10 @@ class HomaTxDetailPage extends StatelessWidget {
     final nativeDecimal = decimals[symbols.indexOf(symbol)];
     final liquidDecimal = decimals[symbols.indexOf('L$symbol')];
 
-    final amountStyle = TextStyle(fontSize: 16, fontWeight: FontWeight.bold);
+    final amountStyle = TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: PluginColorsDark.headline1);
 
     final infoItems = <TxDetailInfoItem>[
       TxDetailInfoItem(
@@ -104,7 +108,7 @@ class HomaTxDetailPage extends StatelessWidget {
         ));
     }
 
-    return TxDetail(
+    return PluginTxDetail(
       current: keyring.current,
       success: tx.isSuccess,
       action: dic['homa.${tx.action}'],

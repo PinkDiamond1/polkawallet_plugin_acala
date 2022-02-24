@@ -242,8 +242,10 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
                         decimals: balancePair[0]!.decimals!,
                         amount: available.toString()),
                     tokenIconsMap: widget.plugin.tokenIcons,
-                    onSetMax: token.symbol ==
-                            widget.plugin.networkState.tokenSymbol![0]
+                    onSetMax: (params.actionType ==
+                                LoanDepositPage.actionTypeDeposit &&
+                            token.symbol ==
+                                widget.plugin.networkState.tokenSymbol![0])
                         ? null
                         : (max) {
                             {

@@ -52,15 +52,7 @@ class _EarnLoanListState extends State<EarnLoanList> {
     super.initState();
 
     WidgetsBinding.instance!.addPostFrameCallback((_) {
-      // todo: fix this after new acala online
-      final bool enabled = widget.plugin.basic.name == 'acala'
-          ? ModalRoute.of(context)!.settings.arguments as bool
-          : true;
-      if (enabled) {
-        _fetchData();
-      } else {
-        widget.plugin.store!.loan.setLoansLoading(false);
-      }
+      _fetchData();
     });
   }
 

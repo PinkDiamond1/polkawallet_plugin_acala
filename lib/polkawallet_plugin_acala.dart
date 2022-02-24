@@ -39,6 +39,7 @@ import 'package:polkawallet_plugin_acala/pages/loan/loanDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanTxDetailPage.dart';
+import 'package:polkawallet_plugin_acala/pages/newUIRoutes.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftBurnPage.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftTransferPage.dart';
@@ -342,9 +343,9 @@ class PluginAcala extends PolkawalletPlugin {
       ReferendumVotePage.route: (_) => ReferendumVotePage(this, keyring),
       ProposalDetailPage.route: (_) => ProposalDetailPage(this, keyring),
 
-      //new ui
       AcalaEntry.route: (_) => AcalaEntry(this, keyring),
-      // ...getNewUiRoutes(this, keyring)
+      //new ui
+      ...getNewUiRoutes(this, keyring)
     };
   }
 

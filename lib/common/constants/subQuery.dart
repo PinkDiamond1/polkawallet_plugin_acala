@@ -96,3 +96,27 @@ const homaQuery = r'''
     }
   }
 ''';
+
+const queryPoolDetail = r'''
+  query ($pool: String) {
+    pools(filter: {id: {equalTo: $pool}}) {
+      nodes {
+        id,
+        token0 {id,decimal, name }
+        token1 {id,decimal, name }
+        token0Amount
+        token1Amount
+        tvlUSD
+        dayData(orderBy:DATE_DESC,first:30) {
+          nodes {
+            id
+            date
+            tvlUSD
+            volumeUSD
+          }
+        }
+      }
+
+    }
+  }
+''';

@@ -3,10 +3,11 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_ui/components/connectionChecker.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/homa/homaHistoryPage.dart';
+import 'package:polkawallet_plugin_acala/pages/homa/mintPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homa/redeemPage.dart';
-import 'package:polkawallet_plugin_acala/pages/homaNew/mintPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_plugin_acala/utils/format.dart';
@@ -16,6 +17,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginIconButton.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -35,22 +37,6 @@ class HomaPage extends StatefulWidget {
 class _HomaPageState extends State<HomaPage> {
   Timer? _timer;
   String? _unlockingKsm;
-
-  Future<void> _refreshRedeem() async {
-    var data = await widget.plugin.api!.homa
-        .redeemRequested(widget.keyring.current.address);
-    if (!mounted) return;
-
-    if (data != null && data.length > 0) {
-      setState(() {
-        _unlockingKsm = data;
-      });
-    } else if (_unlockingKsm != null) {
-      setState(() {
-        _unlockingKsm = null;
-      });
-    }
-  }
 
   Future<void> _refreshData() async {
     widget.plugin.service!.assets.queryMarketPrices([relay_chain_token_symbol]);
@@ -112,10 +98,11 @@ class _HomaPageState extends State<HomaPage> {
               "${I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!['homa.redeem.cancel']}${I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!['homa.redeem']}$relay_chain_token_symbol",
           txDisplay: txDisplay,
           params: params,
+          isPlugin: true,
         ))) as Map?;
 
     if (res != null) {
-      _refreshRedeem();
+      _refreshData();
     }
   }
 
@@ -131,23 +118,19 @@ class _HomaPageState extends State<HomaPage> {
         txDisplayBold: {
           dic['loan.amount']!: Text(
             '${Fmt.priceFloor(claimable as double?, lengthMax: 4)} $relay_chain_token_symbol',
-            style: Theme.of(context).textTheme.headline1,
+            style: Theme.of(context)
+                .textTheme
+                .headline1
+                ?.copyWith(color: Colors.white),
           ),
         },
         params: [widget.keyring.current.address],
+        isPlugin: true,
       ),
     );
     if (res != null) {
       _refreshData();
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      _refreshData();
-    });
   }
 
   @override
@@ -165,7 +148,35 @@ class _HomaPageState extends State<HomaPage> {
       final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
       final stakeSymbol = relay_chain_token_symbol;
 
-      final env = widget.plugin.store!.homa.env;
+      if (widget.plugin.sdk.api.connectedNode == null) {
+        return PluginScaffold(
+          appBar: PluginAppBar(
+            title: Text('${dic['homa.title']} $stakeSymbol'),
+            actions: [
+              Container(
+                margin: EdgeInsets.only(right: 16),
+                child: PluginIconButton(
+                  onPressed: () =>
+                      Navigator.of(context).pushNamed(HomaHistoryPage.route),
+                  icon: Icon(
+                    Icons.history,
+                    size: 22,
+                    color: Color(0xFF17161F),
+                  ),
+                ),
+              )
+            ],
+          ),
+          body: Column(
+            children: [
+              ConnectionChecker(widget.plugin, onConnected: _refreshData),
+              PluginLoadingWidget()
+            ],
+          ),
+        );
+      }
+
+      final env = widget.plugin.store?.homa.env;
       final balances = AssetsUtils.getBalancePairFromTokenNameId(
           widget.plugin, [stakeSymbol, 'L$stakeSymbol']);
       final balanceStakeToken =
@@ -186,12 +197,17 @@ class _HomaPageState extends State<HomaPage> {
       final riveHeight = riveWidget / 360 * 292;
 
       final aprValue =
-          "${Fmt.priceFloor(env?.apy ?? 0 * 100, lengthFixed: 0)}%";
+          "${Fmt.priceFloor((env?.apy ?? 0) * 100, lengthFixed: 0)}%";
       final aprStyle = Theme.of(context).textTheme.headline4?.copyWith(
           fontSize: 24,
           fontWeight: FontWeight.bold,
           height: 0.9,
           color: Colors.white);
+
+      final redeemRequest = Fmt.balanceDouble(
+          (widget.plugin.store?.homa.userInfo?.redeemRequest ?? {})['amount'] ??
+              '0',
+          balances[0]!.decimals!);
 
       return PluginScaffold(
         appBar: PluginAppBar(
@@ -218,6 +234,7 @@ class _HomaPageState extends State<HomaPage> {
             padding: EdgeInsets.symmetric(horizontal: paddingHorizontal),
             child: Column(
               children: [
+                ConnectionChecker(widget.plugin, onConnected: _refreshData),
                 Expanded(
                     child: SingleChildScrollView(
                         child: Stack(
@@ -230,7 +247,7 @@ class _HomaPageState extends State<HomaPage> {
                             height: riveHeight,
                             margin: EdgeInsets.only(top: riveTop),
                             child: RiveAnimation.asset(
-                              'packages/polkawallet_plugin_karura/assets/images/new_file.riv',
+                              'packages/polkawallet_plugin_acala/assets/images/new_file.riv',
                               animations: const [
                                 'Animation 1',
                                 'Animation 2',
@@ -245,12 +262,12 @@ class _HomaPageState extends State<HomaPage> {
                               decoration: BoxDecoration(
                                   image: DecorationImage(
                                 image: AssetImage(
-                                    'packages/polkawallet_plugin_karura/assets/images/homa_left_bg.png'),
+                                    'packages/polkawallet_plugin_acala/assets/images/homa_left_bg.png'),
                               )),
                               padding:
                                   EdgeInsets.only(left: 45, right: 15, top: 2),
                               child: Text(
-                                  '1 L$stakeSymbol ≈ ${Fmt.priceFloor(env?.exchangeRate, lengthMax: 4)} $stakeSymbol',
+                                  '1 L$stakeSymbol ≈ ${Fmt.priceFloor(env?.exchangeRate ?? 1, lengthMax: 2)} $stakeSymbol',
                                   style: Theme.of(context)
                                       .appBarTheme
                                       .titleTextStyle
@@ -281,7 +298,7 @@ class _HomaPageState extends State<HomaPage> {
                           color: Color(0x33FFFFFF),
                           padding: EdgeInsets.symmetric(horizontal: 5),
                           child: Text(
-                            '${Fmt.priceFloor(env?.totalLiquidity, lengthMax: 2)}',
+                            '${Fmt.priceFloor(env?.totalLiquidity ?? 0, lengthMax: 2)}',
                             style: Theme.of(context)
                                 .appBarTheme
                                 .titleTextStyle
@@ -305,15 +322,14 @@ class _HomaPageState extends State<HomaPage> {
                               top: riveTop + riveHeight * 0.17,
                               right: paddingHorizontal +
                                   riveWidget * 0.195 -
-                                  PluginFmt.boundingTextSize(
-                                              aprValue, aprStyle!)
+                                  PluginFmt.boundingTextSize(aprValue, aprStyle)
                                           .width /
                                       2),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                'APR',
+                                'APY',
                                 style: Theme.of(context)
                                     .textTheme
                                     .headline4
@@ -337,7 +353,7 @@ class _HomaPageState extends State<HomaPage> {
                         decoration: BoxDecoration(
                             image: DecorationImage(
                           image: AssetImage(
-                              'packages/polkawallet_plugin_karura/assets/images/homa_total_staked_bg.png'),
+                              'packages/polkawallet_plugin_acala/assets/images/homa_total_staked_bg.png'),
                         )),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,7 +378,7 @@ class _HomaPageState extends State<HomaPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '${Fmt.priceFloor(env?.totalStaking, lengthMax: 2)} $relay_chain_token_symbol',
+                                      '${Fmt.priceFloorFormatter(env?.totalStaking ?? 0, lengthMax: 4)} $stakeSymbol',
                                       style: Theme.of(context)
                                           .textTheme
                                           .headline5
@@ -397,7 +413,7 @@ class _HomaPageState extends State<HomaPage> {
                               decoration: BoxDecoration(
                                   image: DecorationImage(
                                 image: AssetImage(
-                                    'packages/polkawallet_plugin_karura/assets/images/homa_my_stats_bg.png'),
+                                    'packages/polkawallet_plugin_acala/assets/images/homa_my_stats_bg.png'),
                               )),
                               child: Text(
                                 dic['v3.myStats']!,
@@ -411,6 +427,7 @@ class _HomaPageState extends State<HomaPage> {
                             ),
                             Container(
                               width: double.infinity,
+                              margin: EdgeInsets.only(bottom: 16),
                               padding: EdgeInsets.only(
                                   left: 11, top: 16, bottom: 20),
                               decoration: BoxDecoration(
@@ -432,7 +449,7 @@ class _HomaPageState extends State<HomaPage> {
                                         decoration: BoxDecoration(
                                             image: DecorationImage(
                                           image: AssetImage(
-                                              'packages/polkawallet_plugin_karura/assets/images/homa_myStats_item_bg.png'),
+                                              'packages/polkawallet_plugin_acala/assets/images/homa_myStats_item_bg.png'),
                                         )),
                                         child: Column(
                                           crossAxisAlignment:
@@ -449,15 +466,14 @@ class _HomaPageState extends State<HomaPage> {
                                                           FontWeight.w600),
                                             ),
                                             Text(
-                                              Fmt.priceFloor(balanceLiquidToken,
+                                              Fmt.priceFloorFormatter(
+                                                  balanceLiquidToken,
                                                   lengthMax: 4),
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .headline4
                                                   ?.copyWith(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.w600),
+                                                      color: Colors.white),
                                             )
                                           ],
                                         ),
@@ -471,7 +487,7 @@ class _HomaPageState extends State<HomaPage> {
                                         decoration: BoxDecoration(
                                             image: DecorationImage(
                                           image: AssetImage(
-                                              'packages/polkawallet_plugin_karura/assets/images/homa_myStats_item_bg.png'),
+                                              'packages/polkawallet_plugin_acala/assets/images/homa_myStats_item_bg.png'),
                                         )),
                                         child: Column(
                                           crossAxisAlignment:
@@ -488,15 +504,12 @@ class _HomaPageState extends State<HomaPage> {
                                                           FontWeight.w600),
                                             ),
                                             Text(
-                                              Fmt.priceFloor(unbonding,
-                                                  lengthMax: 4),
+                                              "${Fmt.priceFloorFormatter(unbonding, lengthMax: 4)} $stakeSymbol",
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .headline4
                                                   ?.copyWith(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.w600),
+                                                      color: Colors.white),
                                             )
                                           ],
                                         ),
@@ -516,7 +529,7 @@ class _HomaPageState extends State<HomaPage> {
                                         decoration: BoxDecoration(
                                             image: DecorationImage(
                                           image: AssetImage(
-                                              'packages/polkawallet_plugin_karura/assets/images/homa_myStats_item_bg.png'),
+                                              'packages/polkawallet_plugin_acala/assets/images/homa_myStats_item_bg.png'),
                                         )),
                                         child: Column(
                                           crossAxisAlignment:
@@ -533,15 +546,14 @@ class _HomaPageState extends State<HomaPage> {
                                                           FontWeight.w600),
                                             ),
                                             Text(
-                                              Fmt.priceFloor(balanceStakeToken,
+                                              Fmt.priceFloorFormatter(
+                                                  balanceStakeToken,
                                                   lengthMax: 4),
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .headline4
                                                   ?.copyWith(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.w600),
+                                                      color: Colors.white),
                                             )
                                           ],
                                         ),
@@ -561,7 +573,7 @@ class _HomaPageState extends State<HomaPage> {
                                             decoration: BoxDecoration(
                                                 image: DecorationImage(
                                               image: AssetImage(
-                                                  'packages/polkawallet_plugin_karura/assets/images/homa_myStats${claimable > 0 ? '_select' : ''}_item_bg.png'),
+                                                  'packages/polkawallet_plugin_acala/assets/images/homa_myStats_item${claimable > 0 ? '_select' : ''}_bg.png'),
                                             )),
                                             child: Column(
                                               crossAxisAlignment:
@@ -573,20 +585,21 @@ class _HomaPageState extends State<HomaPage> {
                                                       .textTheme
                                                       .headline4
                                                       ?.copyWith(
-                                                          color: Colors.white,
+                                                          color: claimable > 0
+                                                              ? Colors.black
+                                                              : Colors.white,
                                                           fontWeight:
                                                               FontWeight.w600),
                                                 ),
                                                 Text(
-                                                  Fmt.priceFloor(claimable,
-                                                      lengthMax: 4),
+                                                  "${Fmt.priceFloorFormatter(claimable, lengthMax: 4)} $stakeSymbol",
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .headline4
                                                       ?.copyWith(
-                                                          color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.w600),
+                                                          color: claimable > 0
+                                                              ? Colors.black
+                                                              : Colors.white),
                                                 )
                                               ],
                                             ),
@@ -595,7 +608,44 @@ class _HomaPageState extends State<HomaPage> {
                                   ))
                                 ],
                               ),
-                            )
+                            ),
+                            Visibility(
+                                visible: redeemRequest > 0,
+                                child: Padding(
+                                    padding: EdgeInsets.only(bottom: 16),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Padding(
+                                                padding:
+                                                    EdgeInsets.only(right: 8),
+                                                child: RedeemRequestIcon()),
+                                            Text(
+                                              dic['homa.RedeemRequest']!,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline4
+                                                  ?.copyWith(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                            )
+                                          ],
+                                        ),
+                                        Text(
+                                          "${Fmt.priceFloor(redeemRequest, lengthMax: 4)} L$stakeSymbol",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline4
+                                              ?.copyWith(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w400),
+                                        )
+                                      ],
+                                    )))
                           ],
                         ),
                       ),
@@ -624,11 +674,11 @@ class _HomaPageState extends State<HomaPage> {
                             child: PluginButton(
                           title: '${dic['homa.mint']} L$stakeSymbol',
                           backgroundColor: (env?.totalStaking ?? 0) <
-                                  (env?.stakingSoftCap ?? 1)
+                                  (env?.stakingSoftCap ?? 0)
                               ? null
                               : Color(0x54FFFFFF),
                           onPressed: (env?.totalStaking ?? 0) <
-                                  (env?.stakingSoftCap ?? 1)
+                                  (env?.stakingSoftCap ?? 0)
                               ? () async {
                                   // if (!(await _confirmMint())) return;
 
@@ -648,5 +698,55 @@ class _HomaPageState extends State<HomaPage> {
             )),
       );
     });
+  }
+}
+
+class RedeemRequestIcon extends StatefulWidget {
+  RedeemRequestIcon({Key? key}) : super(key: key);
+
+  @override
+  _RedeemRequestIconState createState() => _RedeemRequestIconState();
+}
+
+class _RedeemRequestIconState extends State<RedeemRequestIcon>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Function(AnimationStatus) _listener;
+
+  @override
+  void initState() {
+    _controller = AnimationController(
+        vsync: this, duration: Duration(milliseconds: 1000));
+    _controller.forward();
+
+    _listener = (status) {
+      if (status == AnimationStatus.completed) {
+        _controller.reset();
+        _controller.forward();
+      }
+    };
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.removeStatusListener(_listener);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 20,
+      height: 20,
+      child: RotationTransition(
+        child: Image.asset(
+          "packages/polkawallet_plugin_acala/assets/images/homa_redeem_request.png",
+          width: 20,
+        ),
+        turns: _controller..addStatusListener(_listener),
+      ),
+    );
   }
 }

@@ -1,16 +1,83 @@
 import 'package:flutter/material.dart';
+import 'package:polkawallet_plugin_acala/common/constants/base.dart';
+import 'package:polkawallet_plugin_acala/pages/earnNew/LPStakePage.dart';
+import 'package:polkawallet_plugin_acala/pages/earnNew/addLiquidityPage.dart';
+import 'package:polkawallet_plugin_acala/pages/earnNew/earnDetailPage.dart';
+import 'package:polkawallet_plugin_acala/pages/earnNew/earnHistoryPage.dart';
+import 'package:polkawallet_plugin_acala/pages/earnNew/earnPage.dart';
+import 'package:polkawallet_plugin_acala/pages/earnNew/inviteFriendsPage.dart';
+import 'package:polkawallet_plugin_acala/pages/earnNew/withdrawLiquidityPage.dart';
+import 'package:polkawallet_plugin_acala/pages/homaNew/homaHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homaNew/homaPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homaNew/mintPage.dart';
+import 'package:polkawallet_plugin_acala/pages/homaNew/redeemPage.dart';
+import 'package:polkawallet_plugin_acala/pages/loanNew/loanCreatePage.dart';
+import 'package:polkawallet_plugin_acala/pages/loanNew/loanDepositPage.dart';
+import 'package:polkawallet_plugin_acala/pages/loanNew/loanHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loanNew/loanPage.dart';
+import 'package:polkawallet_plugin_acala/pages/swapNew/bootstrapPage.dart';
+import 'package:polkawallet_plugin_acala/pages/swapNew/swapHistoryPage.dart';
+import 'package:polkawallet_plugin_acala/pages/swapNew/swapPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/service/graphql.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 
 Map<String, WidgetBuilder> getNewUiRoutes(PluginAcala plugin, Keyring keyring) {
-  return {
-    //homa
-    HomaPage.route: (_) => HomaPage(plugin, keyring),
-    MintPage.route: (_) => MintPage(plugin, keyring),
+  /// use new pages in testnet for now.
+  final isTest = true;
+  return isTest
+      ? {
+          //homa
+          HomaPage.route: (_) => HomaPage(plugin, keyring),
+          MintPage.route: (_) => MintPage(plugin, keyring),
+          RedeemPage.route: (_) => RedeemPage(plugin, keyring),
+          HomaHistoryPage.route: (_) => ClientProvider(
+                child: Builder(
+                  builder: (_) => HomaHistoryPage(plugin, keyring),
+                ),
+                uri: GraphQLConfig['httpUri']!,
+              ),
 
-    LoanPage.route: (_) => LoanPage(plugin, keyring),
-  };
+          //loan
+          LoanPage.route: (_) => LoanPage(plugin, keyring),
+          LoanCreatePage.route: (_) => LoanCreatePage(plugin, keyring),
+          LoanHistoryPage.route: (_) => ClientProvider(
+                child: Builder(
+                  builder: (_) => LoanHistoryPage(plugin, keyring),
+                ),
+                uri: GraphQLConfig['httpUri']!,
+              ),
+          LoanDepositPage.route: (_) => LoanDepositPage(plugin, keyring),
+
+          //swap
+          SwapPage.route: (_) => SwapPage(plugin, keyring),
+          SwapHistoryPage.route: (_) => ClientProvider(
+                child: Builder(
+                  builder: (_) => SwapHistoryPage(plugin, keyring),
+                ),
+                uri: GraphQLConfig['httpUri']!,
+              ),
+          BootstrapPage.route: (_) => BootstrapPage(plugin, keyring),
+
+          //earn
+          EarnPage.route: (_) => EarnPage(plugin, keyring),
+          AddLiquidityPage.route: (_) => AddLiquidityPage(plugin, keyring),
+          WithdrawLiquidityPage.route: (_) =>
+              WithdrawLiquidityPage(plugin, keyring),
+          EarnHistoryPage.route: (_) => ClientProvider(
+                child: Builder(
+                  builder: (_) => EarnHistoryPage(plugin, keyring),
+                ),
+                uri: GraphQLConfig['httpUri']!,
+              ),
+          EarnDetailPage.route: (_) => ClientProvider(
+                child: Builder(
+                  builder: (_) => EarnDetailPage(plugin, keyring),
+                ),
+                uri: GraphQLConfig['httpUri']!,
+              ),
+          LPStakePage.route: (_) => LPStakePage(plugin, keyring),
+          InviteFriendsPage.route: (_) => InviteFriendsPage(plugin, keyring),
+        }
+      : {};
 }

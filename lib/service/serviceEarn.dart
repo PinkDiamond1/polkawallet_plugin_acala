@@ -118,6 +118,6 @@ class ServiceEarn {
 
     await queryDexPoolInfo();
 
-    queryIncentives();
+    await queryIncentives();
   }
 }

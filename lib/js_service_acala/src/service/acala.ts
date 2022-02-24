@@ -723,10 +723,10 @@ function _formatHomaEnv(env: HomaEnvironment) {
 }
 
 async function queryHomaNewEnv(api: ApiPromise) {
-  if (!walletPromise) {
-    walletPromise = new WalletPromise(api);
-  }
   if (!homa) {
+    if (!walletPromise) {
+      walletPromise = new WalletPromise(api);
+    }
     const walletAdapter = {
       subscribeToken: (token: any) => of(walletPromise.getToken(token)),
     };
@@ -738,10 +738,10 @@ async function queryHomaNewEnv(api: ApiPromise) {
 }
 
 async function calcHomaNewMintAmount(api: ApiPromise, amount: number) {
-  if (!walletPromise) {
-    walletPromise = new WalletPromise(api);
-  }
   if (!homa) {
+    if (!walletPromise) {
+      walletPromise = new WalletPromise(api);
+    }
     const walletAdapter = {
       subscribeToken: (token: any) => of(walletPromise.getToken(token)),
     };
@@ -757,10 +757,10 @@ async function calcHomaNewMintAmount(api: ApiPromise, amount: number) {
 }
 
 async function calcHomaNewRedeemAmount(api: ApiPromise, amount: number, isFastRedeem: boolean) {
-  if (!walletPromise) {
-    walletPromise = new WalletPromise(api);
-  }
   if (!homa) {
+    if (!walletPromise) {
+      walletPromise = new WalletPromise(api);
+    }
     const walletAdapter = {
       subscribeToken: (token: any) => of(walletPromise.getToken(token)),
     };
@@ -778,10 +778,10 @@ async function calcHomaNewRedeemAmount(api: ApiPromise, amount: number, isFastRe
 }
 
 async function queryHomaPendingRedeem(api: ApiPromise, address: string) {
-  if (!walletPromise) {
-    walletPromise = new WalletPromise(api);
-  }
   if (!homa) {
+    if (!walletPromise) {
+      walletPromise = new WalletPromise(api);
+    }
     const walletAdapter = {
       subscribeToken: (token: any) => of(walletPromise.getToken(token)),
     };

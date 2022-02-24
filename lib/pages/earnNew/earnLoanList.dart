@@ -64,8 +64,6 @@ class _EarnLoanListState extends State<EarnLoanList> {
 
   @override
   Widget build(BuildContext context) {
-    final stableCoinDecimals = widget.plugin.networkState.tokenDecimals![
-        widget.plugin.networkState.tokenSymbol!.indexOf(acala_stable_coin)];
     final incentiveTokenSymbol = widget.plugin.networkState.tokenSymbol![0];
     return Observer(
       builder: (_) {
@@ -89,7 +87,6 @@ class _EarnLoanListState extends State<EarnLoanList> {
                 incentives: widget.plugin.store!.earn.incentives.loans,
                 rewards: widget.plugin.store!.loan.collateralRewards,
                 marketPrices: widget.plugin.store!.assets.marketPrices,
-                collateralDecimals: stableCoinDecimals,
                 incentiveTokenSymbol: incentiveTokenSymbol,
                 dexIncentiveLoyaltyEndBlock:
                     widget.plugin.store!.earn.dexIncentiveLoyaltyEndBlock,
@@ -108,7 +105,6 @@ class CollateralIncentiveList extends StatelessWidget {
     this.totalCDPs,
     this.tokenIcons,
     this.marketPrices,
-    this.collateralDecimals,
     this.incentiveTokenSymbol,
     this.dexIncentiveLoyaltyEndBlock,
   });
@@ -120,7 +116,6 @@ class CollateralIncentiveList extends StatelessWidget {
   final Map<String?, TotalCDPData>? totalCDPs;
   final Map<String, Widget>? tokenIcons;
   final Map<String?, double>? marketPrices;
-  final int? collateralDecimals;
   final String? incentiveTokenSymbol;
   final List<dynamic>? dexIncentiveLoyaltyEndBlock;
 
@@ -249,9 +244,7 @@ class CollateralIncentiveList extends StatelessWidget {
         itemBuilder: (_, i) {
           final token = tokens[i]!;
           double apy = 0;
-          if (((totalCDPs![token.tokenNameId])?.collateral ?? BigInt.zero) >
-                  BigInt.zero &&
-              marketPrices![token.symbol] != null &&
+          if (marketPrices![token.symbol] != null &&
               incentives![token.tokenNameId] != null) {
             incentives![token.tokenNameId]!.forEach((e) {
               if (e.tokenNameId != 'Any') {
@@ -260,13 +253,11 @@ class CollateralIncentiveList extends StatelessWidget {
                 apy += (marketPrices![rewardToken.symbol] ?? 0) *
                     e.amount! /
                     Fmt.bigIntToDouble(rewards![token.tokenNameId]?.sharesTotal,
-                        collateralDecimals!) /
+                        token.decimals ?? 12) /
                     marketPrices![token.symbol]!;
               }
             });
           }
-          final deposit = Fmt.priceFloorBigInt(
-              loans![token.tokenNameId]?.collaterals, collateralDecimals!);
 
           bool canClaim = false;
           double? loyaltyBonus = 0;
@@ -287,6 +278,9 @@ class CollateralIncentiveList extends StatelessWidget {
                   return '${Fmt.priceFloor(amount * (1 - loyaltyBonus!))}';
                 }).join(' + ')
               : '0.00';
+
+          final deposit =
+              Fmt.priceFloorBigInt(reward?.shares, token.decimals ?? 12);
 
           final bestNumber = plugin!.store!.gov.bestNumber;
           var blockNumber;
@@ -434,9 +428,7 @@ class CollateralIncentiveList extends StatelessWidget {
                             active: true,
                             padding: EdgeInsets.only(top: 8, bottom: 8),
                             margin: EdgeInsets.zero,
-                            onPressed: (loans![token.tokenNameId]
-                                            ?.collaterals ??
-                                        BigInt.zero) >
+                            onPressed: (reward?.shares ?? BigInt.zero) >
                                     BigInt.zero
                                 ? () => Navigator.of(context).pushNamed(
                                       LoanDepositPage.route,

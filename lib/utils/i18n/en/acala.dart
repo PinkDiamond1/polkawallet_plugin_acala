@@ -254,4 +254,5 @@ const Map<String, String> enDex = {
   'homa.fast.describe':
       'Fast redeem will try to redeem as fast as the system can, but it may failed by some reasons, if fast redeem failed, the system will not charge the fast redeem fee.',
   'dex.swap.describe': 'Redeem through swap will charge the trading fee.',
+  'v3.fastRedeemError': 'The fast redeem is not available at the present.'
 };

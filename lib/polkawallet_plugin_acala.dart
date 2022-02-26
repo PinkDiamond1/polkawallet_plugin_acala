@@ -12,6 +12,7 @@ import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/common/constants/nodeList.dart';
 import 'package:polkawallet_plugin_acala/pages/acalaEntry.dart';
+import 'package:polkawallet_plugin_acala/pages/assets/nativeTokenTransfers.dart';
 import 'package:polkawallet_plugin_acala/pages/assets/tokenDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/assets/transferDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/assets/transferPage.dart';
@@ -265,6 +266,12 @@ class PluginAcala extends PolkawalletPlugin {
       default:
         return "packages/polkawallet_plugin_acala/assets/images/icon_instrument_yellow.png";
     }
+  }
+
+  @override
+  Widget? getNativeTokenTransfers(
+      {required String address, int transferType = 0}) {
+    return NativeTokenTransfers(this, address, transferType);
   }
 
   @override

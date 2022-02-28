@@ -257,7 +257,6 @@ class _DexPoolCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: PluginOutlinedButtonSmall(
-                      margin: EdgeInsets.all(0),
                       content: dic['dex.removeLiquidity'],
                       color: Color(0xFFcdcdce),
                       active: true,
@@ -269,6 +268,7 @@ class _DexPoolCard extends StatelessWidget {
                   Expanded(
                     child: PluginOutlinedButtonSmall(
                       content: dic['dex.addLiquidity'],
+                      margin: EdgeInsets.zero,
                       color: Color(0xFFFC8156),
                       active: true,
                       onPressed: () => Navigator.of(context).pushNamed(

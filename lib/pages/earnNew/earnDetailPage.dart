@@ -75,6 +75,8 @@ class EarnDetailPage extends StatelessWidget {
             share = poolInfo.shares;
             stakeShare = share! / shareTotal!;
             poolShare = share / issuance!;
+            print(
+                "poolInfo.sharesTotal===${Fmt.priceCeil(Fmt.bigIntToDouble(shareTotal, balancePair[0]!.decimals!) * plugin.store!.assets.marketPrices[balancePair[0]!.symbol]!)}");
 
             final lpAmount = Fmt.bigIntToDouble(
                     poolInfo.amountLeft, balancePair[0]!.decimals!) *
@@ -198,7 +200,7 @@ class EarnDetailPage extends StatelessWidget {
                                     padding:
                                         EdgeInsets.only(left: 16, bottom: 10),
                                     child: Text(
-                                      "TVL: \$ ${Fmt.priceCeil(leftPrice + rightPrice)}; ${dic['v3.earn.stakedValue']}: ",
+                                      "TVL: \$${Fmt.priceCeil(leftPrice + rightPrice)} | ${dic['earn.staked']}: \$${Fmt.priceCeil(Fmt.bigIntToDouble(shareTotal, balancePair[0]!.decimals!) * plugin.store!.assets.marketPrices[balancePair[0]!.symbol]!)}",
                                       style: Theme.of(context)
                                           .textTheme
                                           .headline5

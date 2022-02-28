@@ -75,8 +75,6 @@ class EarnDetailPage extends StatelessWidget {
             share = poolInfo.shares;
             stakeShare = share! / shareTotal!;
             poolShare = share / issuance!;
-            print(
-                "poolInfo.sharesTotal===${Fmt.priceCeil(Fmt.bigIntToDouble(shareTotal, balancePair[0]!.decimals!) * plugin.store!.assets.marketPrices[balancePair[0]!.symbol]!)}");
 
             final lpAmount = Fmt.bigIntToDouble(
                     poolInfo.amountLeft, balancePair[0]!.decimals!) *

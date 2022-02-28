@@ -107,7 +107,7 @@ class _LoanPageState extends State<LoanPage> {
     final debitShares = loan.debitShares - originalLoan.debitShares;
     final debits = loan.type.debitShareToDebit(debitShares);
 
-    if (collaterals == BigInt.zero && debitShares == BigInt.zero) {
+    if (collaterals == BigInt.zero && debits == BigInt.zero) {
       return null;
     }
 

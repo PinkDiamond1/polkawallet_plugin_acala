@@ -88,7 +88,7 @@ class PluginAcala extends PolkawalletPlugin {
           isTestNet: false,
           isXCMSupport: false,
           parachainId: '2000',
-          jsCodeVersion: 23301,
+          jsCodeVersion: 31501,
         );
 
   @override

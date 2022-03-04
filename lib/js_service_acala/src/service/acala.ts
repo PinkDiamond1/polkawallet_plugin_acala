@@ -9,7 +9,7 @@ import { Homa } from "@acala-network/sdk";
 import { OraclePriceProvider } from "@acala-network/sdk/wallet/price-provider/oracle-price-provider";
 import axios from "axios";
 import { IncentiveResult } from "../types/acalaTypes";
-import { firstValueFrom, of } from "rxjs";
+import { of } from "rxjs";
 import { HomaEnvironment } from "@acala-network/sdk/homa/types";
 
 const ONE = FixedPointNumber.ONE;
@@ -738,7 +738,7 @@ async function queryHomaNewEnv(api: ApiPromise) {
     homa = new Homa(api, walletAdapter);
   }
 
-  const result = await firstValueFrom(homa.subscribeEnv());
+  const result = await homa.getEnv();
   return _formatHomaEnv(result);
 }
 
@@ -753,7 +753,7 @@ async function calcHomaNewMintAmount(api: ApiPromise, amount: number) {
     homa = new Homa(api, walletAdapter);
   }
 
-  const result = await firstValueFrom(homa.subscribeEstimateMintResult(new FixedPointNumber(amount, DOT_DECIMAL)));
+  const result = await homa.getEstimateMintResult(new FixedPointNumber(amount, DOT_DECIMAL));
   return {
     pay: result.pay.toNumber(),
     receive: result.receive.toNumber(),
@@ -772,12 +772,12 @@ async function calcHomaNewRedeemAmount(api: ApiPromise, amount: number, isFastRe
     homa = new Homa(api, walletAdapter);
   }
 
-  const result = await firstValueFrom(homa.subscribeEstimateRedeemResult(new FixedPointNumber(amount, DOT_DECIMAL), isFastRedeem));
+  const result = await homa.getEstimateRedeemResult(new FixedPointNumber(amount, DOT_DECIMAL), isFastRedeem);
   return {
     request: result.request.toNumber(),
     receive: result.receive.toNumber(),
     fee: result.fee.toNumber(),
-    canTryFastReddem: result.canTryFastReddem,
+    canTryFastRedeem: result.canTryFastRedeem,
     env: _formatHomaEnv(result.env),
   };
 }
@@ -793,7 +793,7 @@ async function queryHomaPendingRedeem(api: ApiPromise, address: string) {
     homa = new Homa(api, walletAdapter);
   }
 
-  const result = await firstValueFrom(homa.subscribeUserLiquidTokenSummary(address));
+  const result = await homa.getUserLiquidTokenSummary(address);
   return {
     totalUnbonding: result.totalUnbonding.toNumber(),
     claimable: result.claimable.toNumber(),

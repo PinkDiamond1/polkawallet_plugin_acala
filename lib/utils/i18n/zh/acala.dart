@@ -216,6 +216,9 @@ const Map<String, String> zhDex = {
   'v3.loan.iUnderstand': '我明白了',
   'v3.loan.paybackMessage':
       '您已经销毁了所有已铸造的 aUSD，但是你仍然有已抵押的 DOT。如果您想关闭债仓，您可以同时提取所有抵押的 DOT。',
+  'loan.warn.KSM1': '债仓未清零时，余额不能小于 ',
+  'loan.warn.KSM2': 'aUSD，本次操作后将剩余 ',
+  'loan.warn.KSM3': 'aUSD 的债务。确认继续吗？',
   'v3.earn.lpTokenReceived': '收到的LP Token',
   'v3.earn.amout': '数量',
   'v3.earn.tokenReceived': '收到的Token',

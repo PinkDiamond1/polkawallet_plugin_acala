@@ -328,7 +328,7 @@ class _TransferPageState extends State<TransferPage> {
                   child: Container(
                     margin: EdgeInsets.fromLTRB(8, 16, 0, 16),
                     child: Text(
-                      Fmt.address(_accountTo?.address, pad: 8) ?? '',
+                      Fmt.address(_accountTo?.address, pad: 8),
                       style: Theme.of(context).textTheme.headline4,
                     ),
                   ),
@@ -381,7 +381,7 @@ class _TransferPageState extends State<TransferPage> {
                 child: Container(
                   margin: EdgeInsets.fromLTRB(8, 16, 0, 16),
                   child: Text(
-                    Fmt.address(_accountTo?.address, pad: 8) ?? '',
+                    Fmt.address(_accountTo?.address, pad: 8),
                     style: Theme.of(context).textTheme.headline4,
                   ),
                 ),

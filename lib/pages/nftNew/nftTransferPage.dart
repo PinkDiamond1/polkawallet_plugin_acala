@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/api/types/nftData.dart';
+import 'package:polkawallet_plugin_acala/common/components/videoPlayerContainer.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
@@ -255,6 +256,7 @@ class NFTFormItem extends StatelessWidget {
     final symbol = plugin.networkState.tokenSymbol![0];
     final decimal = plugin.networkState.tokenDecimals![0];
     final deposit = Fmt.balance(item!.deposit, decimal);
+    final imageUrl = item!.metadata!['dwebImage'] as String;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,8 +264,9 @@ class NFTFormItem extends StatelessWidget {
         Container(
           height: 93,
           margin: EdgeInsets.only(right: 19),
-          child: Image.network(
-              '${item!.metadata!['imageServiceUrl']}?imageView2/2/w/400'),
+          child: imageUrl.contains('.mp4')
+              ? VideoPlayerContainer(imageUrl)
+              : Image.network('$imageUrl?imageView2/2/w/400'),
         ),
         Expanded(
           child: Column(

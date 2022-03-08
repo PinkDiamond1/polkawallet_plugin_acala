@@ -16,7 +16,7 @@ class HomaTxDetailPage extends StatelessWidget {
   final PluginAcala plugin;
   final Keyring keyring;
 
-  static final String route = '/acala/homa/tx';
+  static final String route = '/karura/homa/tx';
 
   @override
   Widget build(BuildContext context) {
@@ -70,13 +70,13 @@ class HomaTxDetailPage extends StatelessWidget {
           TxDetailInfoItem(
             label: dic['dex.pay'],
             content: Text(
-                '${Fmt.priceFloorBigInt(tx.amountPay, liquidDecimal)} $symbol',
+                '${Fmt.priceFloorBigInt(tx.amountPay, liquidDecimal)} L$symbol',
                 style: amountStyle),
           ),
           TxDetailInfoItem(
             label: dic['dex.receive'],
             content: Text(
-                '${Fmt.priceFloorBigInt(tx.amountReceive, nativeDecimal)} L$symbol',
+                '${Fmt.priceFloorBigInt(tx.amountReceive, nativeDecimal)} $symbol',
                 style: amountStyle),
           )
         ]);

@@ -6,7 +6,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:polkawallet_plugin_acala/api/types/txIncentiveData.dart';
 import 'package:polkawallet_plugin_acala/common/constants/subQuery.dart';
-import 'package:polkawallet_plugin_acala/pages/earn/earnTxDetailPage.dart';
+import 'package:polkawallet_plugin_acala/pages/earnNew/earnTxDetailPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';

@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:polkawallet_plugin_acala/api/types/txHomaData.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/common/constants/subQuery.dart';
-import 'package:polkawallet_plugin_acala/pages/homa/homaTxDetailPage.dart';
+import 'package:polkawallet_plugin_acala/pages/homaNew/homaTxDetailPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';

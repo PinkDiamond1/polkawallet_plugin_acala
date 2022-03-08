@@ -8,7 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/api/types/swapOutputData.dart';
 import 'package:polkawallet_plugin_acala/common/components/InsufficientACAWarn.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
-import 'package:polkawallet_plugin_acala/pages/swap/bootstrapPage.dart';
+import 'package:polkawallet_plugin_acala/pages/swapNew/bootstrapPage.dart';
 import 'package:polkawallet_plugin_acala/pages/swapNew/swapPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';

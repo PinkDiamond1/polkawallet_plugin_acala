@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_acala/api/types/calcHomaRedeemAmount.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
-import 'package:polkawallet_plugin_acala/pages/swap/bootstrapPage.dart';
+import 'package:polkawallet_plugin_acala/pages/swapNew/bootstrapPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_plugin_acala/utils/format.dart';

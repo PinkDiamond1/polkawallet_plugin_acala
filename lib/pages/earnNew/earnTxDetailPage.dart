@@ -15,7 +15,7 @@ class EarnTxDetailPage extends StatelessWidget {
   final PluginAcala plugin;
   final Keyring keyring;
 
-  static final String route = '/acala/earn/incentive/tx';
+  static final String route = '/karura/earn/incentive/tx';
 
   @override
   Widget build(BuildContext context) {

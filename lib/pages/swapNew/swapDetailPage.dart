@@ -16,7 +16,7 @@ class SwapDetailPage extends StatelessWidget {
   final PluginAcala plugin;
   final Keyring keyring;
 
-  static final String route = '/acala/swap/tx';
+  static final String route = '/karura/swap/tx';
 
   @override
   Widget build(BuildContext context) {

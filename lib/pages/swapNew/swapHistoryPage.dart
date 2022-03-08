@@ -4,7 +4,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:polkawallet_plugin_acala/api/types/txSwapData.dart';
 import 'package:polkawallet_plugin_acala/common/constants/subQuery.dart';
-import 'package:polkawallet_plugin_acala/pages/swap/swapDetailPage.dart';
+import 'package:polkawallet_plugin_acala/pages/swapNew/swapDetailPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';

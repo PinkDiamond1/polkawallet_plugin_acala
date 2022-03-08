@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_plugin_acala/pages/swapNew/swapHistoryPage.dart';
 import 'package:polkawallet_ui/components/connectionChecker.dart';
 import 'package:polkawallet_plugin_acala/pages/swapNew/bootstrapList.dart';
 import 'package:polkawallet_plugin_acala/pages/swapNew/dexPoolList.dart';
-import 'package:polkawallet_plugin_acala/pages/swap/swapHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/swapNew/swapForm.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';

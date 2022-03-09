@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerContainer extends StatefulWidget {
@@ -33,7 +34,11 @@ class _VideoPlayerContainerState extends State<VideoPlayerContainer> {
               aspectRatio: _controller.value.aspectRatio,
               child: VideoPlayer(_controller),
             )
-          : Container(),
+          : Container(
+              child: Center(
+                child: PluginLoadingWidget(),
+              ),
+            ),
     );
   }
 

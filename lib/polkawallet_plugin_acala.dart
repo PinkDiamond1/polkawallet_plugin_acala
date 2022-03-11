@@ -120,7 +120,9 @@ class PluginAcala extends PolkawalletPlugin {
               icon: Container(),
               iconActive: Container(),
               // content: GovernanceWidget(this),
-              content: Gov(this, keyring),
+              content: Container(),
+              onTap: () =>
+                  Navigator.of(context).pushNamed(GovernancePage.route),
             )
           ]
         : [

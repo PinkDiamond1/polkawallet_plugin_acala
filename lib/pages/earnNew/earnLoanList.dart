@@ -47,8 +47,11 @@ class _EarnLoanListState extends State<EarnLoanList> {
       setState(() {
         _loading = false;
       });
-      widget.plugin.service!.loan
-          .subscribeAccountLoans(widget.keyring.current.address);
+
+      // we have a global [subscribeAccountLoans] in plugin_acala,
+      // so we don't need to do the subscribe here.
+      // widget.plugin.service!.loan
+      //     .subscribeAccountLoans(widget.keyring.current.address);
     }
   }
 
@@ -59,12 +62,6 @@ class _EarnLoanListState extends State<EarnLoanList> {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       _fetchData();
     });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    widget.plugin.service!.loan.unsubscribeAccountLoans();
   }
 
   @override

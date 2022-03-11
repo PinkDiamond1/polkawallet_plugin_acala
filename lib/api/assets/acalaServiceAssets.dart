@@ -111,8 +111,12 @@ class AcalaServiceAssets {
       callback(prices);
     }
 
-    _tokenPricesSubscribeTimer =
-        Timer(Duration(seconds: 30), () => subscribeTokenPrices(callback));
+    // we may have multi-subscriptions, so we merge them into one timer.
+    if (_tokenPricesSubscribeTimer == null ||
+        !_tokenPricesSubscribeTimer!.isActive) {
+      _tokenPricesSubscribeTimer =
+          Timer(Duration(seconds: 20), () => subscribeTokenPrices(callback));
+    }
   }
 
   void unsubscribeTokenPrices() {

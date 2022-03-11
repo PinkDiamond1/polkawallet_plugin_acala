@@ -64,20 +64,16 @@ class _LoanPageState extends State<LoanPage> {
     priceQueryTokens.add(widget.plugin.networkState.tokenSymbol![0]);
     await widget.plugin.service!.assets.queryMarketPrices(priceQueryTokens);
 
-    if (mounted) {
-      await widget.plugin.service!.loan
-          .subscribeAccountLoans(widget.keyring.current.address);
-    }
+    // we have a global [subscribeAccountLoans] in plugin_acala,
+    // so we don't need to do the subscribe here.
+    // if (mounted) {
+    //   await widget.plugin.service!.loan
+    //       .subscribeAccountLoans(widget.keyring.current.address);
+    // }
 
     setState(() {
       _editorLoans = Map<String, LoanData?>();
     });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    widget.plugin.service!.loan.unsubscribeAccountLoans();
   }
 
   Future<void> _onSubmit(

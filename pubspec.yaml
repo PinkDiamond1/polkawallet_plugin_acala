@@ -32,6 +32,7 @@ dependencies:
   toast: ^0.1.5
   fl_chart: ^0.40.2
   qr_flutter_fork: ^4.0.0
+  sticky_headers: ^0.2.0
 
 dev_dependencies:
   build_runner: ^2.0.3
@@ -55,5 +56,6 @@ flutter:
     - lib/js_service_acala/dist/main.js
     - assets/images/
     - assets/images/tokens/
+    - assets/images/gov/
     - assets/images/2.0X/
     - assets/images/3.0X/

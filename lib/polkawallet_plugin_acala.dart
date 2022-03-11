@@ -21,6 +21,7 @@ import 'package:polkawallet_plugin_acala/pages/gov/democracy/proposalDetailPage.
 import 'package:polkawallet_plugin_acala/pages/gov/democracy/referendumVotePage.dart';
 import 'package:polkawallet_plugin_acala/pages/gov/democracyPage.dart';
 import 'package:polkawallet_plugin_acala/pages/gov/governance.dart';
+import 'package:polkawallet_plugin_acala/pages/governanceNew/governancePage.dart';
 import 'package:polkawallet_plugin_acala/pages/newUIRoutes.dart';
 import 'package:polkawallet_plugin_acala/pages/nftNew/nftPage.dart';
 import 'package:polkawallet_plugin_acala/service/graphql.dart';
@@ -135,7 +136,9 @@ class PluginAcala extends PolkawalletPlugin {
               icon: Container(),
               iconActive: Container(),
               // content: GovernanceWidget(this),
-              content: Gov(this, keyring),
+              content: Container(),
+              onTap: () =>
+                  Navigator.of(context).pushNamed(GovernancePage.route),
             )
           ];
   }

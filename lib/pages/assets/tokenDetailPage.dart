@@ -98,7 +98,7 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
                   tokenPrice:
                       widget.plugin.store?.assets.marketPrices[tokenSymbol] ??
                           0,
-                  bgColors: [Color(0xFF2B292A), Color(0xFFCD4337)],
+                  bgColors: [Color(0xFFFD4732), Color(0xFF645AFF)],
                   icon: TokenIcon(
                     tokenSymbol ?? '',
                     widget.plugin.tokenIcons,

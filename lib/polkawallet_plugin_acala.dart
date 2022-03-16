@@ -17,9 +17,6 @@ import 'package:polkawallet_plugin_acala/pages/assets/tokenDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/assets/transferDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/assets/transferPage.dart';
 import 'package:polkawallet_plugin_acala/pages/currencySelectPage.dart';
-import 'package:polkawallet_plugin_acala/pages/gov/democracy/proposalDetailPage.dart';
-import 'package:polkawallet_plugin_acala/pages/gov/democracy/referendumVotePage.dart';
-import 'package:polkawallet_plugin_acala/pages/gov/democracyPage.dart';
 import 'package:polkawallet_plugin_acala/pages/governanceNew/governancePage.dart';
 import 'package:polkawallet_plugin_acala/pages/newUIRoutes.dart';
 import 'package:polkawallet_plugin_acala/pages/nftNew/nftPage.dart';
@@ -272,11 +269,6 @@ class PluginAcala extends PolkawalletPlugin {
           ),
       TransferPage.route: (_) => TransferPage(this, keyring),
       TransferDetailPage.route: (_) => TransferDetailPage(this, keyring),
-
-      // Gov pages
-      DemocracyPage.route: (_) => DemocracyPage(this, keyring),
-      ReferendumVotePage.route: (_) => ReferendumVotePage(this, keyring),
-      ProposalDetailPage.route: (_) => ProposalDetailPage(this, keyring),
 
       AcalaEntry.route: (_) => AcalaEntry(this, keyring),
       //new ui

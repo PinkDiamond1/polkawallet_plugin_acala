@@ -509,12 +509,12 @@ class _TransferPageState extends State<TransferPage> {
         final tokenXcmInfo = (tokensConfig['xcmInfo'] ?? {})[chainTo] ?? {};
         final destExistDeposit = isCrossChain
             ? Fmt.balanceInt(
-                tokenXcmInfo[token.tokenNameId]!['existentialDeposit'])
+                (tokenXcmInfo[token.tokenNameId] ?? {})['existentialDeposit'])
             : BigInt.zero;
         final destFee = isCrossChain
             ? isFromStateMint
                 ? BigInt.zero
-                : Fmt.balanceInt(tokenXcmInfo[token.tokenNameId]!['fee'])
+                : Fmt.balanceInt((tokenXcmInfo[token.tokenNameId] ?? {})['fee'])
             : BigInt.zero;
 
         final relayChainTokenBalance = AssetsUtils.getBalanceFromTokenNameId(

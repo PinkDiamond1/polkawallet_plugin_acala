@@ -1,5 +1,3 @@
-import 'package:polkawallet_plugin_acala/common/constants/base.dart';
-
 const plugin_cache_key = 'plugin_acala';
 
 const plugin_genesis_hash =
@@ -13,44 +11,8 @@ const acala_token_polka_btc = 'POLKABTC';
 const acala_token_polka_btc_view = 'polkaBTC';
 
 const relay_chain_name = 'polkadot';
-const para_chain_name_bifrost = 'bifrost';
-const para_chain_name_khala = 'khala';
-const para_chain_ids = {
-  para_chain_name_bifrost: 2001,
-  para_chain_name_khala: 2004,
-};
-
-const network_ss58_format = {
-  plugin_name_acala: 10,
-  relay_chain_name: 0,
-};
 const relay_chain_token_symbol = 'DOT';
-const para_chain_token_symbol_bifrost = 'BNC';
-const para_chain_token_symbol_khala = 'PHA';
-const cross_chain_xcm_fees = {
-  relay_chain_name: {
-    relay_chain_token_symbol: {
-      'fee': '79999999',
-      'existentialDeposit': '33333333',
-    },
-  },
-  para_chain_name_bifrost: {
-    relay_chain_token_symbol: {
-      'fee': '64000000',
-      'existentialDeposit': '100000000',
-    },
-    para_chain_token_symbol_bifrost: {
-      'fee': '5120000000',
-      'existentialDeposit': '10000000000',
-    },
-  },
-  para_chain_name_khala: {
-    para_chain_token_symbol_khala: {
-      'fee': '800000000',
-      'existentialDeposit': '10000000000',
-    }
-  }
-};
+const foreign_asset_xcm_dest_fee = '16000000000';
 const xcm_dest_weight_v2 = '5000000000';
 
 const acala_token_ids = [
@@ -97,11 +59,4 @@ const config_modules = {
     'visible': true,
     'enabled': true,
   },
-};
-
-const image_assets_uri = 'packages/polkawallet_plugin_acala/assets/images';
-
-const cross_chain_icons = {
-  plugin_name_acala: '$image_assets_uri/tokens/ACA.png',
-  relay_chain_name: '$image_assets_uri/tokens/DOT.png',
 };

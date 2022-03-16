@@ -254,6 +254,7 @@ class _TransferPageState extends State<TransferPage> {
       _accountToEditable = v;
       if (!v) {
         _accountTo = widget.keyring.current;
+        _accountToError = null;
       }
     });
   }

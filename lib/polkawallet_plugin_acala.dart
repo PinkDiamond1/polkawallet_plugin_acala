@@ -20,7 +20,6 @@ import 'package:polkawallet_plugin_acala/pages/currencySelectPage.dart';
 import 'package:polkawallet_plugin_acala/pages/gov/democracy/proposalDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/gov/democracy/referendumVotePage.dart';
 import 'package:polkawallet_plugin_acala/pages/gov/democracyPage.dart';
-import 'package:polkawallet_plugin_acala/pages/gov/governance.dart';
 import 'package:polkawallet_plugin_acala/pages/governanceNew/governancePage.dart';
 import 'package:polkawallet_plugin_acala/pages/newUIRoutes.dart';
 import 'package:polkawallet_plugin_acala/pages/nftNew/nftPage.dart';
@@ -84,7 +83,7 @@ class PluginAcala extends PolkawalletPlugin {
   }
 
   @override
-  Map<String, Widget> get tokenIcons => _getTokenIcons();
+  Map<String, Widget> tokenIcons = {};
 
   @override
   List<TokenBalanceData> get noneNativeTokensAll {
@@ -355,6 +354,8 @@ class PluginAcala extends PolkawalletPlugin {
 
   @override
   Future<void> onWillStart(Keyring keyring) async {
+    tokenIcons = _getTokenIcons();
+
     _api = AcalaApi(AcalaService(this));
 
     await GetStorage.init(plugin_cache_key);

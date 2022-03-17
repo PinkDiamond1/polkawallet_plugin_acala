@@ -2,31 +2,31 @@
 const transferQuery = r'''
   query ($account: String, $token: String) {
     transfers(filter: {
-      tokenId: { equalTo: $token },
+      isSystemCall:{equalTo:false},
+      tokenId: {equalTo: $token},
       or: [
         { fromId: { equalTo: $account } },
         { toId: { equalTo: $account } }
       ]
-    }, first: 10, orderBy: TIMESTAMP_DESC) {
+    }, first: 20, orderBy: TIMESTAMP_DESC) {
       nodes {
         id
-        from {id}
-        to {id}
-        token {id}
+        fromId
+        toId
+        blockId
         amount
-        isSuccess
+        extrinsicId
         timestamp
-        extrinsic {
-          id
-        }
       }
     }
   }
 ''';
 const loanQuery = r'''
   query ($account: String) {
-    loanActions(filter: {accountId: {equalTo: $account}},
-      orderBy: TIMESTAMP_DESC, first: 20) {
+    dexActions(filter: {
+      senderId: {equalTo: $account},
+      section: "honzon"
+    }, orderBy: TIMESTAMP_DESC, first: 20) {
       nodes {
         id
         type

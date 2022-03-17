@@ -4,13 +4,13 @@ import 'package:polkawallet_ui/utils/format.dart';
 class TransferData extends _TransferData {
   static TransferData fromJson(Map json, TokenBalanceData token) {
     final res = TransferData();
-    res.from = json['from']['id'];
-    res.to = json['to']['id'];
+    res.from = json['fromId'];
+    res.to = json['toId'];
     res.token = token.symbol;
     res.amount = Fmt.balance(json['amount'].toString(), token.decimals!);
-    res.hash = json['extrinsic']['id'];
+    res.hash = json['extrinsicId'];
     res.timestamp = (json['timestamp'] as String).replaceAll(' ', '');
-    res.isSuccess = json['isSuccess'];
+    res.isSuccess = true;
     return res;
   }
 }

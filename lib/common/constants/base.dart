@@ -5,4 +5,7 @@ const BLOCK_TIME_DEFAULT = 12000;
 const plugin_name_acala = 'acala';
 const ss58_prefix_acala = 10;
 
-const GraphQLConfig = {'httpUri': 'https://api.polkawallet.io/acala-subql'};
+const GraphQLConfig = {
+  'httpUri':
+      'https://api.subquery.network/sq/AcalaNetwork/acala-transfer-history'
+};

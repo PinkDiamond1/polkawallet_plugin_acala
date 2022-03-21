@@ -369,7 +369,7 @@ class _BootStrapCard extends StatelessWidget {
                           TextSpan(children: [
                             TextSpan(
                                 text:
-                                    '${dic['boot.provision.condition.1']!} ${Fmt.priceCeilBigInt(targetLeft, balancePair[0]!.decimals!)} ${tokenPairView[0]}',
+                                    '${dic['boot.provision.condition.1']!} ${Fmt.priceCeilBigInt(targetLeft, balancePair[0]?.decimals ?? 12)} ${tokenPairView[0]}',
                                 style: Theme.of(context)
                                     .textTheme
                                     .headline5
@@ -424,8 +424,8 @@ class _BootStrapCard extends StatelessWidget {
             margin: EdgeInsets.only(bottom: 4, top: 12, left: 12, right: 12),
             child: InfoItemRow(
               dic['boot.total']!,
-              '${Fmt.priceCeilBigInt(nowLeft, balancePair[0]!.decimals!)} ${tokenPairView[0]}\n'
-              '+ ${Fmt.priceCeilBigInt(nowRight, balancePair[1]!.decimals!)} ${tokenPairView[1]}',
+              '${Fmt.priceCeilBigInt(nowLeft, balancePair[0]?.decimals ?? 12)} ${tokenPairView[0]}\n'
+              '+ ${Fmt.priceCeilBigInt(nowRight, balancePair[1]?.decimals ?? 12)} ${tokenPairView[1]}',
               crossAxisAlignment: CrossAxisAlignment.start,
               labelStyle: Theme.of(context)
                   .textTheme

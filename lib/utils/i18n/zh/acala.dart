@@ -245,5 +245,7 @@ const Map<String, String> zhDex = {
   'homa.fast.describe': '系统会尽快进行提取，但有可能因为某些原因导致提取失败。如果快速提取失败，系统将不会收取快速提取费。',
   'dex.swap.describe': '通过【兑换】进行提取将收取交易费',
   'v3.fastRedeemError': '快速赎回当前不可用。',
-  'v3.loan.closeVault': '你当前的债仓中没有aUSD债务，您确定要提取所有质押物并关闭债仓吗？'
+  'v3.loan.closeVault': '你当前的债仓中没有aUSD债务，您确定要提取所有质押物并关闭债仓吗？',
+  'v3.loan.errorMessage5': '债仓中生成债务的最低要求是 ',
+  'v3.loan.errorMessage6': 'aUSD, 你必须存入更多的抵押品才能生成足够的aUSD'
 };

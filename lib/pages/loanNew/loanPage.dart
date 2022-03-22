@@ -650,10 +650,20 @@ class _LoanPageState extends State<LoanPage> {
                                                     ? 0
                                                     : Fmt.bigIntToDouble(
                                                         originalDebitsValue -
-                                                            balanceStableCoin +
-                                                            Fmt.balanceInt(
-                                                                balancePair[1]!
-                                                                    .minBalance),
+                                                                    balanceStableCoin +
+                                                                    Fmt.balanceInt(
+                                                                        balancePair[1]!
+                                                                            .minBalance) >
+                                                                originalLoan
+                                                                    .debits
+                                                            ? originalLoan
+                                                                .debits
+                                                            : originalDebitsValue -
+                                                                balanceStableCoin +
+                                                                Fmt.balanceInt(
+                                                                    balancePair[
+                                                                            1]!
+                                                                        .minBalance),
                                                         balancePair[1]!
                                                             .decimals!),
                                                 subtitleLeft:
@@ -1144,6 +1154,8 @@ class _LoanCollateralState extends State<LoanCollateral> {
 
   @override
   Widget build(BuildContext context) {
+    print(
+        "${widget.minNumber}==============$_value=================${widget.maxNumber}");
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

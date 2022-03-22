@@ -1,3 +1,7 @@
+## [0.4.4] - 20220322
+- bump polkawallet_sdk v0.4.4.
+- v3 UI update from karura.
+
 ## [0.4.1] - 20220209
 - bump polkawallet_sdk v0.4.1.
 - merge update from karura.

@@ -433,7 +433,7 @@ class _LPStakePage extends State<LPStakePage> {
       String input = _amountLeftCtrl.text.trim();
       try {
         final double amountInput = double.parse(input.isEmpty ? '0' : input);
-        userShare = amountInput / amountLeft;
+        userShare = amountInput / (amountLeft + amountInput);
       } catch (_) {
         // parse double failed
       }

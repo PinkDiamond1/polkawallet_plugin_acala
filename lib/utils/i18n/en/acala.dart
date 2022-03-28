@@ -70,12 +70,12 @@ const Map<String, String> enDex = {
   'loan.max': 'Max',
   'loan.txs': 'History',
   'loan.warn':
-      'Debt should be greater than 1aUSD or payback all, this action will have 1aUSD debt left. Are you sure to continue?',
+      'Debt should be greater than 1 aUSD or payback all, this action will have 1 aUSD debt left. Are you sure to continue?',
   'loan.warn.KSM1': 'Debt should be greater than ',
-  'loan.warn.KSM2': 'aUSD or payback all, this action will have ',
-  'loan.warn.KSM3': 'aUSD debt left. Are you sure to continue?',
+  'loan.warn.KSM2': ' aUSD or payback all, this action will have ',
+  'loan.warn.KSM3': ' aUSD debt left. Are you sure to continue?',
   'loan.warn.KSM4': 'To keep your vault alive, you have to mint at least ',
-  'loan.warn.KSM5': 'aUSD for this time',
+  'loan.warn.KSM5': ' aUSD for this time',
   'loan.warn.back': 'Back to modify',
   'loan.my': 'My Vaults',
   'loan.incentive': 'Earn',
@@ -264,5 +264,5 @@ const Map<String, String> enDex = {
       'There is no minted aUSD in your current vault, are you sure you want to withdraw all your collateral and close the vault?',
   'v3.loan.errorMessage5': 'The minimum requirement for the Vault is ',
   'v3.loan.errorMessage6':
-      'aUSD, you have to deposit more collateral to mint enough aUSD'
+      ' aUSD, you have to deposit more collateral to mint enough aUSD'
 };

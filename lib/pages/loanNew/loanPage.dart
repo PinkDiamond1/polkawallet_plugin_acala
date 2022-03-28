@@ -179,15 +179,6 @@ class _LoanPageState extends State<LoanPage> {
       if (debitShares < BigInt.zero) {
         dicValue = 'loan.payback';
 
-        final BigInt balanceStableCoin =
-            Fmt.balanceInt(balancePair[1]!.amount) -
-                Fmt.balanceInt(balancePair[1]!.minBalance);
-        BigInt minDebigSubtract = BigInt.zero;
-        if (balanceStableCoin <= debits) {
-          minDebigSubtract =
-              loan.type.debitToDebitShare(debits.abs() ~/ BigInt.from(1000000));
-        }
-
         // pay less if less than 1 debit(aUSD) will be left,
         // make sure tx success by leaving more than 1 debit(aUSD).
         if (originalLoan.debits - debits.abs() > BigInt.zero &&
@@ -198,10 +189,18 @@ class _LoanPageState extends State<LoanPage> {
                   '${dic!['loan.warn.KSM1']}$minimumDebitValue${dic['loan.warn.KSM2']}$minimumDebitValue${dic['loan.warn.KSM3']}')
               as Future<bool>);
           if (!canContinue) return null;
-          minDebigSubtract = minDebigSubtract >
-                  loan.type.debitToDebitShare(loan.type.minimumDebitValue)
-              ? minDebigSubtract
-              : loan.type.debitToDebitShare(loan.type.minimumDebitValue);
+          debitSubtract = loan.type.debitToDebitShare(
+              loan.type.minimumDebitValue - originalLoan.debits);
+        }
+
+        final BigInt balanceStableCoin =
+            Fmt.balanceInt(balancePair[1]!.amount) -
+                Fmt.balanceInt(balancePair[1]!.minBalance);
+        if (balanceStableCoin <=
+            loan.type.debitShareToDebit(debitSubtract).abs()) {
+          debitSubtract = balanceStableCoin -
+              loan.type
+                  .debitToDebitShare(balanceStableCoin ~/ BigInt.from(1000000));
         }
       }
       detail[dic![dicValue]!] = Text(
@@ -288,7 +287,7 @@ class _LoanPageState extends State<LoanPage> {
                                   loan.collaterals, collateralDecimal!) -
                               snapshot.data!.amount!;
                           return InfoItemRow(dic['loan.close.receive']!,
-                              Fmt.priceFloor(left) + loan.token!.symbol!);
+                              "${Fmt.priceFloor(left)} ${loan.token!.symbol}");
                         } else {
                           return Container();
                         }
@@ -336,7 +335,7 @@ class _LoanPageState extends State<LoanPage> {
             txTitle: dic!['loan.close'],
             txDisplay: {
               'collateral': loan.token!.symbol,
-              'payback': Fmt.priceCeil(debit) + acala_stable_coin_view,
+              'payback': "${Fmt.priceCeil(debit)} $acala_stable_coin_view",
             },
             params: isRuntimeOld ? params : params.sublist(0, 2),
             isPlugin: true,

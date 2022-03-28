@@ -1153,8 +1153,6 @@ class _LoanCollateralState extends State<LoanCollateral> {
 
   @override
   Widget build(BuildContext context) {
-    print(
-        "${widget.minNumber}==============$_value=================${widget.maxNumber}");
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

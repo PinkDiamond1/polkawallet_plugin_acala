@@ -498,8 +498,8 @@ class _TransferPageState extends State<TransferPage> {
             tokenXcmConfig != null && tokenXcmConfig.length > 0;
 
         final nativeTokenBalance =
-            Fmt.balanceInt(widget.plugin.balances.native!.freeBalance) -
-                Fmt.balanceInt(widget.plugin.balances.native!.frozenFee);
+            Fmt.balanceInt(widget.plugin.balances.native?.freeBalance) -
+                Fmt.balanceInt(widget.plugin.balances.native?.frozenFee);
         final accountED = PluginFmt.getAccountED(widget.plugin);
         final isNativeTokenLow = nativeTokenBalance - accountED <
             Fmt.balanceInt((_fee?.partialFee ?? 0).toString()) * BigInt.two;

@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
@@ -104,5 +106,24 @@ class ServiceAssets {
           Fmt.bigIntToDouble(e.issuance, tokenPair[0]!.decimals!);
     });
     plugin.store!.assets.setMarketPrices(prices);
+  }
+
+  Future<void> queryIconsSrc() async {
+    final data = await Future.wait(
+        [WalletApi.getTokenIcons(), WalletApi.getCrossChainIcons()]);
+    if (data[0] != null && data[1] != null) {
+      final icons = Map.of(data[0]!);
+      icons.removeWhere(
+          (key, value) => plugin.tokenIcons.keys.toList().indexOf(key) > -1);
+      plugin.tokenIcons.addAll(icons.map((k, v) {
+        return MapEntry(
+            (k as String).toUpperCase(),
+            (v as String).contains('.svg')
+                ? SvgPicture.network(v)
+                : Image.network(v));
+      }));
+
+      store!.assets.crossChainIcons = data[1]!;
+    }
   }
 }

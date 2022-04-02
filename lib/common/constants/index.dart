@@ -12,6 +12,7 @@ const acala_token_polka_btc_view = 'polkaBTC';
 
 const relay_chain_name = 'polkadot';
 const relay_chain_token_symbol = 'DOT';
+const para_chain_name_moon = 'moonbeam';
 const foreign_asset_xcm_dest_fee = '16000000000';
 const xcm_dest_weight_v2 = '5000000000';
 

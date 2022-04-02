@@ -9,6 +9,7 @@ import 'package:polkawallet_plugin_acala/common/constants/subQuery.dart';
 import 'package:polkawallet_plugin_acala/pages/assets/transferDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/assets/transferPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
@@ -68,7 +69,7 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
-          title: Text(token.symbol!),
+          title: Text(PluginFmt.tokenView(token.symbol)),
           centerTitle: true,
           elevation: 0.0,
           leading: BackBtn()),

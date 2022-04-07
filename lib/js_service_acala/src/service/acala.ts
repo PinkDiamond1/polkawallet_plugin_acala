@@ -108,19 +108,24 @@ async function getAllTokens(api: ApiPromise) {
     decimals: tokenDecimals.toJSON()[(tokenSymbol.toJSON() as any[]).indexOf(e)],
     minBalance: existential_deposit[e],
   }));
-  const res2 = foreign.map(([args, data]) => {
-    const json = data.toJSON();
-    const currencyId = _getCurrencyIdFromCurrencyIdKey(args.toHuman()[0]);
-    return {
-      type: Object.keys(currencyId)[0],
-      id: Object.values(currencyId)[0],
-      tokenNameId: forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, currencyId)),
-      currencyId: currencyId,
-      ...(data.toHuman() as Object),
-      decimals: json["decimals"],
-      minBalance: json["minimalBalance"].toString(),
-    };
-  });
+  const res2 = foreign
+    .map(([args, data]) => {
+      const key = args.toHuman()[0];
+      if (Object.keys(key)[0] === "NativeAssetId") return null;
+
+      const json = data.toJSON();
+      const currencyId = _getCurrencyIdFromCurrencyIdKey(key);
+      return {
+        type: Object.keys(currencyId)[0],
+        id: Object.values(currencyId)[0],
+        tokenNameId: forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, currencyId)),
+        currencyId: currencyId,
+        ...(data.toHuman() as Object),
+        decimals: json["decimals"],
+        minBalance: json["minimalBalance"].toString(),
+      };
+    })
+    .filter((e) => !!e);
   if (
     !name
       .toHuman()

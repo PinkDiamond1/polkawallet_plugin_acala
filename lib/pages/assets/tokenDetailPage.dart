@@ -128,7 +128,9 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
                                       Navigator.pushNamed(
                                         context,
                                         TransferPage.route,
-                                        arguments: balance,
+                                        arguments: {
+                                          'tokenNameId': token.tokenNameId
+                                        },
                                       );
                                     },
                             ),

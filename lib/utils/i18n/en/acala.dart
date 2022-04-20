@@ -200,11 +200,12 @@ const Map<String, String> enDex = {
   'candy.amount': 'Candies to claim',
   'candy.claimed': 'Claimed',
   'cross.chain': 'To Chain',
+  'cross.chain.from': 'Origin Chain',
   'cross.xcm': 'Cross Chain',
   'cross.chain.select': 'Select Network',
   'cross.exist': 'dest chain ED',
   'cross.exist.msg':
-      '\nED (existential deposit): The minimum amount that an account should have to be deemed active.\n',
+      'ED (existential deposit): The minimum amount that an account should have to be deemed active.',
   'cross.fee': 'dest chain transfer fee',
   'cross.warn': 'Warning',
   'cross.edit': 'Edit To Address',

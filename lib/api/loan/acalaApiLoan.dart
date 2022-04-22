@@ -27,7 +27,7 @@ class AcalaApiLoan {
     return res.map((e) {
       e['tokenNameId'] = AssetsUtils.tokenDataFromCurrencyId(
               service.plugin, pools[index] ?? Map<dynamic, dynamic>())
-          ?.tokenNameId;
+          .tokenNameId;
       index++;
       return TotalCDPData.fromJson(e);
     }).toList();
@@ -37,7 +37,8 @@ class AcalaApiLoan {
     return service.queryCollateralLoyaltyBonus();
   }
 
-  Future<List<CollateralRewardData>> queryCollateralRewards(String address) async {
+  Future<List<CollateralRewardData>> queryCollateralRewards(
+      String address) async {
     final res = await service.queryCollateralRewards(address) as List;
     return res.map((e) => CollateralRewardData.fromJson(e)).toList();
   }

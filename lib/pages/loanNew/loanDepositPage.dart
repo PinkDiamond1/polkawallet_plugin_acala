@@ -198,7 +198,7 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
     final symbolView = PluginFmt.tokenView(token.symbol);
     String titleSuffix = ' $symbolView';
 
-    final BigInt balance = Fmt.balanceInt(balancePair[0]!.amount);
+    final BigInt balance = Fmt.balanceInt(balancePair[0].amount);
     BigInt available = balance;
 
     if (params.actionType == LoanDepositPage.actionTypeWithdraw) {
@@ -214,9 +214,8 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
       }
     }
 
-    final availableView = Fmt.priceFloorBigInt(
-        available, balancePair[0]!.decimals!,
-        lengthMax: 8);
+    final availableView =
+        Fmt.priceFloorBigInt(available, balancePair[0].decimals!, lengthMax: 8);
 
     final pageTitle = '${dic['loan.${params.actionType}']}$titleSuffix';
 
@@ -239,8 +238,8 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
                     },
                     titleTag: dic['loan.${params.actionType}'],
                     balance: TokenBalanceData(
-                        symbol: balancePair[0]!.symbol,
-                        decimals: balancePair[0]!.decimals!,
+                        symbol: balancePair[0].symbol,
+                        decimals: balancePair[0].decimals!,
                         amount: available.toString()),
                     tokenIconsMap: widget.plugin.tokenIcons,
                     onSetMax: (params.actionType ==
@@ -253,14 +252,14 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
                               setState(() {
                                 _amountCollateral = max;
                                 _amountCtrl.text = Fmt.bigIntToDouble(
-                                        max, balancePair[0]!.decimals!)
+                                        max, balancePair[0].decimals!)
                                     .toString();
                               });
                               _onAmount1Change(
                                 availableView,
                                 price,
-                                balancePair[1]!.decimals,
-                                balancePair[0]!.decimals,
+                                balancePair[1].decimals,
+                                balancePair[0].decimals,
                                 available: max,
                                 max: max,
                               );
@@ -271,13 +270,13 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
                         _amountCollateral = BigInt.zero;
                         _amountCtrl.text = "0";
                       });
-                      _onAmount1Change("0", price, balancePair[1]!.decimals,
-                          balancePair[0]!.decimals,
+                      _onAmount1Change("0", price, balancePair[1].decimals,
+                          balancePair[0].decimals,
                           available: available);
                     },
                     inputCtrl: _amountCtrl,
                     onInputChange: (v) => _onAmount1Change(v, price,
-                        balancePair[1]!.decimals, balancePair[0]!.decimals,
+                        balancePair[1].decimals, balancePair[0].decimals,
                         available: available),
                   ),
                   ErrorMessage(_error1,
@@ -291,7 +290,7 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
                       .getDic(i18n_full_dic_ui, 'common')!['tx.submit']!,
                   onPressed: () {
                     if (_error1 == null) {
-                      _onSubmit(pageTitle, balancePair[1]!.decimals);
+                      _onSubmit(pageTitle, balancePair[1].decimals);
                     }
                   },
                 ),

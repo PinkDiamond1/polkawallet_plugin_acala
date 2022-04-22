@@ -31,7 +31,7 @@ class AcalaServiceAssets {
     dexPairs.forEach((e) {
       final lpToken =
           AssetsUtils.getBalanceFromTokenNameId(plugin, e.tokenNameId)
-                  ?.symbol
+                  .symbol
                   ?.split('-') ??
               [];
       if (lpToken.length > 0) {
@@ -72,9 +72,9 @@ class AcalaServiceAssets {
       final lpToken = e.tokens!
           .map((e) => AssetsUtils.tokenDataFromCurrencyId(plugin, e))
           .toList();
-      final tokenId = lpToken.map((e) => e!.symbol).join('-');
+      final tokenId = lpToken.map((e) => e.symbol).join('-');
       final channel =
-          '$tokenBalanceChannel${lpToken.map((e) => e!.symbol).join('')}';
+          '$tokenBalanceChannel${lpToken.map((e) => e.symbol).join('')}';
       plugin.sdk.api.subscribeMessage(
         'api.query.tokens.accounts',
         [address, currencyId],
@@ -85,8 +85,8 @@ class AcalaServiceAssets {
             'type': 'DexShare',
             'tokenNameId': e.tokenNameId,
             'currencyId': currencyId,
-            'minBalance': lpToken[0]?.minBalance,
-            'decimals': lpToken[0]!.decimals,
+            'minBalance': lpToken[0].minBalance,
+            'decimals': lpToken[0].decimals,
             'balance': data
           });
         },

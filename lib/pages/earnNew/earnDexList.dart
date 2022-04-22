@@ -136,7 +136,7 @@ class _EarnDexListState extends State<EarnDexList> {
                         AssetsUtils.tokenDataFromCurrencyId(widget.plugin, e))
                     .toList();
 
-                final tokenSymbol = tokenPair.map((e) => e!.symbol).join('-');
+                final tokenSymbol = tokenPair.map((e) => e.symbol).join('-');
 
                 final rewardsEmpty = incentivesV2.dex == null;
 

@@ -240,7 +240,7 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
     final balancePair = AssetsUtils.getBalancePairFromTokenNameId(
         widget.plugin, [token.tokenNameId, acala_stable_coin]);
     var error = _validateAmount1(_amountCtrl.text,
-        Fmt.balanceInt(balancePair[0]!.amount), collateralDecimals);
+        Fmt.balanceInt(balancePair[0].amount), collateralDecimals);
     setState(() {
       _error1 = error;
     });
@@ -317,7 +317,7 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
 
       final loanType = widget.plugin.store!.loan.loanTypes
           .firstWhere((i) => i.token!.tokenNameId == token.tokenNameId);
-      final balance = Fmt.balanceInt(balancePair[0]!.amount);
+      final balance = Fmt.balanceInt(balancePair[0].amount);
       final available = balance;
 
       final loans = widget.plugin.store!.loan.loans.values.toList();
@@ -325,7 +325,7 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
           loans.firstWhere((data) => data.token!.symbol == token.symbol);
 
       final maxToBorrow =
-          Fmt.priceFloorBigInt(_maxToBorrow, balancePair[1]!.decimals!);
+          Fmt.priceFloorBigInt(_maxToBorrow, balancePair[1].decimals!);
 
       return PluginScaffold(
         appBar: PluginAppBar(title: Text(pageTitle), centerTitle: true),
@@ -343,8 +343,8 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
                   titleTag: dic['loan.collateral'],
                   onInputChange: (v) => _onAmount1Change(
                       v, loanType, price, available,
-                      stableCoinDecimals: balancePair[1]!.decimals,
-                      collateralDecimals: balancePair[0]!.decimals),
+                      stableCoinDecimals: balancePair[1].decimals,
+                      collateralDecimals: balancePair[0].decimals),
                   balance: token,
                   tokenIconsMap: widget.plugin.tokenIcons,
                   onClear: () {
@@ -353,8 +353,8 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
                         _amountCtrl2.text,
                         loanType,
                         Fmt.priceFloorBigInt(
-                            _maxToBorrow, balancePair[1]!.decimals!),
-                        balancePair[1]!.decimals);
+                            _maxToBorrow, balancePair[1].decimals!),
+                        balancePair[1].decimals);
                     setState(() {
                       _error2 = error;
                       _amountCollateral = BigInt.zero;
@@ -373,10 +373,10 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
                   margin: EdgeInsets.only(bottom: 2, top: 24),
                   titleTag: assetDic!['amount'],
                   onInputChange: (v) => _onAmount2Change(v, loanType,
-                      balancePair[1]!.decimals, balancePair[0]!.decimals),
+                      balancePair[1].decimals, balancePair[0].decimals),
                   balance: TokenBalanceData(
                       symbol: acala_stable_coin_view,
-                      decimals: balancePair[1]!.decimals!,
+                      decimals: balancePair[1].decimals!,
                       amount: _maxToBorrow.toString()),
                   tokenIconsMap: widget.plugin.tokenIcons,
                   onClear: () {
@@ -408,7 +408,7 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
                     padding: EdgeInsets.only(bottom: 5),
                     child: InfoItemRow(
                       dic['v3.minimumGenerate']!,
-                      "${Fmt.priceCeilBigInt(loanType.minimumDebitValue, balancePair[1]!.decimals!)} $acala_stable_coin_view",
+                      "${Fmt.priceCeilBigInt(loanType.minimumDebitValue, balancePair[1].decimals!)} $acala_stable_coin_view",
                       labelStyle: Theme.of(context)
                           .textTheme
                           .headline4
@@ -439,8 +439,8 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
                       onPressed: () {
                         if (_error1 == null && _error2 == null) {
                           _onSubmit(pageTitle, loanType,
-                              stableCoinDecimals: balancePair[1]!.decimals!,
-                              collateralDecimals: balancePair[0]!.decimals!);
+                              stableCoinDecimals: balancePair[1].decimals!,
+                              collateralDecimals: balancePair[0].decimals!);
                         }
                       },
                     )),

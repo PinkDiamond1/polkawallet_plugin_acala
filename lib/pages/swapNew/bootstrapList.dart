@@ -206,8 +206,8 @@ class _BootstrapListState extends State<BootstrapList> {
                       shareRate: _initialShareRates[e.tokenNameId],
                       tokenIcons: widget.plugin.tokenIcons,
                       existentialDeposit: Fmt.priceCeilBigInt(
-                          Fmt.balanceInt(balancePair[0]!.minBalance),
-                          balancePair[0]!.decimals!,
+                          Fmt.balanceInt(balancePair[0].minBalance),
+                          balancePair[0].decimals!,
                           lengthMax: 6),
                       withStake: _withStake,
                       onWithStakeChange: (v) {
@@ -268,9 +268,9 @@ class _BootStrapCard extends StatelessWidget {
     final balancePair = pool!.tokens!
         .map((e) => AssetsUtils.tokenDataFromCurrencyId(plugin, e))
         .toList();
-    final poolSymbol = balancePair.map((e) => e!.symbol).join('-');
+    final poolSymbol = balancePair.map((e) => e.symbol).join('-');
     final tokenPairView =
-        balancePair.map((e) => PluginFmt.tokenView(e!.symbol ?? '')).toList();
+        balancePair.map((e) => PluginFmt.tokenView(e.symbol ?? '')).toList();
 
     final targetLeft =
         Fmt.balanceInt(pool!.provisioning!.targetProvision![0].toString());
@@ -283,8 +283,8 @@ class _BootStrapCard extends StatelessWidget {
     final progressLeft = nowLeft / targetLeft;
     final progressRight = nowRight / targetRight;
     final ratio = nowLeft > BigInt.zero
-        ? Fmt.bigIntToDouble(nowRight, balancePair[1]!.decimals!) /
-            Fmt.bigIntToDouble(nowLeft, balancePair[0]!.decimals!)
+        ? Fmt.bigIntToDouble(nowRight, balancePair[1].decimals!) /
+            Fmt.bigIntToDouble(nowLeft, balancePair[0].decimals!)
         : 1.0;
     final blocksEnd = pool!.provisioning!.notBefore! - bestNumber!;
     final time = bestNumber! > 0
@@ -369,7 +369,7 @@ class _BootStrapCard extends StatelessWidget {
                           TextSpan(children: [
                             TextSpan(
                                 text:
-                                    '${dic['boot.provision.condition.1']!} ${Fmt.priceCeilBigInt(targetLeft, balancePair[0]?.decimals ?? 12)} ${tokenPairView[0]}',
+                                    '${dic['boot.provision.condition.1']!} ${Fmt.priceCeilBigInt(targetLeft, balancePair[0].decimals ?? 12)} ${tokenPairView[0]}',
                                 style: Theme.of(context)
                                     .textTheme
                                     .headline5
@@ -397,7 +397,7 @@ class _BootStrapCard extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                                '${dic['boot.provision.or']!} ${Fmt.priceCeilBigInt(targetRight, balancePair[1]!.decimals!)} ${tokenPairView[1]}',
+                                '${dic['boot.provision.or']!} ${Fmt.priceCeilBigInt(targetRight, balancePair[1].decimals!)} ${tokenPairView[1]}',
                                 style: Theme.of(context)
                                     .textTheme
                                     .headline5
@@ -424,8 +424,8 @@ class _BootStrapCard extends StatelessWidget {
             margin: EdgeInsets.only(bottom: 4, top: 12, left: 12, right: 12),
             child: InfoItemRow(
               dic['boot.total']!,
-              '${Fmt.priceCeilBigInt(nowLeft, balancePair[0]?.decimals ?? 12)} ${tokenPairView[0]}\n'
-              '+ ${Fmt.priceCeilBigInt(nowRight, balancePair[1]?.decimals ?? 12)} ${tokenPairView[1]}',
+              '${Fmt.priceCeilBigInt(nowLeft, balancePair[0].decimals ?? 12)} ${tokenPairView[0]}\n'
+              '+ ${Fmt.priceCeilBigInt(nowRight, balancePair[1].decimals ?? 12)} ${tokenPairView[1]}',
               crossAxisAlignment: CrossAxisAlignment.start,
               labelStyle: Theme.of(context)
                   .textTheme
@@ -504,7 +504,7 @@ class _BootStrapCardEnabled extends StatelessWidget {
         .map((e) => AssetsUtils.tokenDataFromCurrencyId(plugin, e))
         .toList();
     final tokenPairView =
-        balancePair.map((e) => PluginFmt.tokenView(e!.symbol ?? '')).toList();
+        balancePair.map((e) => PluginFmt.tokenView(e.symbol ?? '')).toList();
     final poolTokenSymbol = tokenPairView.join('-');
 
     final userLeft = Fmt.balanceInt(userProvision![0].toString());
@@ -571,7 +571,7 @@ class _BootStrapCardEnabled extends StatelessWidget {
                             Padding(
                                 padding: EdgeInsets.only(left: 3),
                                 child: Text(
-                                    '${Fmt.priceFloorBigIntFormatter(userLeft, balancePair[0]!.decimals!)}',
+                                    '${Fmt.priceFloorBigIntFormatter(userLeft, balancePair[0].decimals!)}',
                                     style: Theme.of(context)
                                         .textTheme
                                         .headline5
@@ -591,7 +591,7 @@ class _BootStrapCardEnabled extends StatelessWidget {
                             Padding(
                                 padding: EdgeInsets.only(left: 3),
                                 child: Text(
-                                    '${Fmt.priceFloorBigIntFormatter(userRight, balancePair[1]!.decimals!)}',
+                                    '${Fmt.priceFloorBigIntFormatter(userRight, balancePair[1].decimals!)}',
                                     style: Theme.of(context)
                                         .textTheme
                                         .headline5
@@ -620,7 +620,7 @@ class _BootStrapCardEnabled extends StatelessWidget {
                         ?.copyWith(color: Colors.white)),
                 InfoItemRow(
                     'LP tokens',
-                    Fmt.priceFloorBigInt(amount, balancePair[0]!.decimals!,
+                    Fmt.priceFloorBigInt(amount, balancePair[0].decimals!,
                         lengthMax: 4),
                     crossAxisAlignment: CrossAxisAlignment.start,
                     labelStyle: Theme.of(context)
@@ -654,7 +654,7 @@ class _BootStrapCardEnabled extends StatelessWidget {
                   : PluginTxButton(
                       text: 'Claim LP Tokens',
                       getTxParams: () async => onClaimLP!(pool!, amount,
-                          balancePair[0]!.decimals!, poolTokenSymbol),
+                          balancePair[0].decimals!, poolTokenSymbol),
                       onFinish: onFinish,
                     ))
         ],

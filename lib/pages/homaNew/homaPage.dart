@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_ui/components/connectionChecker.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/homaNew/homaHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homaNew/mintPage.dart';
@@ -14,6 +13,7 @@ import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/connectionChecker.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginIconButton.dart';
@@ -39,7 +39,7 @@ class _HomaPageState extends State<HomaPage> {
   String? _unlockingKsm;
 
   Future<void> _refreshData() async {
-    widget.plugin.service!.assets.queryMarketPrices([relay_chain_token_symbol]);
+    widget.plugin.service!.assets.queryMarketPrices();
     widget.plugin.service!.gov.updateBestNumber();
 
     await widget.plugin.service!.homa.queryHomaEnv();

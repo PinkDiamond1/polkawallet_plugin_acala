@@ -4,7 +4,6 @@ import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/store/index.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
-import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
@@ -20,6 +19,7 @@ class ServiceEarn {
 
   IncentivesData _calcIncentivesAPR(IncentivesData data) {
     final pools = plugin.store!.earn.dexPools.toList();
+    final prices = store!.assets.marketPrices;
     data.dex!.forEach((k, v) {
       final poolIndex = pools.indexWhere((e) => e.tokenNameId == k);
       if (poolIndex < 0) {
@@ -31,7 +31,6 @@ class ServiceEarn {
           .toList();
 
       final poolInfo = store!.earn.dexPoolInfoMap[k];
-      final prices = store!.assets.marketPrices;
 
       /// poolValue = LPAmountOfPool / LPIssuance * token0Issuance * token0Price * 2;
       final stakingPoolValue = (poolInfo?.sharesTotal ?? BigInt.zero) /
@@ -44,9 +43,12 @@ class ServiceEarn {
                   (prices[balancePair[1].symbol] ?? 0));
 
       v.forEach((e) {
+        final rewardToken =
+            AssetsUtils.getBalanceFromTokenNameId(plugin, e.tokenNameId);
+
         /// rewardsRate = rewardsAmount * rewardsTokenPrice / poolValue;
         final rate =
-            e.amount! * (prices[e.tokenNameId] ?? 0) / stakingPoolValue;
+            e.amount! * (prices[rewardToken.symbol] ?? 0) / stakingPoolValue;
         e.apr = rate > 0 ? rate : 0;
       });
     });
@@ -57,6 +59,22 @@ class ServiceEarn {
         e.apr = e.amount! > 0
             ? e.amount! / (poolInfo!.sharesTotal! / poolInfo.issuance!)
             : 0;
+      });
+    });
+
+    final rewards = plugin.store!.loan.collateralRewards;
+    data.loans!.forEach((k, v) {
+      v.forEach((e) {
+        if (e.tokenNameId != 'Any') {
+          final poolToken = AssetsUtils.getBalanceFromTokenNameId(plugin, k);
+          final rewardToken =
+              AssetsUtils.getBalanceFromTokenNameId(plugin, e.tokenNameId);
+          e.apr = (prices[rewardToken.symbol] ?? 0) *
+              e.amount! /
+              Fmt.bigIntToDouble(
+                  rewards[k]?.sharesTotal, poolToken.decimals ?? 12) /
+              prices[poolToken.symbol]!;
+        }
       });
     });
 
@@ -76,8 +94,13 @@ class ServiceEarn {
   }
 
   Future<void> queryIncentives() async {
-    final res = await api!.earn.queryIncentives();
-    store!.earn.setIncentives(_calcIncentivesAPR(res));
+    final res = await Future.wait([
+      api!.earn.queryIncentives(),
+      // we need collateral rewards data to calc incentive apy.
+      plugin.service!.loan.queryCollateralRewards(keyring.current.address!),
+    ]);
+
+    store!.earn.setIncentives(_calcIncentivesAPR((res[0] as IncentivesData)));
   }
 
   Future<void> queryDexPoolInfo() async {
@@ -101,11 +124,8 @@ class ServiceEarn {
             ? store!.earn.dexPools[0].tokenNameId
             : 'lp://ACA/AUSD');
     // 3. query mining pool info
-    await Future.wait([
-      queryDexPoolInfo(),
-      plugin.service!.assets.queryMarketPrices(
-          PluginFmt.getAllDexTokens(plugin).map((e) => e!.symbol).toList())
-    ]);
+    await Future.wait(
+        [queryDexPoolInfo(), plugin.service!.assets.queryMarketPrices()]);
   }
 
   Future<void> updateAllDexPoolInfo() async {
@@ -113,8 +133,7 @@ class ServiceEarn {
       await getDexPools();
     }
 
-    plugin.service!.assets.queryMarketPrices(
-        PluginFmt.getAllDexTokens(plugin).map((e) => e!.symbol).toList());
+    plugin.service!.assets.queryMarketPrices();
 
     await queryDexPoolInfo();
 

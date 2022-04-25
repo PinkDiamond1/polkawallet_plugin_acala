@@ -54,18 +54,18 @@ mixin _$AssetsStore on _AssetsStore, Store {
     });
   }
 
-  final _$aggregatedAssetsAtom = Atom(name: '_AssetsStore.aggregatedAssets');
+  final _$dexPricesAtom = Atom(name: '_AssetsStore.dexPrices');
 
   @override
-  Map? get aggregatedAssets {
-    _$nftAtom.reportRead();
-    return super.aggregatedAssets;
+  Map<String, double> get dexPrices {
+    _$dexPricesAtom.reportRead();
+    return super.dexPrices;
   }
 
   @override
-  set aggregatedAssets(Map? value) {
-    _$aggregatedAssetsAtom.reportWrite(value, super.aggregatedAssets, () {
-      super.aggregatedAssets = value;
+  set dexPrices(Map<String, double> value) {
+    _$dexPricesAtom.reportWrite(value, super.dexPrices, () {
+      super.dexPrices = value;
     });
   }
 
@@ -81,6 +81,21 @@ mixin _$AssetsStore on _AssetsStore, Store {
   set nft(List<NFTData> value) {
     _$nftAtom.reportWrite(value, super.nft, () {
       super.nft = value;
+    });
+  }
+
+  final _$aggregatedAssetsAtom = Atom(name: '_AssetsStore.aggregatedAssets');
+
+  @override
+  Map<dynamic, dynamic>? get aggregatedAssets {
+    _$aggregatedAssetsAtom.reportRead();
+    return super.aggregatedAssets;
+  }
+
+  @override
+  set aggregatedAssets(Map<dynamic, dynamic>? value) {
+    _$aggregatedAssetsAtom.reportWrite(value, super.aggregatedAssets, () {
+      super.aggregatedAssets = value;
     });
   }
 
@@ -121,6 +136,17 @@ mixin _$AssetsStore on _AssetsStore, Store {
   }
 
   @override
+  void setDexPrices(Map<String, double> data) {
+    final _$actionInfo = _$_AssetsStoreActionController.startAction(
+        name: '_AssetsStore.setDexPrices');
+    try {
+      return super.setDexPrices(data);
+    } finally {
+      _$_AssetsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setNFTs(List<NFTData> list) {
     final _$actionInfo = _$_AssetsStoreActionController.startAction(
         name: '_AssetsStore.setNFTs');
@@ -132,7 +158,7 @@ mixin _$AssetsStore on _AssetsStore, Store {
   }
 
   @override
-  void setAggregatedAssets(Map? data, String? pubKey) {
+  void setAggregatedAssets(Map<dynamic, dynamic>? data, String? pubKey) {
     final _$actionInfo = _$_AssetsStoreActionController.startAction(
         name: '_AssetsStore.setAggregatedAssets');
     try {
@@ -159,8 +185,9 @@ mixin _$AssetsStore on _AssetsStore, Store {
 tokenBalanceMap: ${tokenBalanceMap},
 prices: ${prices},
 marketPrices: ${marketPrices},
-aggregatedAssets: ${aggregatedAssets},
-nft: ${nft}
+dexPrices: ${dexPrices},
+nft: ${nft},
+aggregatedAssets: ${aggregatedAssets}
     ''';
   }
 }

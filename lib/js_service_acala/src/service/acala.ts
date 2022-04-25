@@ -761,7 +761,7 @@ async function calcHomaNewMintAmount(api: ApiPromise, amount: number) {
   const result = await homa.getEstimateMintResult(new FixedPointNumber(amount, DOT_DECIMAL));
   return {
     pay: result.pay.toNumber(),
-    receive: result.receive.toNumber(),
+    receive: result.receive.toChainData().toString(),
     env: _formatHomaEnv(result.env),
   };
 }

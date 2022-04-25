@@ -78,23 +78,7 @@ class ServiceLoan {
         // ignore
       }
 
-      // we may not need ACA/KAR prices
-      // prices['ACA'] = Fmt.tokenInt(data[1].toString(), acala_price_decimals);
-
       store!.assets.setPrices(prices);
-
-      // we need to set marketPrice of lcDOT from oraclePrice
-      final lcDOTNameId = 'lc://13';
-      if (prices.keys.contains(lcDOTNameId)) {
-        try {
-          store?.assets.setMarketPrices(
-              {'lcDOT': Fmt.bigIntToDouble(prices[lcDOTNameId], 18)});
-          // then update LP token price
-          plugin.service?.assets.calcLPTokenPrices();
-        } catch (_) {
-          // ignore
-        }
-      }
 
       // 3. update collateral incentive rewards
       queryCollateralRewards(address);

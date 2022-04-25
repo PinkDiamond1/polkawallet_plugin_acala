@@ -723,7 +723,7 @@ function _formatHomaEnv(env: HomaEnvironment) {
     totalStaking: env.totalStaking.toNumber(),
     totalLiquidity: env.totalLiquidity.toNumber(),
     exchangeRate: env.exchangeRate.toNumber(),
-    apy: env.apy,
+    apy: env.apy || 0,
     fastMatchFeeRate: env.fastMatchFeeRate.toNumber(),
     mintThreshold: env.mintThreshold.toNumber(),
     redeemThreshold: env.redeemThreshold.toNumber(),

@@ -225,8 +225,8 @@ const Map<String, String> enDex = {
   'v3.loan.canMint': 'Can Mint',
   'v3.loan.loanRatio': 'Loan Ratio',
   'v3.loan.submit': 'Submit',
-  'v3.homa.minStakingAmmount': 'Minimum Staking Ammount',
-  'v3.homa.minUnstakingAmmount': 'Minimum Unstaking Ammount',
+  'v3.homa.minStakingAmount': 'Minimum Staking Amount',
+  'v3.homa.minUnstakingAmount': 'Minimum Unstaking Amount',
   'v3.homa.unbond': 'Unbond',
   'v3.homa.unbond.describe':
       'Redeem through unbond method will go through 28 eras (6 days approximately).',
@@ -237,7 +237,7 @@ const Map<String, String> enDex = {
   'v3.loan.paybackMessage':
       'You have paid back all the minted aUSD while you still have collateral DOT.If you want to close the vault, you can withdraw all the collateral DOT at the same time.',
   'v3.earn.lpTokenReceived': 'LP Token received',
-  'v3.earn.amout': 'Amout',
+  'v3.earn.amount': 'Amount',
   'v3.earn.tokenReceived': 'Token received',
   'v3.swap.max': 'Max Swap',
   'v3.earn.totalValueLocked': 'Total Value Locked',

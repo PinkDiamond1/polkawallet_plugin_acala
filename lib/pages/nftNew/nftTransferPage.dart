@@ -10,8 +10,8 @@ import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
+import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAddressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAddressTextFormField.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginIconButton.dart';
@@ -134,7 +134,7 @@ class _NFTTransferPageState extends State<NFTTransferPage> {
                           key: _formKey,
                           child: PluginTagCard(
                             margin: EdgeInsets.only(top: 16),
-                            titleTag: dic['v3.earn.amout'],
+                            titleTag: dic['v3.earn.amount'],
                             padding: EdgeInsets.only(
                                 left: 16, right: 16, bottom: 27, top: 12),
                             child: TextFormField(

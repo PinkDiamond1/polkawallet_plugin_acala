@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_acala/api/types/calcHomaMintAmountData.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/swapNew/bootstrapPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
@@ -11,11 +10,11 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 
 class MintPage extends StatefulWidget {
   MintPage(this.plugin, this.keyring);
@@ -34,7 +33,6 @@ class _MintPageState extends State<MintPage> {
   String? _error;
   String _amountReceive = '';
   BigInt? _maxInput;
-  CalcHomaMintAmountData? _data;
   bool isLoading = false;
 
   Future<void> _updateReceiveAmount(double input) async {
@@ -50,7 +48,6 @@ class _MintPageState extends State<MintPage> {
       setState(() {
         isLoading = false;
         _amountReceive = "${data!['receive']}";
-        _data = CalcHomaMintAmountData("", "", null);
       });
     }
   }
@@ -128,24 +125,14 @@ class _MintPageState extends State<MintPage> {
 
     final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
 
-    final call = _data?.suggestRedeemRequests != null &&
-            _data!.suggestRedeemRequests!.length > 0
-        ? 'mintForRequests'
-        : 'mint';
+    final amount = _maxInput != null
+        ? _maxInput.toString()
+        : Fmt.tokenInt(pay, stakeDecimal).toString();
 
-    final List params = [
-      _maxInput != null
-          ? _maxInput.toString()
-          : Fmt.tokenInt(pay, stakeDecimal).toString()
-    ];
-    if (_data?.suggestRedeemRequests != null &&
-        _data!.suggestRedeemRequests!.length > 0) {
-      params.add(_data!.suggestRedeemRequests);
-    }
     final res = (await Navigator.of(context).pushNamed(TxConfirmPage.route,
         arguments: TxConfirmParams(
           module: 'homa',
-          call: call,
+          call: 'mint',
           txTitle: '${dic['homa.mint']} L$relay_chain_token_symbol',
           txDisplay: {},
           txDisplayBold: {
@@ -157,14 +144,14 @@ class _MintPageState extends State<MintPage> {
                   ?.copyWith(color: Colors.white),
             ),
             dic['dex.receive']!: Text(
-              '≈ ${Fmt.priceFloor(double.tryParse(_amountReceive), lengthMax: 4)} L$relay_chain_token_symbol',
+              '≈ ${Fmt.priceFloorBigInt(Fmt.balanceInt(_amountReceive), 12, lengthMax: 4)} L$relay_chain_token_symbol',
               style: Theme.of(context)
                   .textTheme
                   .headline1
                   ?.copyWith(color: Colors.white),
             ),
           },
-          params: params,
+          params: [amount],
           isPlugin: true,
         ))) as Map?;
 
@@ -244,7 +231,9 @@ class _MintPageState extends State<MintPage> {
                       return PluginFmt.tokenView(value);
                     },
                     enabled: false,
-                    text: _amountReceive,
+                    text: Fmt.priceFloorBigInt(
+                        Fmt.balanceInt(_amountReceive), 12,
+                        lengthMax: 4),
                     margin: EdgeInsets.only(bottom: 2),
                     titleTag: dic['homa.mint'],
                     balance: widget
@@ -252,25 +241,29 @@ class _MintPageState extends State<MintPage> {
                     tokenIconsMap: widget.plugin.tokenIcons,
                   )),
               Container(
-                margin: EdgeInsets.only(top: 24),
+                margin: EdgeInsets.only(top: 4),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      dic['v3.homa.minStakingAmmount']!,
+                      dic['v3.homa.minStakingAmount']!,
                       style: Theme.of(context).textTheme.headline4?.copyWith(
-                          color: Colors.white, fontWeight: FontWeight.w600),
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600),
                     ),
                     Text(
                       "$minStake $stakeToken",
                       style: Theme.of(context).textTheme.headline4?.copyWith(
-                          color: Colors.white, fontWeight: FontWeight.w600),
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600),
                     )
                   ],
                 ),
               ),
               Padding(
-                  padding: EdgeInsets.only(top: 300, bottom: 38),
+                  padding: EdgeInsets.only(top: 160, bottom: 32),
                   child: PluginButton(
                     title: dic['v3.loan.submit']!,
                     onPressed: () => _onSubmit(stakeDecimal),

@@ -420,7 +420,6 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
                         value =
                             value.substring(0, value.split(".")[0].length + 7);
                       }
-                      print(value);
                       var error = _validateAmount(value, banlance.amount!,
                           banlance.decimals!, titleTag);
                       setState(() {
@@ -823,13 +822,12 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
             Fmt.balanceInt(balancePair[1].minBalance);
         if (balanceStableCoin <=
             loan.type.debitShareToDebit(debitSubtract).abs()) {
-          debitSubtract = balanceStableCoin -
-              loan.type
-                  .debitToDebitShare(balanceStableCoin ~/ BigInt.from(1000000));
+          debitSubtract = loan.type.debitToDebitShare(
+              balanceStableCoin ~/ BigInt.from(1000000) - balanceStableCoin);
         }
       }
       detail[dic![dicValue]!] = Text(
-        '${Fmt.priceFloorBigInt(loan.type.debitShareToDebit(debitSubtract).abs(), balancePair[1].decimals!, lengthMax: 4)} ${PluginFmt.tokenView(acala_stable_coin)}',
+        '${Fmt.priceFloorBigInt(debitSubtract == debitShares ? debits : loan.type.debitShareToDebit(debitSubtract).abs(), balancePair[1].decimals!, lengthMax: 4)} ${PluginFmt.tokenView(acala_stable_coin)}',
         style: Theme.of(context)
             .textTheme
             .headline1

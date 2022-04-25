@@ -106,7 +106,7 @@ class _EarnLoanListState extends State<EarnLoanList> {
 
 class CollateralIncentiveList extends StatelessWidget {
   CollateralIncentiveList({
-    this.plugin,
+    required this.plugin,
     this.incentives,
     this.rewards,
     this.tokenIcons,
@@ -115,7 +115,7 @@ class CollateralIncentiveList extends StatelessWidget {
     this.dexIncentiveLoyaltyEndBlock,
   });
 
-  final PluginAcala? plugin;
+  final PluginAcala plugin;
   final Map<String?, List<IncentiveItemData>>? incentives;
   final Map<String?, CollateralRewardData>? rewards;
   final Map<String, Widget>? tokenIcons;
@@ -210,7 +210,7 @@ class CollateralIncentiveList extends StatelessWidget {
         call: 'claimRewards',
         txTitle: dic['earn.claim'],
         txDisplay: {
-          dic['loan.amount']: '≈ $rewardView $incentiveTokenSymbol',
+          dic['loan.amount']: '≈ $rewardView',
           dic['earn.stake.pool']: token.symbol,
         },
         params: [pool],
@@ -274,7 +274,9 @@ class CollateralIncentiveList extends StatelessWidget {
                   if (amount > 0.0001) {
                     canClaim = true;
                   }
-                  return '${Fmt.priceFloor(amount)}';
+                  final rewardToken = AssetsUtils.getBalanceFromTokenNameId(
+                      plugin, e['tokenNameId']);
+                  return '${Fmt.priceFloor(amount)} ${PluginFmt.tokenView(rewardToken.symbol)}';
                 }).join(' + ')
               : '0.00';
 
@@ -328,14 +330,15 @@ class CollateralIncentiveList extends StatelessWidget {
                 Container(
                     width: double.infinity,
                     color: Color(0xFF494b4e),
-                    padding: EdgeInsets.symmetric(vertical: 24),
+                    padding: EdgeInsets.symmetric(vertical: 20),
                     child: Column(
                       children: [
-                        Row(children: [
-                          PluginInfoItem(
+                        Container(
+                          margin: EdgeInsets.only(bottom: 16),
+                          child: PluginInfoItem(
+                            isExpanded: false,
                             crossAxisAlignment: CrossAxisAlignment.center,
-                            title:
-                                '${dic['earn.reward']} ($incentiveTokenSymbol)',
+                            title: dic['earn.reward'],
                             content: rewardView,
                             titleStyle:
                                 Theme.of(context).textTheme.headline5?.copyWith(
@@ -350,8 +353,8 @@ class CollateralIncentiveList extends StatelessWidget {
                                     fontSize: 24,
                                     height: 1.5,
                                     fontWeight: FontWeight.bold),
-                          )
-                        ]),
+                          ),
+                        ),
                         Row(
                           children: [
                             PluginInfoItem(

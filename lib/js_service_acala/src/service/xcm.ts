@@ -87,7 +87,7 @@ async function _getTokenBalance(chain: string, address: string, tokenNameId: str
   if (!api) return null;
 
   const token = await wallet.getToken(tokenNameId);
-  if (chain.match(chain_name_statemint)) {
+  if (chain.match(chain_name_statemint) && tokenNameId !== "DOT") {
     const res = await api.query.assets.account(token.locations?.generalIndex, address);
     return {
       amount: res.toJSON()["balance"].toString(),
@@ -96,7 +96,6 @@ async function _getTokenBalance(chain: string, address: string, tokenNameId: str
     };
   }
 
-  // for kusama/polkadot/khala-pha/heiko-hko/crust-csm/kico
   const res = await api.derive.balances.all(address);
   return {
     amount: res.availableBalance.toString(),

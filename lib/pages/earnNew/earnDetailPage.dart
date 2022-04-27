@@ -8,6 +8,7 @@ import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/LPStakePage.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/inviteFriendsPage.dart';
+import 'package:polkawallet_plugin_acala/pages/types/earnPageParams.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_plugin_acala/utils/format.dart';
@@ -43,8 +44,11 @@ class EarnDetailPage extends StatelessWidget {
     final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
     final symbols = plugin.networkState.tokenSymbol;
 
-    final DexPoolData pool =
-        ModalRoute.of(context)!.settings.arguments as DexPoolData;
+    final argsJson = ModalRoute.of(context)!.settings.arguments as Map;
+    final args = EarnDetailPageParams.fromJson(argsJson);
+    final pool = plugin.store!.earn.dexPools
+        .firstWhere((e) => e.tokenNameId == args.poolId);
+
     final balancePair = pool.tokens!
         .map((e) => AssetsUtils.tokenDataFromCurrencyId(plugin, e))
         .toList();
@@ -495,8 +499,10 @@ class _UserCard extends StatelessWidget {
   void _onWithdrawReward(
       BuildContext context, String rewardV2, double rewardSaving) {
     final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
-    final DexPoolData pool =
-        ModalRoute.of(context)!.settings.arguments as DexPoolData;
+    final argsJson = ModalRoute.of(context)!.settings.arguments as Map;
+    final args = EarnDetailPageParams.fromJson(argsJson);
+    final pool = plugin.store!.earn.dexPools
+        .firstWhere((e) => e.tokenNameId == args.poolId);
     final tokenPair = pool.tokens!
         .map((e) => AssetsUtils.tokenDataFromCurrencyId(plugin, e))
         .toList();

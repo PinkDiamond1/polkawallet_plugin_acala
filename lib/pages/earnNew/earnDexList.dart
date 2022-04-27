@@ -335,8 +335,9 @@ class _EarnDexListState extends State<EarnDexList> {
                           )),
                         ],
                       )),
-                  onTap: () => Navigator.of(context)
-                      .pushNamed(EarnDetailPage.route, arguments: dexPools[i]),
+                  onTap: () => Navigator.of(context).pushNamed(
+                      EarnDetailPage.route,
+                      arguments: {'poolId': dexPools[i].tokenNameId}),
                 );
               },
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

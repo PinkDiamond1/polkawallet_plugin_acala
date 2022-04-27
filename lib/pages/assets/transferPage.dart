@@ -9,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/common/components/insufficientACAWarn.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/assets/transferFormXCM.dart';
+import 'package:polkawallet_plugin_acala/pages/types/transferPageParams.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_plugin_acala/utils/format.dart';
@@ -139,6 +140,18 @@ class _TransferPageState extends State<TransferPage> {
     print(_accountTo!.address);
   }
 
+  Future<String?> _updateAddressIcon(String address) async {
+    final res = await widget.plugin.sdk.api.account.getAddressIcons([address]);
+    if (res != null && res.length > 0) {
+      final acc = KeyPairData()
+        ..address = _accountTo?.address
+        ..icon = res[0][1];
+      setState(() {
+        _accountTo = acc;
+      });
+    }
+  }
+
   void _onSwitchCheckAlive(bool res, bool isNoDeath) {
     final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common')!;
 
@@ -256,15 +269,22 @@ class _TransferPageState extends State<TransferPage> {
     super.initState();
 
     WidgetsBinding.instance!.addPostFrameCallback((_) {
-      final args = ModalRoute.of(context)!.settings.arguments as Map? ?? {};
+      final argsJson = ModalRoute.of(context)!.settings.arguments as Map? ?? {};
+      final args = TransferPageParams.fromJson(argsJson);
       setState(() {
         _token = AssetsUtils.getBalanceFromTokenNameId(
-            widget.plugin, args['tokenNameId']);
+            widget.plugin, args.tokenNameId);
         _accountOptions = widget.keyring.allWithContacts.toList();
-        _accountTo = widget.keyring.current;
 
-        if (args['isXCM'] != null) {
-          _tab = args['isXCM'] == "true" ? 1 : 0;
+        if (args.address != null) {
+          _accountTo = KeyPairData()..address = args.address;
+          _updateAddressIcon(args.address!);
+        } else {
+          _accountTo = widget.keyring.current;
+        }
+
+        if (args.isXCM != null) {
+          _tab = args.isXCM == "true" ? 1 : 0;
         }
       });
     });
@@ -279,10 +299,10 @@ class _TransferPageState extends State<TransferPage> {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common')!;
-    final args = ModalRoute.of(context)!.settings.arguments as Map? ?? {};
+    final argsJson = ModalRoute.of(context)!.settings.arguments as Map? ?? {};
+    final args = TransferPageParams.fromJson(argsJson);
     final token = _token ??
-        AssetsUtils.getBalanceFromTokenNameId(
-            widget.plugin, args['tokenNameId']);
+        AssetsUtils.getBalanceFromTokenNameId(widget.plugin, args.tokenNameId);
 
     final tokensConfig =
         widget.plugin.store!.setting.remoteConfig['tokens'] ?? {};

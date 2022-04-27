@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/earnDexList.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/earnHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/earnLoanList.dart';
+import 'package:polkawallet_plugin_acala/pages/types/earnPageParams.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
@@ -29,6 +30,16 @@ class _EarnPageState extends State<EarnPage> {
   void initState() {
     widget.plugin.store!.earn.getdexIncentiveLoyaltyEndBlock(widget.plugin);
     super.initState();
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      final argsJson = ModalRoute.of(context)!.settings.arguments as Map? ?? {};
+      final args = EarnPageParams.fromJson(argsJson);
+      if (args.tab != null) {
+        setState(() {
+          _tab = int.parse(args.tab!);
+        });
+      }
+    });
   }
 
   @override

@@ -12,6 +12,7 @@ import 'package:polkawallet_plugin_acala/pages/loanNew/loanAdjustPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loanNew/loanCreatePage.dart';
 import 'package:polkawallet_plugin_acala/pages/loanNew/loanHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loanNew/loanTabBarWidget.dart';
+import 'package:polkawallet_plugin_acala/pages/types/loanPageParams.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_plugin_acala/utils/format.dart';
@@ -207,7 +208,8 @@ class _LoanPageState extends State<LoanPage> {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala');
-    final args = ModalRoute.of(context)?.settings.arguments as Map?;
+    final argsJson = ModalRoute.of(context)!.settings.arguments as Map? ?? {};
+    final args = LoanPageParams.fromJson(argsJson);
 
     return Observer(builder: (_) {
       final loans = widget.plugin.store!.loan.loans.values.toList();
@@ -220,9 +222,9 @@ class _LoanPageState extends State<LoanPage> {
 
       /// The initial tab index will be from arguments or user's vault.
       int initialLoanTypeIndex = 0;
-      if (args != null && args['loanType'] != null) {
+      if (args.loanType != null) {
         initialLoanTypeIndex = widget.plugin.store!.loan.loanTypes
-            .indexWhere((e) => e.token?.tokenNameId == args['loanType']);
+            .indexWhere((e) => e.token?.tokenNameId == args.loanType);
       } else if (loans.length > 0) {
         initialLoanTypeIndex = widget.plugin.store!.loan.loanTypes.indexWhere(
             (e) => e.token?.tokenNameId == loans[0].token?.tokenNameId);

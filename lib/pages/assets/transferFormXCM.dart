@@ -12,6 +12,7 @@ import 'package:polkawallet_plugin_acala/common/components/insufficientACAWarn.d
 import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/assets/xcmChainSelector.dart';
+import 'package:polkawallet_plugin_acala/pages/types/transferPageParams.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_plugin_acala/utils/format.dart';
@@ -193,10 +194,11 @@ class _TransferFormXCMState extends State<TransferFormXCM> {
     final connected = await widget.plugin.sdk.webView!
         .evalJavascript('xcm.connectFromChain(["$chainName"])');
     if (connected != null) {
-      final args = ModalRoute.of(context)!.settings.arguments as Map? ?? {};
+      final argsJson = ModalRoute.of(context)!.settings.arguments as Map? ?? {};
+      final args = TransferPageParams.fromJson(argsJson);
       final token = _token ??
           AssetsUtils.getBalanceFromTokenNameId(
-              widget.plugin, args['tokenNameId']);
+              widget.plugin, args.tokenNameId);
       final balances = await widget.plugin.sdk.webView!.evalJavascript(
           'xcm.getBalances("$chainName", "${widget.keyring.current.address}", ["${token.symbol}"])');
       if (balances != null) {
@@ -421,23 +423,24 @@ class _TransferFormXCMState extends State<TransferFormXCM> {
     super.initState();
 
     WidgetsBinding.instance!.addPostFrameCallback((_) {
-      final args = ModalRoute.of(context)!.settings.arguments as Map? ?? {};
+      final argsJson = ModalRoute.of(context)!.settings.arguments as Map? ?? {};
+      final args = TransferPageParams.fromJson(argsJson);
       final token = AssetsUtils.getBalanceFromTokenNameId(
-          widget.plugin, args['tokenNameId']);
+          widget.plugin, args.tokenNameId);
       final tokensConfig =
           widget.plugin.store!.setting.remoteConfig['tokens'] ?? {};
       final tokenXcmConfig = List<String>.from(
           (tokensConfig['xcm'] ?? {})[token.tokenNameId] ?? []);
 
-      if (args['chainFrom'] != null && args['chainTo'] != null) {
-        _onChainSelected([args['chainFrom'], args['chainTo']]);
+      if (args.chainFrom != null && args.chainTo != null) {
+        _onChainSelected([args.chainFrom!, args.chainTo!]);
       }
       setState(() {
         _token = token;
         _accountOptions = widget.keyring.allWithContacts.toList();
         _accountTo = widget.keyring.current;
 
-        if (args['chainTo'] == null) {
+        if (args.chainTo == null) {
           _chainTo = tokenXcmConfig[0];
         }
       });
@@ -468,10 +471,12 @@ class _TransferFormXCMState extends State<TransferFormXCM> {
         final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common')!;
         final dicAcala =
             I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
-        final args = ModalRoute.of(context)!.settings.arguments as Map? ?? {};
+        final argsJson =
+            ModalRoute.of(context)!.settings.arguments as Map? ?? {};
+        final args = TransferPageParams.fromJson(argsJson);
         final token = _token ??
             AssetsUtils.getBalanceFromTokenNameId(
-                widget.plugin, args['tokenNameId']);
+                widget.plugin, args.tokenNameId);
         final tokenSymbol = token.symbol!.toUpperCase();
         final tokenView = PluginFmt.tokenView(token.symbol);
 

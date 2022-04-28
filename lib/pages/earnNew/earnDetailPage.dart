@@ -114,8 +114,6 @@ class EarnDetailPage extends StatelessWidget {
             });
           }
 
-          print(plugin.store?.earn.dexIncentiveEndBlock);
-          print(plugin.store?.earn.dexIncentiveLoyaltyEndBlock);
           final incentiveEndIndex = plugin.store?.earn.dexIncentiveEndBlock
               .indexWhere(
                   (e) => poolSymbol == PluginFmt.getPool(plugin, e['pool']));
@@ -127,8 +125,11 @@ class EarnDetailPage extends StatelessWidget {
           final incentiveEndBlocks = incentiveEndBlock != null
               ? incentiveEndBlock - plugin.store!.gov.bestNumber.toInt()
               : null;
-          final incentiveEndTime = DateTime.now()
-              .add(Duration(seconds: (20 * (incentiveEndBlocks ?? 0)).toInt()));
+          final incentiveEndTime = DateTime.now().add(Duration(
+              seconds: (plugin.store!.earn.blockDuration /
+                      1000 *
+                      (incentiveEndBlocks ?? 0))
+                  .toInt()));
 
           return SafeArea(
               child: Stack(
@@ -424,7 +425,7 @@ class EarnDetailPage extends StatelessWidget {
                                       fontSize: 12, color: Colors.white),
                                 ),
                                 Text(
-                                  ' ${Fmt.priceFloor(double.parse(incentiveEndBlocks.toString()), lengthMax: 0)} ${dic['earn.incentive.blocks']}',
+                                  ' ${Fmt.priceFloor(double.parse(incentiveEndBlocks.toString()), lengthFixed: 0)} ${dic['earn.incentive.blocks']}',
                                   style: TextStyle(
                                       fontSize: 12, color: Color(0xFFFF7849)),
                                 )

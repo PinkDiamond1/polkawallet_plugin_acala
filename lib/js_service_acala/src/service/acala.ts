@@ -894,4 +894,6 @@ export default {
   queryHomaPendingRedeem,
 
   queryDexIncentiveLoyaltyEndBlock,
+
+  getBlockDuration: async () => ACA_SYS_BLOCK_TIME.toNumber(),
 };

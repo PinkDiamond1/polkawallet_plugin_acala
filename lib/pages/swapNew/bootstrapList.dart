@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:intl/intl.dart';
 import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
-import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/addLiquidityPage.dart';
 import 'package:polkawallet_plugin_acala/pages/swapNew/bootstrapPage.dart';
@@ -244,14 +243,14 @@ class _BootstrapListState extends State<BootstrapList> {
 
 class _BootStrapCard extends StatelessWidget {
   _BootStrapCard(
-      {this.plugin,
+      {required this.plugin,
       this.pool,
       this.bestNumber,
       this.tokenIcons,
       this.relayChainTokenPrice,
       this.onRefresh});
 
-  final PluginAcala? plugin;
+  final PluginAcala plugin;
   final DexPoolData? pool;
   final int? bestNumber;
   final Map<String, Widget>? tokenIcons;
@@ -286,8 +285,8 @@ class _BootStrapCard extends StatelessWidget {
         : 1.0;
     final blocksEnd = pool!.provisioning!.notBefore! - bestNumber!;
     final time = bestNumber! > 0
-        ? DateTime.now()
-            .add(Duration(milliseconds: BLOCK_TIME_DEFAULT * blocksEnd))
+        ? DateTime.now().add(Duration(
+            milliseconds: plugin.store!.earn.blockDuration * blocksEnd))
         : null;
 
     String ratioView =

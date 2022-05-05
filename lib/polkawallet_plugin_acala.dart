@@ -38,6 +38,7 @@ import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
+import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 
 class PluginAcala extends PolkawalletPlugin {
   PluginAcala({String name = plugin_name_acala})
@@ -253,11 +254,10 @@ class PluginAcala extends PolkawalletPlugin {
   @override
   Map<String, WidgetBuilder> getRoutes(Keyring keyring) {
     return {
-      TxConfirmPage.route: (_) => TxConfirmPage(
-          this,
-          keyring,
-          _service!.getPassword as Future<String> Function(
-              BuildContext, KeyPairData)),
+      TxConfirmPage.route: (_) =>
+          TxConfirmPage(this, keyring, _service!.getPassword),
+      XcmTxConfirmPage.route: (_) =>
+          XcmTxConfirmPage(this, keyring, _service!.getPassword),
       CurrencySelectPage.route: (_) => CurrencySelectPage(this),
       AccountQrCodePage.route: (_) => AccountQrCodePage(this, keyring),
 
@@ -270,7 +270,6 @@ class PluginAcala extends PolkawalletPlugin {
       TransferPage.route: (_) => TransferPage(this, keyring),
       TransferDetailPage.route: (_) => TransferDetailPage(this, keyring),
 
-      AcalaEntry.route: (_) => AcalaEntry(this, keyring),
       //new ui
       ...getNewUiRoutes(this, keyring)
     };

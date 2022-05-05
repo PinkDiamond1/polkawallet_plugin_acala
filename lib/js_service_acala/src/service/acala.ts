@@ -43,14 +43,14 @@ function _getTokenSymbol(allTokens: any[], tokenNameId: string): string {
   return allTokens.find((i) => i.tokenNameId === tokenNameId)?.symbol;
 }
 
-async function _fetchBlockDuration() {
-  const res = await axios.get("https://api.polkawallet.io/height-time-avg?recent=300&network=acala");
+// async function _fetchBlockDuration() {
+//   const res = await axios.get("https://api.polkawallet.io/height-time-avg?recent=300&network=acala");
 
-  if (res.status === 200) {
-    ACA_SYS_BLOCK_TIME = new BN((res.data["avg"] * 1000).toFixed(0));
-  }
-}
-_fetchBlockDuration();
+//   if (res.status === 200) {
+//     ACA_SYS_BLOCK_TIME = new BN((res.data["avg"] * 1000).toFixed(0));
+//   }
+// }
+// _fetchBlockDuration();
 
 // let swapper: SwapPromise;
 /**

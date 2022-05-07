@@ -270,6 +270,7 @@ class PluginAcala extends PolkawalletPlugin {
       TransferPage.route: (_) => TransferPage(this, keyring),
       TransferDetailPage.route: (_) => TransferDetailPage(this, keyring),
 
+      AcalaEntry.route: (_) => AcalaEntry(this, keyring),
       //new ui
       ...getNewUiRoutes(this, keyring)
     };

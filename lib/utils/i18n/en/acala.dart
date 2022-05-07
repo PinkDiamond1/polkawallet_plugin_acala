@@ -232,7 +232,7 @@ const Map<String, String> enDex = {
   'v3.homa.minUnstakingAmount': 'Minimum Unstaking Amount',
   'v3.homa.unbond': 'Unbond',
   'v3.homa.unbond.describe':
-      'Redeem through unbond method will go through 28 eras (6 days approximately).',
+      'Redeem through unbond method will go through 28 eras (28 days approximately).',
   'v3.selectRedeemMethod': 'Select redeem method',
   'v3.maxCanMint': 'Max can mint',
   'v3.minimumGenerate': 'Minimum generate',

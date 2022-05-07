@@ -96,22 +96,28 @@ class _RedeemPageState extends State<RedeemPage> {
         }
       });
 
-      final lToken =
-          AssetsUtils.getBalanceFromTokenNameId(widget.plugin, 'L$stakeToken');
-      final token =
-          AssetsUtils.getBalanceFromTokenNameId(widget.plugin, stakeToken);
-      final swapRes = await widget.plugin.api!.swap.queryTokenSwapAmount(
-          input.toString(),
-          null,
-          [
-            {...lToken.currencyId!, 'decimals': lToken.decimals},
-            {...token.currencyId!, 'decimals': token.decimals},
-          ],
-          '0.1');
-      setState(() {
-        _swapAmount = swapRes.amount!;
-        isLoading = false;
-      });
+      try {
+        final lToken = AssetsUtils.getBalanceFromTokenNameId(
+            widget.plugin, 'L$stakeToken');
+        final token =
+            AssetsUtils.getBalanceFromTokenNameId(widget.plugin, stakeToken);
+        final swapRes = await widget.plugin.api!.swap.queryTokenSwapAmount(
+            input.toString(),
+            null,
+            [
+              {...lToken.currencyId!, 'decimals': lToken.decimals},
+              {...token.currencyId!, 'decimals': token.decimals},
+            ],
+            '0.1');
+        setState(() {
+          _swapAmount = swapRes.amount!;
+          isLoading = false;
+        });
+      } catch (err) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -392,6 +398,7 @@ class _RedeemPageState extends State<RedeemPage> {
                                   title: dic['homa.fast']!,
                                   value:
                                       "$_fastReceiveAmount $relay_chain_token_symbol",
+                                  margin: EdgeInsets.only(bottom: 14),
                                   describe: dic['homa.fast.describe']!,
                                   isSelect: _selectIndex == 0,
                                   ontap: () {
@@ -402,18 +409,21 @@ class _RedeemPageState extends State<RedeemPage> {
                                     }
                                   },
                                 ),
-                                UnStakeTypeItemWidget(
-                                  title: dic['dex.swap']!,
-                                  value:
-                                      "$_swapAmount $relay_chain_token_symbol",
-                                  margin: EdgeInsets.symmetric(vertical: 14),
-                                  describe: dic['dex.swap.describe']!,
-                                  isSelect: _selectIndex == 1,
-                                  ontap: () {
-                                    setState(() {
-                                      _selectIndex = 1;
-                                    });
-                                  },
+                                Visibility(
+                                  visible: _swapAmount > 0,
+                                  child: UnStakeTypeItemWidget(
+                                    title: dic['dex.swap']!,
+                                    value:
+                                        "$_swapAmount $relay_chain_token_symbol",
+                                    margin: EdgeInsets.only(bottom: 14),
+                                    describe: dic['dex.swap.describe']!,
+                                    isSelect: _selectIndex == 1,
+                                    ontap: () {
+                                      setState(() {
+                                        _selectIndex = 1;
+                                      });
+                                    },
+                                  ),
                                 ),
                                 UnStakeTypeItemWidget(
                                   title: dic['v3.homa.unbond']!,

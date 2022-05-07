@@ -7,7 +7,7 @@ class HomaNewEnvData {
   double totalStaking;
   double totalLiquidity;
   double exchangeRate;
-  double apy;
+  double? apy;
   double fastMatchFeeRate;
   double mintThreshold;
   double redeemThreshold;

@@ -4,6 +4,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/swapNew/bootstrapPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
@@ -118,7 +119,7 @@ class _MintPageState extends State<MintPage> {
     }
   }
 
-  Future<void> _onSubmit(int stakeDecimal) async {
+  Future<void> _onSubmit(int stakeDecimal, int liquidDecimals) async {
     final pay = _amountPayCtrl.text.trim();
 
     if (_error != null || pay.isEmpty) return;
@@ -144,7 +145,7 @@ class _MintPageState extends State<MintPage> {
                   ?.copyWith(color: Colors.white),
             ),
             dic['dex.receive']!: Text(
-              '≈ ${Fmt.priceFloorBigInt(Fmt.balanceInt(_amountReceive), 12, lengthMax: 4)} L$relay_chain_token_symbol',
+              '≈ ${Fmt.priceFloorBigInt(Fmt.balanceInt(_amountReceive), liquidDecimals, lengthMax: 4)} L$relay_chain_token_symbol',
               style: Theme.of(context)
                   .textTheme
                   .headline1
@@ -156,7 +157,8 @@ class _MintPageState extends State<MintPage> {
         ))) as Map?;
 
     if (res != null) {
-      Navigator.of(context).pop('${Fmt.balanceDouble(_amountReceive, 12)}');
+      Navigator.of(context)
+          .pop('${Fmt.balanceDouble(_amountReceive, liquidDecimals)}');
     }
   }
 
@@ -172,25 +174,25 @@ class _MintPageState extends State<MintPage> {
       builder: (BuildContext context) {
         final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
 
-        final symbols = widget.plugin.networkState.tokenSymbol!;
-        final stakeToken = relay_chain_token_symbol;
-        final decimals = widget.plugin.networkState.tokenDecimals!;
+        final balances = AssetsUtils.getBalancePairFromTokenNameId(
+            widget.plugin,
+            [relay_chain_token_symbol, 'L$relay_chain_token_symbol']);
+        final stakeDecimals = balances[0].decimals ?? 12;
+        final liquidDecimals = balances[1].decimals ?? 12;
 
+        final decimals = widget.plugin.networkState.tokenDecimals!;
         final karBalance = Fmt.balanceDouble(
             widget.plugin.balances.native!.availableBalance.toString(),
             decimals[0]);
-        final balanceData =
-            widget.plugin.store!.assets.tokenBalanceMap[stakeToken];
 
-        final stakeDecimal = decimals[symbols.indexOf(stakeToken)];
-        final balanceDouble =
-            Fmt.balanceDouble(balanceData?.amount ?? "0", stakeDecimal);
+        final balanceDouble = Fmt.balanceDouble(
+            balances[0].amount ?? "0", balances[0].decimals ?? 12);
 
         final minStake = widget.plugin.store!.homa.env!.mintThreshold;
 
         return PluginScaffold(
           appBar: PluginAppBar(
-              title: Text('${dic['homa.mint']} L$stakeToken'),
+              title: Text('${dic['homa.mint']} L$relay_chain_token_symbol'),
               centerTitle: true),
           body: SafeArea(
               child: ListView(
@@ -206,7 +208,8 @@ class _MintPageState extends State<MintPage> {
                 onInputChange: (v) =>
                     _onSupplyAmountChange(v, balanceDouble, minStake),
                 onSetMax: karBalance > 0.1
-                    ? (v) => _onSetMax(v, stakeDecimal, balanceDouble, minStake)
+                    ? (v) =>
+                        _onSetMax(v, stakeDecimals, balanceDouble, minStake)
                     : null,
                 onClear: () {
                   setState(() {
@@ -214,8 +217,7 @@ class _MintPageState extends State<MintPage> {
                   });
                   _onSupplyAmountChange('', balanceDouble, minStake);
                 },
-                balance:
-                    widget.plugin.store!.assets.tokenBalanceMap[stakeToken],
+                balance: balances[0],
                 tokenIconsMap: widget.plugin.tokenIcons,
               ),
               ErrorMessage(
@@ -232,12 +234,12 @@ class _MintPageState extends State<MintPage> {
                     },
                     enabled: false,
                     text: Fmt.priceFloorBigInt(
-                        Fmt.balanceInt(_amountReceive), 12,
+                        Fmt.balanceInt(_amountReceive), liquidDecimals,
                         lengthMax: 4),
                     margin: EdgeInsets.only(bottom: 2),
                     titleTag: dic['homa.mint'],
-                    balance: widget
-                        .plugin.store!.assets.tokenBalanceMap["L$stakeToken"],
+                    balance: widget.plugin.store!.assets
+                        .tokenBalanceMap["L$relay_chain_token_symbol"],
                     tokenIconsMap: widget.plugin.tokenIcons,
                   )),
               Container(
@@ -253,7 +255,7 @@ class _MintPageState extends State<MintPage> {
                           fontWeight: FontWeight.w600),
                     ),
                     Text(
-                      "$minStake $stakeToken",
+                      "$minStake $relay_chain_token_symbol",
                       style: Theme.of(context).textTheme.headline4?.copyWith(
                           color: Colors.white,
                           fontSize: 12,
@@ -266,7 +268,7 @@ class _MintPageState extends State<MintPage> {
                   padding: EdgeInsets.only(top: 160, bottom: 32),
                   child: PluginButton(
                     title: dic['v3.loan.submit']!,
-                    onPressed: () => _onSubmit(stakeDecimal),
+                    onPressed: () => _onSubmit(stakeDecimals, liquidDecimals),
                   ))
             ],
           )),

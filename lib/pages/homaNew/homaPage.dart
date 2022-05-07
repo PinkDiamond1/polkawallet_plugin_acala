@@ -196,8 +196,9 @@ class _HomaPageState extends State<HomaPage> {
           MediaQuery.of(context).size.width - paddingHorizontal * 2;
       final riveHeight = riveWidget / 360 * 292;
 
-      final aprValue =
-          "${Fmt.priceFloor((env?.apy ?? 0) * 100, lengthFixed: 0)}%";
+      // todo: use fixed APY 14.5% here.
+      final aprValue = '14.5%';
+      // "${Fmt.priceFloor((env?.apy ?? 0) * 100, lengthFixed: 0)}%";
       final aprStyle = Theme.of(context).textTheme.headline4?.copyWith(
           fontSize: 24,
           fontWeight: FontWeight.bold,

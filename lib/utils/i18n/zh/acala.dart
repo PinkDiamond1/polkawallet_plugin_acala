@@ -204,7 +204,7 @@ const Map<String, String> zhDex = {
   'transfer.exist': '存活余额',
   'transfer.fee': '预估手续费',
   'warn.fee': '因 ACA 余额不足，交易可能会执行失败。',
-  'v3.totalBalance': '总资产',
+  'v3.totalBalance': '余额',
   'v3.myDefi': '我的DeFi',
   'v3.totalStaked': '总质押',
   'v3.total': '总发行',
@@ -272,8 +272,5 @@ const Map<String, String> zhDex = {
   'v3.loan.currentCollateral': '当前质押',
   'v3.loan.requiredSafety': '安全需求',
   'v3.loan.newLiquidationPrice': '新清算价格',
-  'v3.loan.vaultState': '状态',
-  'v3.loan.healthy': '健康',
-  'v3.loan.needAdjust': '需要调整',
-  'v3.loan.liquidationWarning': '爆仓警告',
+  'v3.loan.liquidRatio': '清算质押率',
 };

@@ -83,16 +83,11 @@ class AcalaEntry extends StatelessWidget {
   }
 }
 
-class DefiWidget extends StatefulWidget {
+class DefiWidget extends StatelessWidget {
   DefiWidget(this.plugin);
 
   final PluginAcala plugin;
 
-  @override
-  _DefiWidgetState createState() => _DefiWidgetState();
-}
-
-class _DefiWidgetState extends State<DefiWidget> {
   final _liveModuleRoutes = {
     'loan': LoanPage.route,
     'swap': SwapPage.route,
@@ -104,7 +99,7 @@ class _DefiWidgetState extends State<DefiWidget> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common');
     final modulesConfig =
-        widget.plugin.store?.setting.remoteConfig['modules'] ?? config_modules;
+        plugin.store?.setting.remoteConfig['modules'] ?? config_modules;
     List liveModules = [];
     if (modulesConfig.keys.length > 0) {
       liveModules = modulesConfig.keys.toList().sublist(1);

@@ -34,6 +34,6 @@ const node_list = [
   // {
   //   'name': 'Acala (acala dev node)',
   //   'ss58': ss58_prefix_acala,
-  //   'endpoint': 'wss://crosschain-dev.polkawallet.io:9904',
+  //   'endpoint': 'wss://kusama-1.polkawallet.io:3000',
   // },
 ];

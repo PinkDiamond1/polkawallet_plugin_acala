@@ -219,6 +219,14 @@ const Map<String, String> zhDex = {
   'v3.homa.minUnstakingAmount': '提取最小值',
   'v3.homa.unbond': '解绑',
   'v3.homa.unbond.describe': '通过【解绑】进行提取将经历28个era（大概28天）',
+  'v3.homa.stake': '质押',
+  'v3.homa.stake.describe': '质押 DOT 可以获得 LDOT 并享有协议 APY.',
+  'v3.homa.stake.method': '质押方式',
+  'v3.homa.stake.more': '质押 LDOT 已获取奖励',
+  'v3.homa.stake.more.describe': '通过质押 LDOT 获取奖励, 你还可以在债仓中 mint aUSD.',
+  'v3.homa.stake.apy.total': '总 APY',
+  'v3.homa.stake.apy.protocol': '协议 APY',
+  'v3.homa.stake.apy.reward': '奖励 APY',
   'v3.selectRedeemMethod': '选择提取方式',
   'v3.maxCanMint': '最大可生成',
   'v3.minimumGenerate': '最少生成',
@@ -273,4 +281,5 @@ const Map<String, String> zhDex = {
   'v3.loan.requiredSafety': '安全需求',
   'v3.loan.newLiquidationPrice': '新清算价格',
   'v3.loan.liquidRatio': '清算质押率',
+  'event.vault.rewards': '🚀 LDOT 质押挖矿已开启! APY 最高可达'
 };

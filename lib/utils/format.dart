@@ -10,11 +10,8 @@ class PluginFmt {
     if (token == acala_stable_coin) {
       return acala_stable_coin_view;
     }
-    if (token == acala_token_ren_btc) {
-      return acala_token_ren_btc_view;
-    }
-    if (token == acala_token_polka_btc) {
-      return acala_token_polka_btc_view;
+    if (token == acala_token_lc_dot) {
+      return acala_token_lc_dot_view;
     }
     if (token?.contains('-') ?? false) {
       return '${token!.split('-').map((e) => PluginFmt.tokenView(e)).join('-')} LP';

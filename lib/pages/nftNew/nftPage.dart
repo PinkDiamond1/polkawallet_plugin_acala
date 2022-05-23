@@ -96,7 +96,6 @@ class _NftPageState extends State<NftPage> {
                             ? VideoPlayerContainer(imageUrl)
                             : Image.network(
                                 '$imageUrl?imageView2/2/w/400',
-                                fit: BoxFit.cover,
                               ),
                       ),
                       Align(

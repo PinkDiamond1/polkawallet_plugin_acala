@@ -18,6 +18,8 @@ import 'package:polkawallet_plugin_acala/pages/assets/transferDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/assets/transferPage.dart';
 import 'package:polkawallet_plugin_acala/pages/currencySelectPage.dart';
 import 'package:polkawallet_plugin_acala/pages/governanceNew/governancePage.dart';
+import 'package:polkawallet_plugin_acala/pages/multiply/multiplyCreatePage.dart';
+import 'package:polkawallet_plugin_acala/pages/multiply/multiplyPage.dart';
 import 'package:polkawallet_plugin_acala/pages/newUIRoutes.dart';
 import 'package:polkawallet_plugin_acala/pages/nftNew/nftPage.dart';
 import 'package:polkawallet_plugin_acala/service/graphql.dart';
@@ -272,7 +274,11 @@ class PluginAcala extends PolkawalletPlugin {
 
       AcalaEntry.route: (_) => AcalaEntry(this, keyring),
       //new ui
-      ...getNewUiRoutes(this, keyring)
+      ...getNewUiRoutes(this, keyring),
+
+      //multiply
+      MultiplyPage.route: (_) => MultiplyPage(this, keyring),
+      MultiplyCreatePage.route: (_) => MultiplyCreatePage(this, keyring),
     };
   }
 

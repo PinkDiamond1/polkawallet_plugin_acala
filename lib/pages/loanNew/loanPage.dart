@@ -200,6 +200,9 @@ class _LoanPageState extends State<LoanPage> {
         );
       }
       if (res != null) {
+        Future.delayed(Duration(milliseconds: 500), () {
+          _fetchData();
+        });
         Navigator.of(context).pop(res);
       }
     }
@@ -215,10 +218,10 @@ class _LoanPageState extends State<LoanPage> {
       final loans = widget.plugin.store!.loan.loans.values.toList();
       loans.retainWhere((loan) =>
           loan.debits > BigInt.zero || loan.collaterals > BigInt.zero);
-      final isDataLoading =
-          widget.plugin.store!.loan.loansLoading && loans.length == 0 ||
+      final isDataLoading = widget.plugin.store!.loan.loansLoading &&
+          (colorDanger.length == 0 ||
               // do not show loan card if collateralRatio was not calculated.
-              (loans.length > 0 && loans[0].collateralRatio <= 0);
+              (loans.length > 0 && loans[0].collateralRatio <= 0));
 
       /// The initial tab index will be from arguments or user's vault.
       int initialLoanTypeIndex = 0;
@@ -275,10 +278,15 @@ class _LoanPageState extends State<LoanPage> {
                               (data) => data.token!.symbol == e.token!.symbol);
                           LoanData? loan =
                               _loans.length > 0 ? _loans.first : null;
-                          Widget child = CreateVaultWidget(onPressed: () {
-                            Navigator.of(context).pushNamed(
+                          Widget child = CreateVaultWidget(onPressed: () async {
+                            final res = await Navigator.of(context).pushNamed(
                                 LoanCreatePage.route,
                                 arguments: e.token);
+                            if (res != null) {
+                              Future.delayed(Duration(milliseconds: 500), () {
+                                _fetchData();
+                              });
+                            }
                           });
                           if (loan != null) {
                             final balancePair =

@@ -11,6 +11,8 @@ interface ChainData {
 const chain_name_acala = "acala";
 const chain_name_polkadot = "polkadot";
 const chain_name_statemint = "statemint";
+const chain_name_parallel = "parallel";
+
 const relay_chain_token = "DOT";
 
 const chainNodes = {
@@ -20,6 +22,7 @@ const chainNodes = {
     "wss://statemint.api.onfinality.io/public-ws",
     "wss://statemint-rpc.dwellir.com",
   ],
+  [chain_name_parallel]: ["wss://parallel.api.onfinality.io/public-ws", "wss://rpc.parallel.fi", "wss://parallel-rpc.dwellir.com"],
 };
 const xcm_dest_weight_v2 = "5000000000";
 
@@ -92,6 +95,23 @@ async function _getTokenBalance(chain: string, address: string, tokenNameId: str
     const res = await api.query.assets.account(token.locations?.generalIndex, address);
     return {
       amount: res.toJSON()["balance"].toString(),
+      tokenNameId,
+      decimals: token.decimals,
+    };
+  }
+
+  if (chain.match(chain_name_parallel) && token.symbol !== "PARA") {
+    const tokenIds: Record<string, number> = {
+      ACA: 108,
+      AUSD: 104,
+      LDOT: 110,
+    };
+
+    if (!tokenIds[token.name]) return null;
+
+    const res = await api.query.assets.account(tokenIds[token.name], address);
+    return {
+      amount: (res as any).unwrapOrDefault().balance.toString(),
       tokenNameId,
       decimals: token.decimals,
     };
@@ -180,6 +200,29 @@ async function getTransferParams(
       module: "polkadotXcm",
       call: "limitedReserveTransferAssets",
       params: [{ V0: dst }, { V0: acc }, { V0: ass }, 0, "Unlimited"],
+    };
+  }
+
+  // parallel
+  if (chainFrom.name === chain_name_parallel) {
+    const tokenIds: Record<string, number> = {
+      PARA: 1,
+      ACA: 108,
+      AUSD: 104,
+      LDOT: 110,
+    };
+
+    if (typeof tokenIds[token.symbol] === "undefined") return;
+
+    const dst = {
+      parents: 1,
+      interior: { X2: [{ Parachain: chainTo.paraChainId }, { AccountId32: { id: u8aToHex(decodeAddress(addressTo)), network: "Any" } }] },
+    };
+
+    return {
+      module: "xTokens",
+      call: "transfer",
+      params: [tokenIds[token.symbol], amount, { V1: dst }, xcm_dest_weight_v2],
     };
   }
 

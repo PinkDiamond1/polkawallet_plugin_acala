@@ -11,6 +11,9 @@ interface ChainData {
 const chain_name_acala = "acala";
 const chain_name_polkadot = "polkadot";
 const chain_name_statemint = "statemint";
+const chain_name_parallel = "parallel";
+
+const relay_chain_token = "DOT";
 
 const chainNodes = {
   [chain_name_polkadot]: ["wss://rpc.polkadot.io", "wss://polkadot.api.onfinality.io/public-ws", "wss://polkadot-rpc.dwellir.com"],
@@ -19,6 +22,7 @@ const chainNodes = {
     "wss://statemint.api.onfinality.io/public-ws",
     "wss://statemint-rpc.dwellir.com",
   ],
+  [chain_name_parallel]: ["wss://parallel.api.onfinality.io/public-ws", "wss://rpc.parallel.fi", "wss://parallel-rpc.dwellir.com"],
 };
 const xcm_dest_weight_v2 = "5000000000";
 
@@ -87,10 +91,27 @@ async function _getTokenBalance(chain: string, address: string, tokenNameId: str
   if (!api) return null;
 
   const token = await wallet.getToken(tokenNameId);
-  if (chain.match(chain_name_statemint) && tokenNameId !== "DOT") {
+  if (chain.match(chain_name_statemint) && tokenNameId !== relay_chain_token) {
     const res = await api.query.assets.account(token.locations?.generalIndex, address);
     return {
       amount: res.toJSON()["balance"].toString(),
+      tokenNameId,
+      decimals: token.decimals,
+    };
+  }
+
+  if (chain.match(chain_name_parallel) && token.symbol !== "PARA") {
+    const tokenIds: Record<string, number> = {
+      ACA: 108,
+      AUSD: 104,
+      LDOT: 110,
+    };
+
+    if (!tokenIds[token.name]) return null;
+
+    const res = await api.query.assets.account(tokenIds[token.name], address);
+    return {
+      amount: (res as any).unwrapOrDefault().balance.toString(),
       tokenNameId,
       decimals: token.decimals,
     };
@@ -119,7 +140,7 @@ async function getTransferParams(
 
   const token = await wallet.getToken(tokenName);
 
-  // from karura
+  // from acala
   if (chainFrom.name === chain_name_acala) {
     let dst: any;
     if (chainTo.name === chain_name_polkadot) {
@@ -148,9 +169,9 @@ async function getTransferParams(
         };
   }
 
-  // from other chains to karura
-  // kusama
-  if (chainFrom.name === chain_name_polkadot && tokenName.toLowerCase() === "ksm") {
+  // from other chains to acala
+  // polkadot
+  if (chainFrom.name === chain_name_polkadot && tokenName === relay_chain_token) {
     const dst = { X1: { ParaChain: chainTo.paraChainId } };
     const acc = { X1: { AccountId32: { id: u8aToHex(decodeAddress(addressTo)), network: "Any" } } };
     const ass = [{ ConcreteFungible: { amount } }];
@@ -162,7 +183,7 @@ async function getTransferParams(
     };
   }
 
-  // statemine
+  // statemint
   if (chainFrom.name === chain_name_statemint && chainTo.name === chain_name_acala) {
     const dst = { X2: ["Parent", { ParaChain: chainTo.paraChainId }] };
     const acc = { X1: { AccountId32: { id: u8aToHex(decodeAddress(addressTo)), network: "Any" } } };
@@ -179,6 +200,29 @@ async function getTransferParams(
       module: "polkadotXcm",
       call: "limitedReserveTransferAssets",
       params: [{ V0: dst }, { V0: acc }, { V0: ass }, 0, "Unlimited"],
+    };
+  }
+
+  // parallel
+  if (chainFrom.name === chain_name_parallel) {
+    const tokenIds: Record<string, number> = {
+      PARA: 1,
+      ACA: 108,
+      AUSD: 104,
+      LDOT: 110,
+    };
+
+    if (typeof tokenIds[token.symbol] === "undefined") return;
+
+    const dst = {
+      parents: 1,
+      interior: { X2: [{ Parachain: chainTo.paraChainId }, { AccountId32: { id: u8aToHex(decodeAddress(addressTo)), network: "Any" } }] },
+    };
+
+    return {
+      module: "xTokens",
+      call: "transfer",
+      params: [tokenIds[token.symbol], amount, { V1: dst }, xcm_dest_weight_v2],
     };
   }
 

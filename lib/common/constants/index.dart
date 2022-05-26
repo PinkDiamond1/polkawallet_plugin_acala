@@ -5,10 +5,8 @@ const plugin_genesis_hash =
 const acala_price_decimals = 18;
 const acala_stable_coin = 'AUSD';
 const acala_stable_coin_view = 'aUSD';
-const acala_token_ren_btc = 'RENBTC';
-const acala_token_ren_btc_view = 'renBTC';
-const acala_token_polka_btc = 'POLKABTC';
-const acala_token_polka_btc_view = 'polkaBTC';
+const acala_token_lc_dot = 'LCDOT';
+const acala_token_lc_dot_view = 'lcDOT';
 
 const relay_chain_name = 'polkadot';
 const relay_chain_token_symbol = 'DOT';

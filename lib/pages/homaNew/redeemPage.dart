@@ -96,22 +96,28 @@ class _RedeemPageState extends State<RedeemPage> {
         }
       });
 
-      final lToken =
-          AssetsUtils.getBalanceFromTokenNameId(widget.plugin, 'L$stakeToken');
-      final token =
-          AssetsUtils.getBalanceFromTokenNameId(widget.plugin, stakeToken);
-      final swapRes = await widget.plugin.api!.swap.queryTokenSwapAmount(
-          input.toString(),
-          null,
-          [
-            {...lToken.currencyId!, 'decimals': lToken.decimals},
-            {...token.currencyId!, 'decimals': token.decimals},
-          ],
-          '0.1');
-      setState(() {
-        _swapAmount = swapRes.amount!;
-        isLoading = false;
-      });
+      try {
+        final lToken = AssetsUtils.getBalanceFromTokenNameId(
+            widget.plugin, 'L$stakeToken');
+        final token =
+            AssetsUtils.getBalanceFromTokenNameId(widget.plugin, stakeToken);
+        final swapRes = await widget.plugin.api!.swap.queryTokenSwapAmount(
+            input.toString(),
+            null,
+            [
+              {...lToken.currencyId!, 'decimals': lToken.decimals},
+              {...token.currencyId!, 'decimals': token.decimals},
+            ],
+            '0.1');
+        setState(() {
+          _swapAmount = swapRes.amount!;
+          isLoading = false;
+        });
+      } catch (err) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -392,6 +398,7 @@ class _RedeemPageState extends State<RedeemPage> {
                                   title: dic['homa.fast']!,
                                   value:
                                       "$_fastReceiveAmount $relay_chain_token_symbol",
+                                  margin: EdgeInsets.only(bottom: 14),
                                   describe: dic['homa.fast.describe']!,
                                   isSelect: _selectIndex == 0,
                                   ontap: () {
@@ -402,18 +409,21 @@ class _RedeemPageState extends State<RedeemPage> {
                                     }
                                   },
                                 ),
-                                UnStakeTypeItemWidget(
-                                  title: dic['dex.swap']!,
-                                  value:
-                                      "$_swapAmount $relay_chain_token_symbol",
-                                  margin: EdgeInsets.symmetric(vertical: 14),
-                                  describe: dic['dex.swap.describe']!,
-                                  isSelect: _selectIndex == 1,
-                                  ontap: () {
-                                    setState(() {
-                                      _selectIndex = 1;
-                                    });
-                                  },
+                                Visibility(
+                                  visible: _swapAmount > 0,
+                                  child: UnStakeTypeItemWidget(
+                                    title: dic['dex.swap']!,
+                                    value:
+                                        "$_swapAmount $relay_chain_token_symbol",
+                                    margin: EdgeInsets.only(bottom: 14),
+                                    describe: dic['dex.swap.describe']!,
+                                    isSelect: _selectIndex == 1,
+                                    ontap: () {
+                                      setState(() {
+                                        _selectIndex = 1;
+                                      });
+                                    },
+                                  ),
                                 ),
                                 UnStakeTypeItemWidget(
                                   title: dic['v3.homa.unbond']!,
@@ -467,6 +477,8 @@ class UnStakeTypeItemWidget extends StatelessWidget {
       {required this.title,
       required this.value,
       required this.describe,
+      this.valueColor,
+      this.subtitle,
       this.isSelect = false,
       this.margin,
       this.ontap,
@@ -475,6 +487,8 @@ class UnStakeTypeItemWidget extends StatelessWidget {
   final String title;
   final String value;
   final String describe;
+  final Color? valueColor;
+  final Widget? subtitle;
   final bool isSelect;
   final EdgeInsetsGeometry? margin;
   final Function()? ontap;
@@ -507,10 +521,12 @@ class UnStakeTypeItemWidget extends StatelessWidget {
                   Text(
                     value,
                     style: Theme.of(context).textTheme.headline4?.copyWith(
-                        fontWeight: FontWeight.bold, color: Colors.white),
+                        fontWeight: FontWeight.bold,
+                        color: valueColor ?? Colors.white),
                   )
                 ],
               ),
+              Visibility(child: subtitle ?? Container()),
               Container(
                   padding: EdgeInsets.only(top: 8),
                   margin: EdgeInsets.only(right: 60),

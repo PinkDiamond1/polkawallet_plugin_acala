@@ -28,7 +28,7 @@ class WalletApi {
 
   static Future<Map?> getRemoteConfig() async {
     final url = '$_configEndpoint/config/acalaConfig.json';
-    // final url = '$_endpoint/config/acalaConfig.json';
+    // final url = '$_endpoint/devConfiguration/config/acalaConfig.json';
     try {
       Response res = await get(Uri.parse(url));
       if (res == null) {

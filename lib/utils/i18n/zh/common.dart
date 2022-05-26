@@ -57,6 +57,8 @@ const Map<String, String> zhCommon = {
   'homa.brief': '存入 DOT 并生成 Liquid DOT (L-DOT). 获取 Staking 收益的同时保持流动性。',
   'nft.title': 'NFTs',
   'nft.brief': 'NFT 收藏品.',
+  'multiply.title': '多倍债仓',
+  'multiply.brief': '使用锁定质押所生成的aUSD 来最大化您对质押物敞口的最大倍数',
   'coming': '等待治理投票激活',
   'asset.lock': '锁定',
   'asset.reserve': '保留',

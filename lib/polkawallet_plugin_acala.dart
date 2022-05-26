@@ -18,6 +18,8 @@ import 'package:polkawallet_plugin_acala/pages/assets/transferDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/assets/transferPage.dart';
 import 'package:polkawallet_plugin_acala/pages/currencySelectPage.dart';
 import 'package:polkawallet_plugin_acala/pages/governanceNew/governancePage.dart';
+import 'package:polkawallet_plugin_acala/pages/multiply/multiplyCreatePage.dart';
+import 'package:polkawallet_plugin_acala/pages/multiply/multiplyPage.dart';
 import 'package:polkawallet_plugin_acala/pages/newUIRoutes.dart';
 import 'package:polkawallet_plugin_acala/pages/nftNew/nftPage.dart';
 import 'package:polkawallet_plugin_acala/service/graphql.dart';
@@ -38,6 +40,7 @@ import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
+import 'package:polkawallet_ui/pages/v3/xcmTxConfirmPage.dart';
 
 class PluginAcala extends PolkawalletPlugin {
   PluginAcala({String name = plugin_name_acala})
@@ -253,11 +256,10 @@ class PluginAcala extends PolkawalletPlugin {
   @override
   Map<String, WidgetBuilder> getRoutes(Keyring keyring) {
     return {
-      TxConfirmPage.route: (_) => TxConfirmPage(
-          this,
-          keyring,
-          _service!.getPassword as Future<String> Function(
-              BuildContext, KeyPairData)),
+      TxConfirmPage.route: (_) =>
+          TxConfirmPage(this, keyring, _service!.getPassword),
+      XcmTxConfirmPage.route: (_) =>
+          XcmTxConfirmPage(this, keyring, _service!.getPassword),
       CurrencySelectPage.route: (_) => CurrencySelectPage(this),
       AccountQrCodePage.route: (_) => AccountQrCodePage(this, keyring),
 
@@ -272,7 +274,11 @@ class PluginAcala extends PolkawalletPlugin {
 
       AcalaEntry.route: (_) => AcalaEntry(this, keyring),
       //new ui
-      ...getNewUiRoutes(this, keyring)
+      ...getNewUiRoutes(this, keyring),
+
+      //multiply
+      MultiplyPage.route: (_) => MultiplyPage(this, keyring),
+      MultiplyCreatePage.route: (_) => MultiplyCreatePage(this, keyring),
     };
   }
 

@@ -5,6 +5,7 @@ import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/earnPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homaNew/homaPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loanNew/loanPage.dart';
+import 'package:polkawallet_plugin_acala/pages/multiply/multiplyPage.dart';
 import 'package:polkawallet_plugin_acala/pages/swapNew/swapPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
@@ -83,17 +84,13 @@ class AcalaEntry extends StatelessWidget {
   }
 }
 
-class DefiWidget extends StatefulWidget {
+class DefiWidget extends StatelessWidget {
   DefiWidget(this.plugin);
 
   final PluginAcala plugin;
 
-  @override
-  _DefiWidgetState createState() => _DefiWidgetState();
-}
-
-class _DefiWidgetState extends State<DefiWidget> {
   final _liveModuleRoutes = {
+    'multiply': MultiplyPage.route,
     'loan': LoanPage.route,
     'swap': SwapPage.route,
     'earn': EarnPage.route,
@@ -104,19 +101,18 @@ class _DefiWidgetState extends State<DefiWidget> {
   Widget build(BuildContext context) {
     final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common');
     final modulesConfig =
-        widget.plugin.store?.setting.remoteConfig['modules'] ?? config_modules;
-    List liveModules = [];
-    if (modulesConfig.keys.length > 0) {
-      liveModules = modulesConfig.keys.toList().sublist(1);
-    }
+        plugin.store?.setting.remoteConfig['modules'] ?? config_modules;
+    List liveModules = _liveModuleRoutes.keys.toList();
 
-    liveModules.retainWhere((e) => modulesConfig[e]['visible'] && e != 'nft');
+    liveModules.retainWhere(
+        (e) => modulesConfig[e] == null || modulesConfig[e]['visible']);
 
     return SingleChildScrollView(
       physics: BouncingScrollPhysics(),
       child: Column(
         children: liveModules.map((e) {
-          final enabled = modulesConfig[e]['enabled'];
+          final enabled =
+              modulesConfig[e] == null ? true : modulesConfig[e]['enabled'];
           return GestureDetector(
             child: PluginItemCard(
               margin: EdgeInsets.only(bottom: 16),

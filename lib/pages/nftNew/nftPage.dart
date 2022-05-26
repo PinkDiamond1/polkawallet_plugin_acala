@@ -96,7 +96,6 @@ class _NftPageState extends State<NftPage> {
                             ? VideoPlayerContainer(imageUrl)
                             : Image.network(
                                 '$imageUrl?imageView2/2/w/400',
-                                fit: BoxFit.cover,
                               ),
                       ),
                       Align(
@@ -173,7 +172,7 @@ class _NftPageState extends State<NftPage> {
           title: Text('NFTs'),
           actions: [
             Padding(
-                padding: EdgeInsets.only(right: 8),
+                padding: EdgeInsets.only(right: 16),
                 child: PluginIconButton(
                   icon: Center(
                       child: Image.asset(
@@ -270,7 +269,9 @@ class _NftPageState extends State<NftPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              buildHeaderView(classes, list),
+                              Padding(
+                                  padding: EdgeInsets.only(top: 5),
+                                  child: buildHeaderView(classes, list)),
                               Container(
                                   padding: EdgeInsets.symmetric(horizontal: 16),
                                   child: Column(
@@ -307,6 +308,8 @@ class _NftPageState extends State<NftPage> {
                                                           .textTheme
                                                           .headline5
                                                           ?.copyWith(
+                                                              color:
+                                                                  Colors.black,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w600),
@@ -453,7 +456,7 @@ class _tabBarState extends State<_tabBar> {
         children: [
           Expanded(
               child: Container(
-                  constraints: BoxConstraints(maxHeight: _isOpen ? 1000 : 32),
+                  constraints: BoxConstraints(maxHeight: _isOpen ? 1000 : 28),
                   child: Wrap(
                       spacing: 10,
                       runSpacing: 10,
@@ -501,7 +504,7 @@ class _tabBarState extends State<_tabBar> {
                 });
               },
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                padding: EdgeInsets.symmetric(horizontal: 6),
                 child: Transform.rotate(
                     angle: _isOpen ? -pi : 0,
                     child: Icon(Icons.arrow_drop_down,

@@ -122,7 +122,6 @@ class _LoanTabBarWidgetState extends State<LoanTabBarWidget> {
                       child: Center(
                         child: Container(
                           margin: EdgeInsets.symmetric(horizontal: 18),
-                          padding: _index == index ? EdgeInsets.all(5) : null,
                           decoration: _index == index
                               ? BoxDecoration(
                                   color: Color(0xCCFFFFFF),
@@ -134,16 +133,17 @@ class _LoanTabBarWidgetState extends State<LoanTabBarWidget> {
                               Container(
                                   width: 48,
                                   height: 48,
-                                  child: widget.data[index].icon),
+                                  child:
+                                      Center(child: widget.data[index].icon)),
                               Container(
-                                  width: 48,
-                                  height: 48,
+                                  width: 34,
+                                  height: 34,
                                   decoration: BoxDecoration(
                                       color: _index == index
                                           ? Colors.transparent
                                           : Color(0x33000000),
                                       borderRadius: const BorderRadius.all(
-                                          Radius.circular(6))))
+                                          Radius.circular(34))))
                             ],
                           ),
                         ),

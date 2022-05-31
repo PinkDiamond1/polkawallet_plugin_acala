@@ -212,7 +212,7 @@ async function getTransferParams(
       LDOT: 110,
     };
 
-    if (typeof tokenIds[token.symbol] === "undefined") return;
+    if (typeof tokenIds[token.name] === "undefined") return;
 
     const dst = {
       parents: 1,
@@ -222,7 +222,7 @@ async function getTransferParams(
     return {
       module: "xTokens",
       call: "transfer",
-      params: [tokenIds[token.symbol], amount, { V1: dst }, xcm_dest_weight_v2],
+      params: [tokenIds[token.name], amount, { V1: dst }, xcm_dest_weight_v2],
     };
   }
 

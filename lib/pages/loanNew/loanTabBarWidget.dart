@@ -104,10 +104,7 @@ class _LoanTabBarWidgetState extends State<LoanTabBarWidget> {
             ),
             decoration: BoxDecoration(
                 color: Color(0x66FFFFFF),
-                borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(13),
-                    topRight: Radius.circular(13),
-                    bottomRight: Radius.circular(13))),
+                borderRadius: BorderRadius.circular(6)),
             child: ScrollablePositionedList.builder(
                 scrollDirection: Axis.horizontal,
                 itemScrollController: _scrollController,
@@ -129,6 +126,7 @@ class _LoanTabBarWidgetState extends State<LoanTabBarWidget> {
                                       const Radius.circular(10)))
                               : null,
                           child: Stack(
+                            alignment: Alignment.center,
                             children: [
                               Container(
                                   width: 48,

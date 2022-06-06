@@ -12,6 +12,7 @@ const chain_name_acala = "acala";
 const chain_name_polkadot = "polkadot";
 const chain_name_statemint = "statemint";
 const chain_name_parallel = "parallel";
+const chain_name_moon = "moonbeam";
 
 const relay_chain_token = "DOT";
 
@@ -23,6 +24,12 @@ const chainNodes = {
     "wss://statemint-rpc.dwellir.com",
   ],
   [chain_name_parallel]: ["wss://parallel.api.onfinality.io/public-ws", "wss://rpc.parallel.fi", "wss://parallel-rpc.dwellir.com"],
+  [chain_name_moon]: [
+    "wss://wss.api.moonbeam.network",
+    "wss://moonbeam.public.blastapi.io",
+    "wss://moonbeam-rpc.dwellir.com",
+    "wss://moonbeam.api.onfinality.io/public-ws",
+  ],
 };
 const xcm_dest_weight_v2 = "5000000000";
 
@@ -146,6 +153,25 @@ async function getTransferParams(
     if (chainTo.name === chain_name_polkadot) {
       // to relay-chain
       dst = { parents: 1, interior: { X1: { AccountId32: { id: u8aToHex(decodeAddress(addressTo)), network: "Any" } } } };
+    } else if (chainTo.name === chain_name_moon) {
+      // to moon beam
+      dst = {
+        parents: 1,
+        interior: {
+          X2: [{ Parachain: chainTo.paraChainId }, { AccountKey20: { key: addressTo, network: "Any" } }],
+        },
+      };
+      return token.name === "ACA" || token.name === "AUSD" || token.name === "fa://0"
+        ? {
+            module: "xTokens",
+            call: "transfer",
+            params: [token.toChainData(), amount, { V1: dst }, xcm_dest_weight_v2],
+          }
+        : {
+            module: "xTokens",
+            call: "transferMulticurrencies",
+            params: [[[token.toChainData(), amount], sendFee], 1, { V1: dst }, xcm_dest_weight_v2],
+          };
     } else {
       // to other parachains
       dst = {
@@ -212,7 +238,7 @@ async function getTransferParams(
       LDOT: 110,
     };
 
-    if (typeof tokenIds[token.symbol] === "undefined") return;
+    if (typeof tokenIds[token.name] === "undefined") return;
 
     const dst = {
       parents: 1,
@@ -222,7 +248,7 @@ async function getTransferParams(
     return {
       module: "xTokens",
       call: "transfer",
-      params: [tokenIds[token.symbol], amount, { V1: dst }, xcm_dest_weight_v2],
+      params: [tokenIds[token.name], amount, { V1: dst }, xcm_dest_weight_v2],
     };
   }
 

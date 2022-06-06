@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
@@ -271,7 +273,8 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
                                     _error2 = null;
                                   });
                                   if (error == null) {
-                                    _inputChage(titleTag, _lastController.text);
+                                    _inputChage(titleTag, _lastController.text,
+                                        isMax: true);
                                   }
                                   if (titleTag == dic['loan.payback']!) {
                                     final withdrawBalance =
@@ -418,7 +421,8 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
                         _error1 = error;
                       });
                       if (error == null) {
-                        _inputChage(titleTag, _firstController.text);
+                        _inputChage(titleTag, _firstController.text,
+                            isMax: true);
                       }
                       if (titleTag == dic['loan.payback']!) {
                         final withdrawBalance =
@@ -546,11 +550,23 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
     } else if (titleTag == dic['loan.withdraw']!) {
       symbol = _editorLoan!.token!.symbol!;
       decimals = _editorLoan!.token?.decimals ?? 12;
-      amount =
-          (_loan!.collaterals - _editorLoan!.requiredCollateral > BigInt.zero
-                  ? _loan!.collaterals - _editorLoan!.requiredCollateral
+      var requiredCollateral = BigInt.zero;
+      if (_loan!.price > BigInt.zero && _loan!.debitInUSD > BigInt.zero) {
+        final stableCoinDecimals = widget
+            .plugin.store!.assets.tokenBalanceMap[acala_stable_coin]!.decimals!;
+        final collateralDecimals = _loan!.token!.decimals!;
+        requiredCollateral = BigInt.from(_loan!.debitInUSD *
+            (_loan!.type.requiredCollateralRatio + Fmt.tokenInt("0.01", 18)) /
+            _loan!.price /
+            pow(10, stableCoinDecimals - collateralDecimals));
+      }
+      amount = (_editorLoan!.requiredCollateral == BigInt.zero
+              ? _loan!.collaterals
+              : _loan!.collaterals - _editorLoan!.requiredCollateral >
+                      BigInt.zero
+                  ? _loan!.collaterals - requiredCollateral
                   : BigInt.zero)
-              .toString();
+          .toString();
     }
     return TokenBalanceData(symbol: symbol, decimals: decimals, amount: amount);
   }
@@ -588,7 +604,7 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
     return null;
   }
 
-  void _inputChage(String titleTag, String v) {
+  void _inputChage(String titleTag, String v, {bool isMax = false}) {
     final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
     final balancePair = AssetsUtils.getBalancePairFromTokenNameId(
         widget.plugin, [_editorLoan!.token!.tokenNameId, acala_stable_coin]);
@@ -598,7 +614,11 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
         return;
       }
       final debits = Fmt.tokenInt(v, balancePair[1].decimals!);
-      _valueChange(debits: _loan!.debits - debits);
+      _valueChange(
+          debits: double.parse(v) ==
+                  Fmt.bigIntToDouble(_loan!.debits, balancePair[1].decimals!)
+              ? BigInt.zero
+              : _loan!.debits - debits);
     } else if (titleTag == dic['loan.mint']!) {
       if (v == "0") {
         _valueChange(debits: _loan!.debits);
@@ -619,7 +639,10 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
         return;
       }
       final collaterals = Fmt.tokenInt(v, balancePair[0].decimals!);
-      _valueChange(collaterals: _loan!.collaterals - collaterals);
+      _valueChange(
+          collaterals: isMax && _editorLoan!.debits == BigInt.zero
+              ? BigInt.zero
+              : _loan!.collaterals - collaterals);
     }
   }
 
@@ -702,7 +725,9 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
     final res = (await Navigator.of(context).pushNamed(TxConfirmPage.route,
         arguments: TxConfirmParams(
           module: 'honzon',
-          call: 'adjustLoan',
+          call: _loan!.debits == BigInt.zero
+              ? 'adjustLoan'
+              : 'adjustLoanByDebitValue',
           txTitle: "adjust Vault",
           txDisplayBold: params['detail'],
           params: params['params'],
@@ -716,7 +741,7 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
   Future<Map?> _getTxParams(LoanData loan, LoanData originalLoan) async {
     final collaterals = loan.collaterals - originalLoan.collaterals;
     final debitShares = loan.debitShares - originalLoan.debitShares;
-    final debits = loan.debits - originalLoan.debits;
+    var debits = loan.debits - originalLoan.debits;
 
     if (collaterals == BigInt.zero && debits == BigInt.zero) {
       return null;
@@ -780,7 +805,7 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
       );
     }
 
-    BigInt debitSubtract = debitShares;
+    var debitS = debitShares;
     if (debitShares != BigInt.zero) {
       var dicValue = 'loan.mint';
 
@@ -811,8 +836,8 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
                 '${dic!['loan.warn4']}$minimumDebitValue ${dic['loan.warn5']}')
             as Future<bool>);
         if (!canContinue) return null;
-        debitSubtract = loan.type.debitToDebitShare(
-            (loan.type.minimumDebitValue + BigInt.from(10000)));
+        debitS = loan.type.debitToDebitShare(
+            loan.type.minimumDebitValue + BigInt.from(10000));
       }
       if (debitShares < BigInt.zero) {
         dicValue = 'loan.payback';
@@ -834,14 +859,13 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
 
         final BigInt balanceStableCoin = Fmt.balanceInt(balancePair[1].amount) -
             Fmt.balanceInt(balancePair[1].minBalance);
-        if (balanceStableCoin <=
-            loan.type.debitShareToDebit(debitSubtract).abs()) {
-          debitSubtract = loan.type.debitToDebitShare(
+        if (balanceStableCoin <= debits.abs()) {
+          debitS = loan.type.debitToDebitShare(
               balanceStableCoin ~/ BigInt.from(1000000) - balanceStableCoin);
         }
       }
       detail[dic![dicValue]!] = Text(
-        '${Fmt.priceFloorBigInt(debitSubtract == debitShares ? debits : loan.type.debitShareToDebit(debitSubtract).abs(), balancePair[1].decimals!, lengthMax: 4)} ${PluginFmt.tokenView(acala_stable_coin)}',
+        '${Fmt.priceFloorBigInt(loan.type.debitShareToDebit(debitS).abs(), balancePair[1].decimals!, lengthMax: 4)} ${PluginFmt.tokenView(acala_stable_coin)}',
         style: Theme.of(context)
             .textTheme
             .headline1
@@ -854,7 +878,13 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
       'params': [
         loan.token!.currencyId,
         collaterals != BigInt.zero ? collaterals.toString() : 0,
-        debitSubtract.toString()
+        originalLoan.debits == BigInt.zero
+            ? debitS.toString()
+            : debitS == debitShares
+                ? loan.debits == BigInt.zero
+                    ? (debits + debits ~/ BigInt.from(10000)).toString()
+                    : debits.toString()
+                : loan.type.debitShareToDebit(debitS).toString()
       ]
     };
   }

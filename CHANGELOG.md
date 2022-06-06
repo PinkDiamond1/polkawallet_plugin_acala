@@ -1,3 +1,9 @@
+## [0.4.7] - 20220606
+- bump polkawallet_sdk v0.4.7.
+- xcm transfer est. fee fix.
+- ui update.
+- moonbeam/parallel xcm transfer support.
+
 ## [0.4.6] - 20220526
 - bump polkawallet_sdk v0.4.6.
 - new module browser.

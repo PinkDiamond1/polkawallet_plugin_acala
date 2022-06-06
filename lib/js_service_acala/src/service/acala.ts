@@ -107,7 +107,7 @@ async function getAllTokens(api: ApiPromise) {
       return {
         type: _getTokenType(e),
         tokenNameId: e.name,
-        symbol: e.symbol.toUpperCase(),
+        symbol: e.symbol,
         id: Object.values(e.toChainData())[0].toString(),
         src: e.locations,
         currencyId: e.toChainData(),

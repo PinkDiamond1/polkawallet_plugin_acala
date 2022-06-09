@@ -56,7 +56,7 @@ class _EarnLoanListState extends State<EarnLoanList> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchData();
     });
   }
@@ -125,7 +125,7 @@ class CollateralIncentiveList extends StatelessWidget {
       loyaltyBonus = incentives![token.tokenNameId]![0].deduction;
     }
 
-    final bestNumber = plugin!.store!.gov.bestNumber;
+    final bestNumber = plugin.store!.gov.bestNumber;
     var blockNumber;
     dexIncentiveLoyaltyEndBlock!.forEach((e) {
       if (token.tokenNameId == PluginFmt.getPool(plugin, e['pool'])) {
@@ -233,7 +233,7 @@ class CollateralIncentiveList extends StatelessWidget {
       );
     }
     final tokens = tokenIds
-        .map((e) => AssetsUtils.getBalanceFromTokenNameId(plugin!, e))
+        .map((e) => AssetsUtils.getBalanceFromTokenNameId(plugin, e))
         .toList();
 
     return ListView.builder(

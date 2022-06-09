@@ -70,7 +70,6 @@ class EarnDetailPage extends StatelessWidget {
           String lpAmountString = '~';
 
           final poolInfo = plugin.store!.earn.dexPoolInfoMap[pool.tokenNameId];
-          double leftPrice = 0, rightPrice = 0;
 
           if (poolInfo != null) {
             issuance = poolInfo.issuance;
@@ -85,14 +84,6 @@ class EarnDetailPage extends StatelessWidget {
             final lpAmount2 = Fmt.bigIntToDouble(
                     poolInfo.amountRight, balancePair[1].decimals!) *
                 poolShare;
-
-            leftPrice = Fmt.bigIntToDouble(
-                    poolInfo.amountLeft, balancePair[0].decimals!) *
-                AssetsUtils.getMarketPrice(plugin, balancePair[0].symbol ?? '');
-
-            rightPrice = Fmt.bigIntToDouble(
-                    poolInfo.amountRight, balancePair[1].decimals!) *
-                AssetsUtils.getMarketPrice(plugin, balancePair[1].symbol ?? '');
 
             lpAmountString =
                 '${Fmt.priceFloor(lpAmount)} ${PluginFmt.tokenView(balancePair[0].symbol)} + ${Fmt.priceFloor(lpAmount2)} ${PluginFmt.tokenView(balancePair[1].symbol)}';

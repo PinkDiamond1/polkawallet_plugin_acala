@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/swapNew/bootstrapPage.dart';
@@ -178,7 +177,7 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       final params = ModalRoute.of(context)!.settings.arguments as Map;
 
       final loan = widget.plugin.store!.loan.loans[params["tokenNameId"]];
@@ -200,7 +199,6 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
   @override
   Widget build(BuildContext context) {
     var dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
-    var assetDic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common');
 
     final params = ModalRoute.of(context)!.settings.arguments as Map;
     final balancePair = AssetsUtils.getBalancePairFromTokenNameId(

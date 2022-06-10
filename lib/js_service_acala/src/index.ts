@@ -34,7 +34,7 @@ async function connect(nodes: string[]) {
       await res.isReady;
       if (!(<any>window).api) {
         (<any>window).api = res;
-        // (<any>window).apiWallet = new WalletPromise(res);
+        // console.log(res);
         const url = nodes[(<any>res)._options.provider.__private_29_endpointIndex];
         send("log", `${url} wss connected success`);
         resolve(url);

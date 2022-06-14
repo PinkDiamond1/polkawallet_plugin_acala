@@ -284,7 +284,6 @@ class CollateralIncentiveList extends StatelessWidget {
                   .toInt()));
 
           return RoundedPluginCard(
-            borderRadius: const BorderRadius.all(const Radius.circular(14)),
             margin: EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Column(
               children: [
@@ -293,8 +292,8 @@ class CollateralIncentiveList extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(14),
-                        topRight: Radius.circular(14)),
+                        topLeft: Radius.circular(8),
+                        topRight: Radius.circular(8)),
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 15),
                   child: Row(
@@ -446,8 +445,8 @@ class CollateralIncentiveList extends StatelessWidget {
                     padding: EdgeInsets.symmetric(vertical: 13, horizontal: 8),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(14),
-                          bottomRight: Radius.circular(14)),
+                          bottomLeft: Radius.circular(8),
+                          bottomRight: Radius.circular(8)),
                     ),
                     child: Row(
                       children: [

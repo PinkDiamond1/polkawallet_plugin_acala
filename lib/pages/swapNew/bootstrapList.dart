@@ -299,7 +299,6 @@ class _BootStrapCard extends StatelessWidget {
     return RoundedPluginCard(
       margin: EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.symmetric(vertical: 16),
-      borderRadius: const BorderRadius.all(const Radius.circular(14)),
       child: Column(
         children: [
           Padding(
@@ -510,7 +509,6 @@ class _BootStrapCardEnabled extends StatelessWidget {
     return RoundedPluginCard(
       margin: EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.symmetric(vertical: 16),
-      borderRadius: const BorderRadius.all(const Radius.circular(14)),
       child: Column(
         children: [
           Padding(

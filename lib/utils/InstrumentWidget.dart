@@ -6,6 +6,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/SkaletonList.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class InstrumentWidget extends StatefulWidget {
   InstrumentWidget(this.datas, this.onSwitchChange, this.onSwitchHideBalance,
@@ -76,7 +77,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                               : "",
                           style: TextStyle(
                               fontFamily: "TitilliumWeb",
-                              fontSize: 14,
+                              fontSize: UI.getTextSize(14, context),
                               fontWeight: FontWeight.w400,
                               color: Theme.of(context)
                                   .textSelectionTheme
@@ -92,7 +93,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                                   : "${widget.datas[index].currencySymbol}${Fmt.priceFloorFormatter(widget.datas[index].sumValue, lengthMax: widget.datas[index].lengthMax)}",
                               style: TextStyle(
                                   fontFamily: "SF_Pro",
-                                  fontSize: 18,
+                                  fontSize: UI.getTextSize(18, context),
                                   fontWeight: FontWeight.w600,
                                   color: Theme.of(context)
                                       .textSelectionTheme
@@ -225,7 +226,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                               e.name,
                               style: TextStyle(
                                   fontFamily: "TitilliumWeb",
-                                  fontSize: 12,
+                                  fontSize: UI.getTextSize(12, context),
                                   fontWeight: FontWeight.w400,
                                   color: Theme.of(context)
                                       .textSelectionTheme
@@ -239,7 +240,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                               : "${widget.datas[index].currencySymbol}${Fmt.priceFloorFormatter(e.value, lengthMax: widget.datas[index].lengthMax)}",
                           style: TextStyle(
                               fontFamily: "TitilliumWeb",
-                              fontSize: 12,
+                              fontSize: UI.getTextSize(12, context),
                               fontWeight: FontWeight.w400,
                               color: Theme.of(context)
                                   .textSelectionTheme

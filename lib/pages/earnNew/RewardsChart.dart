@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class RewardsChart extends StatelessWidget {
   final List<FlSpot> seriesList;
@@ -134,14 +135,14 @@ class RewardsChart extends StatelessWidget {
                         text: "${DateFormat.yMd().format(time.toLocal())}\n",
                         style: Theme.of(context).textTheme.headline5?.copyWith(
                             color: Colors.white,
-                            fontSize: 10,
+                            fontSize: UI.getTextSize(10, context),
                             fontWeight: FontWeight.w600)),
                     TextSpan(
                         text:
                             "${Fmt.priceFloorFormatter(e.y / yBase, lengthFixed: 4)}",
                         style: Theme.of(context).textTheme.headline5?.copyWith(
                             color: Colors.white,
-                            fontSize: 10,
+                            fontSize: UI.getTextSize(10, context),
                             fontWeight: FontWeight.w600)),
                   ]);
                 }).toList();
@@ -156,7 +157,7 @@ class RewardsChart extends StatelessWidget {
               .headline5
               ?.copyWith(
                   color: Colors.white,
-                  fontSize: 10,
+                  fontSize: UI.getTextSize(10, context),
                   fontWeight: FontWeight.w600),
           getTitles: (value) {
             int b = xBase ~/ 2;
@@ -185,7 +186,7 @@ class RewardsChart extends StatelessWidget {
               .headline5
               ?.copyWith(
                   color: Colors.white,
-                  fontSize: 10,
+                  fontSize: UI.getTextSize(10, context),
                   fontWeight: FontWeight.w600),
           getTitles: (value) {
             return Fmt.priceFloorFormatter(value / yBase, lengthFixed: 1);

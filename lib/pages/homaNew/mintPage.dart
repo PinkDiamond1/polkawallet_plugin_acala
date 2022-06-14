@@ -17,6 +17,7 @@ import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class MintPage extends StatefulWidget {
   MintPage(this.plugin, this.keyring);
@@ -308,14 +309,14 @@ class _MintPageState extends State<MintPage> {
                       dic['v3.homa.minStakingAmount']!,
                       style: Theme.of(context).textTheme.headline4?.copyWith(
                           color: Colors.white,
-                          fontSize: 12,
+                          fontSize: UI.getTextSize(12, context),
                           fontWeight: FontWeight.w600),
                     ),
                     Text(
                       "$minStake $relay_chain_token_symbol",
                       style: Theme.of(context).textTheme.headline4?.copyWith(
                           color: Colors.white,
-                          fontSize: 12,
+                          fontSize: UI.getTextSize(12, context),
                           fontWeight: FontWeight.w600),
                     )
                   ],

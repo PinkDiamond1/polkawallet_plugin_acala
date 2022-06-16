@@ -35,7 +35,14 @@ class LoanTxDetailPage extends StatelessWidget {
     final List<TxDetailInfoItem> items = [
       TxDetailInfoItem(
         label: 'Event',
-        content: Text(tx.event!, style: amountStyle),
+        content: Text(tx.event!,
+            style: tx.isSuccess == null
+                ? TextStyle(
+                    fontFamily: "TitilliumWeb-SemiBold",
+                    fontSize: UI.getTextSize(30, context),
+                    fontWeight: FontWeight.w600,
+                    color: PluginColorsDark.headline1)
+                : amountStyle),
       ),
       TxDetailInfoItem(
         label: dic['txs.action'],

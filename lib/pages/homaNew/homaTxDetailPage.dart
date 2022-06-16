@@ -44,7 +44,7 @@ class HomaTxDetailPage extends StatelessWidget {
         content: Text(tx.action!,
             style: tx.isSuccess == null
                 ? TextStyle(
-                    fontFamily: "TitilliumWeb-SemiBold",
+                    fontFamily: UI.getFontFamily('TitilliumWeb', context),
                     fontSize: UI.getTextSize(30, context),
                     fontWeight: FontWeight.w600,
                     color: PluginColorsDark.headline1)

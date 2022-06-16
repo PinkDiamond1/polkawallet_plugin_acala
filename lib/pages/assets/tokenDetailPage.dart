@@ -302,7 +302,7 @@ Widget priceItemBuild(Widget icon, String title, String price, Color color,
                 color: color,
                 fontSize: UI.getTextSize(12, context),
                 fontWeight: FontWeight.w600,
-                fontFamily: "TitilliumWeb"),
+                fontFamily: UI.getFontFamily('TitilliumWeb', context)),
           ),
           Expanded(
             child: Text(
@@ -312,7 +312,7 @@ Widget priceItemBuild(Widget icon, String title, String price, Color color,
                   color: color,
                   fontSize: UI.getTextSize(12, context),
                   fontWeight: FontWeight.w400,
-                  fontFamily: "TitilliumWeb"),
+                  fontFamily: UI.getFontFamily('TitilliumWeb', context)),
             ),
           )
         ],
@@ -395,7 +395,8 @@ class BalanceCard extends StatelessWidget {
                             fontSize: UI.getTextSize(20, context),
                             letterSpacing: -0.8,
                             fontWeight: FontWeight.w600,
-                            fontFamily: "TitilliumWeb"),
+                            fontFamily:
+                                UI.getFontFamily('TitilliumWeb', context)),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Visibility(

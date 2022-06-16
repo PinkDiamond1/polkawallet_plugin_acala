@@ -44,7 +44,7 @@ Map<String, WidgetBuilder> getNewUiRoutes(PluginAcala plugin, Keyring keyring) {
                 child: Builder(
                   builder: (_) => HomaHistoryPage(plugin, keyring),
                 ),
-                uri: GraphQLConfig['httpUri']!,
+                uri: GraphQLConfig['defiUri']!,
               ),
           HomaTxDetailPage.route: (_) => HomaTxDetailPage(plugin, keyring),
 
@@ -55,7 +55,7 @@ Map<String, WidgetBuilder> getNewUiRoutes(PluginAcala plugin, Keyring keyring) {
                 child: Builder(
                   builder: (_) => LoanHistoryPage(plugin, keyring),
                 ),
-                uri: GraphQLConfig['httpUri']!,
+                uri: GraphQLConfig['defiUri']!,
               ),
           LoanDepositPage.route: (_) => LoanDepositPage(plugin, keyring),
           LoanTxDetailPage.route: (_) => LoanTxDetailPage(plugin, keyring),
@@ -67,7 +67,7 @@ Map<String, WidgetBuilder> getNewUiRoutes(PluginAcala plugin, Keyring keyring) {
                 child: Builder(
                   builder: (_) => SwapHistoryPage(plugin, keyring),
                 ),
-                uri: GraphQLConfig['httpUri']!,
+                uri: GraphQLConfig['defiUri']!,
               ),
           BootstrapPage.route: (_) => BootstrapPage(plugin, keyring),
           SwapDetailPage.route: (_) => SwapDetailPage(plugin, keyring),
@@ -81,13 +81,13 @@ Map<String, WidgetBuilder> getNewUiRoutes(PluginAcala plugin, Keyring keyring) {
                 child: Builder(
                   builder: (_) => EarnHistoryPage(plugin, keyring),
                 ),
-                uri: GraphQLConfig['httpUri']!,
+                uri: GraphQLConfig['defiUri']!,
               ),
           EarnDetailPage.route: (_) => ClientProvider(
                 child: Builder(
                   builder: (_) => EarnDetailPage(plugin, keyring),
                 ),
-                uri: GraphQLConfig['httpUri']!,
+                uri: GraphQLConfig['defiUri']!,
               ),
           LPStakePage.route: (_) => LPStakePage(plugin, keyring),
           InviteFriendsPage.route: (_) => InviteFriendsPage(plugin, keyring),

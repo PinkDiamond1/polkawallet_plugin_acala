@@ -23,10 +23,8 @@ const transferQuery = r'''
 ''';
 const loanQuery = r'''
   query ($account: String) {
-    dexActions(filter: {
-      senderId: {equalTo: $account},
-      section: "honzon"
-    }, orderBy: TIMESTAMP_DESC, first: 20) {
+    loanActions(filter: {accountId: {equalTo: $account}},
+      orderBy: TIMESTAMP_DESC, first: 20) {
       nodes {
         id
         type

@@ -42,7 +42,14 @@ class SwapDetailPage extends StatelessWidget {
     final List<TxDetailInfoItem> items = [
       TxDetailInfoItem(
         label: 'Event',
-        content: Text(tx.action!, style: amountStyle),
+        content: Text(tx.action!,
+            style: tx.isSuccess == null
+                ? TextStyle(
+                    fontFamily: "TitilliumWeb-SemiBold",
+                    fontSize: UI.getTextSize(30, context),
+                    fontWeight: FontWeight.w600,
+                    color: PluginColorsDark.headline1)
+                : amountStyle),
       ),
       TxDetailInfoItem(
         label: dic['txs.action'],

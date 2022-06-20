@@ -36,9 +36,9 @@ const node_list = [
     'ss58': ss58_prefix_acala,
     'endpoint': 'wss://acala-polkadot.api.onfinality.io/public-ws',
   },
-  {
-    'name': 'Acala (acala dev node)',
-    'ss58': ss58_prefix_acala,
-    'endpoint': 'ws://121.43.163.151:10944',
-  },
+  // {
+  //   'name': 'Acala (acala dev node)',
+  //   'ss58': ss58_prefix_acala,
+  //   'endpoint': 'wss://kusama-1.polkawallet.io:3000',
+  // },
 ];

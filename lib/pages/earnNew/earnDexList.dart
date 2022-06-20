@@ -307,7 +307,7 @@ class _EarnDexListState extends State<EarnDexList> {
                       Container(
                         margin: EdgeInsets.only(right: 12),
                         child: Text(
-                          dic!['earn.staked']!,
+                          dic['earn.staked']!,
                           style: Theme.of(context)
                               .textTheme
                               .headline4

@@ -42,10 +42,9 @@ class _EarnDexListState extends State<EarnDexList> {
     await widget.plugin.service!.earn.updateAllDexPoolInfo();
 
     widget.plugin.service!.gov.updateBestNumber();
+    _loading = false;
     if (mounted) {
-      setState(() {
-        _loading = false;
-      });
+      setState(() {});
 
       _timer = Timer(Duration(seconds: 30), () {
         _fetchData();
@@ -116,7 +115,7 @@ class _EarnDexListState extends State<EarnDexList> {
 
           if (dexPools[i].provisioning == null &&
               (incentive > 0 || userReward > 0)) {
-            if (_search.isNotEmpty) {
+            if (_search.trim().isNotEmpty) {
               final balancePair = dexPools[i]
                   .tokens!
                   .map((e) =>
@@ -126,7 +125,7 @@ class _EarnDexListState extends State<EarnDexList> {
               var tokenSymbol = balancePair.map((e) => e.symbol).join('-');
               if (!PluginFmt.tokenView(tokenSymbol)
                   .toUpperCase()
-                  .contains(_search.toUpperCase())) {
+                  .contains(_search.trim().toUpperCase())) {
                 continue;
               }
             }
@@ -279,6 +278,11 @@ class _EarnDexListState extends State<EarnDexList> {
                   onSubmitted: (value) {
                     setState(() {
                       _search = value;
+                    });
+                  },
+                  onChanged: (value) {
+                    setState(() {
+                      _search = _controller.text;
                     });
                   },
                 )),

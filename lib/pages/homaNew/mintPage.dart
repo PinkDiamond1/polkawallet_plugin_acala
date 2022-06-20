@@ -234,14 +234,14 @@ class _MintPageState extends State<MintPage> {
 
         final minStake = widget.plugin.store!.homa.env!.mintThreshold;
 
-        final baseApy = '14.5%';
+        final baseApy = 14.78;
         bool isRewardsOpen = false;
         double rewardApr = 0;
         final rewards = widget
             .plugin.store!.earn.incentives.loans?['L$relay_chain_token_symbol'];
         if ((rewards ?? []).length > 0) {
           rewards?.forEach((e) {
-            if (e.tokenNameId == acala_stable_coin && (e.amount ?? 0) > 0) {
+            if ((e.amount ?? 0) > 0) {
               isRewardsOpen = true;
               rewardApr = e.apr ?? 0;
             }
@@ -348,11 +348,11 @@ class _MintPageState extends State<MintPage> {
                               UnStakeTypeItemWidget(
                                 title: dic['v3.homa.stake.more']!,
                                 value:
-                                    "${dic['v3.homa.stake.apy.total']!} ${(14.5 + rewardApr * 100).toStringAsFixed(2)}%",
+                                    "${dic['v3.homa.stake.apy.total']!} ${(baseApy + rewardApr * 100).toStringAsFixed(2)}%",
                                 subtitle: Container(
                                   margin: EdgeInsets.only(top: 8),
                                   child: Text(
-                                    '(${dic['v3.homa.stake.apy.protocol']} $baseApy + ${dic['v3.homa.stake.apy.reward']} ${(rewardApr * 100).toStringAsFixed(2)}%)',
+                                    '(${dic['v3.homa.stake.apy.protocol']} ${baseApy.toStringAsFixed(2)}% + ${dic['v3.homa.stake.apy.reward']} ${(rewardApr * 100).toStringAsFixed(2)}%)',
                                     style: Theme.of(context)
                                         .textTheme
                                         .headline6
@@ -372,11 +372,11 @@ class _MintPageState extends State<MintPage> {
                               UnStakeTypeItemWidget(
                                 title: dic['v3.homa.stake']!,
                                 value:
-                                    "${dic['v3.homa.stake.apy.total']!} $baseApy",
+                                    "${dic['v3.homa.stake.apy.total']!} ${baseApy.toStringAsFixed(2)}%",
                                 subtitle: Container(
                                   margin: EdgeInsets.only(top: 8),
                                   child: Text(
-                                    '(${dic['v3.homa.stake.apy.protocol']} $baseApy)',
+                                    '(${dic['v3.homa.stake.apy.protocol']} ${baseApy.toStringAsFixed(2)}%)',
                                     style: Theme.of(context)
                                         .textTheme
                                         .headline6

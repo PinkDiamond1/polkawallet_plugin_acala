@@ -35,6 +35,9 @@ class _EarnDexListState extends State<EarnDexList> {
   bool _partake = false;
   String _sort = 'earn.dex.sort0';
 
+  TextEditingController _controller = TextEditingController();
+  String _search = '';
+
   Future<void> _fetchData() async {
     await widget.plugin.service!.earn.updateAllDexPoolInfo();
 
@@ -113,6 +116,20 @@ class _EarnDexListState extends State<EarnDexList> {
 
           if (dexPools[i].provisioning == null &&
               (incentive > 0 || userReward > 0)) {
+            if (_search.isNotEmpty) {
+              final balancePair = dexPools[i]
+                  .tokens!
+                  .map((e) =>
+                      AssetsUtils.tokenDataFromCurrencyId(widget.plugin, e))
+                  .toList();
+
+              var tokenSymbol = balancePair.map((e) => e.symbol).join('-');
+              if (!PluginFmt.tokenView(tokenSymbol)
+                  .toUpperCase()
+                  .contains(_search.toUpperCase())) {
+                continue;
+              }
+            }
             if (dexPools[i].tokenNameId!.indexOf("ACA") >= 0) {
               datas.add(dexPools[i]);
             } else {
@@ -233,6 +250,52 @@ class _EarnDexListState extends State<EarnDexList> {
             BigInt.zero);
       }
       return Column(children: [
+        Container(
+            margin: EdgeInsets.only(left: 16, right: 16, bottom: 14, top: 5),
+            padding: EdgeInsets.only(left: 8, top: 4, bottom: 5, right: 8),
+            decoration: BoxDecoration(
+                color: PluginColorsDark.cardColor,
+                borderRadius: BorderRadius.all(Radius.circular(6))),
+            child: Row(
+              children: [
+                Expanded(
+                    child: TextField(
+                  controller: _controller,
+                  textInputAction: TextInputAction.search,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline5
+                      ?.copyWith(color: PluginColorsDark.headline1),
+                  decoration: InputDecoration(
+                      isDense: true,
+                      hintText: dic!['earn.dex.searchPools'],
+                      border: InputBorder.none,
+                      hintStyle: Theme.of(context)
+                          .textTheme
+                          .headline5
+                          ?.copyWith(
+                              color: PluginColorsDark.headline1.withAlpha(127)),
+                      contentPadding: EdgeInsets.zero),
+                  onSubmitted: (value) {
+                    setState(() {
+                      _search = value;
+                    });
+                  },
+                )),
+                GestureDetector(
+                  child: Icon(
+                    Icons.search,
+                    color: Color(0xFF979797),
+                    size: 16,
+                  ),
+                  onTap: () {
+                    setState(() {
+                      _search = _controller.text;
+                    });
+                  },
+                )
+              ],
+            )),
         Padding(
             padding: EdgeInsets.only(left: 16, right: 16),
             child: Row(
@@ -242,15 +305,14 @@ class _EarnDexListState extends State<EarnDexList> {
                   child: Row(
                     children: [
                       Container(
-                        margin: EdgeInsets.only(left: 16, right: 4),
+                        margin: EdgeInsets.only(right: 12),
                         child: Text(
                           dic!['earn.staked']!,
                           style: Theme.of(context)
                               .textTheme
-                              .headline5
+                              .headline4
                               ?.copyWith(
-                                  fontFamily:
-                                      UI.getFontFamily('SF_Pro', context),
+                                  fontWeight: FontWeight.bold,
                                   color: PluginColorsDark.headline1),
                         ),
                       ),
@@ -258,6 +320,7 @@ class _EarnDexListState extends State<EarnDexList> {
                           height: 20,
                           child: v3.CupertinoSwitch(
                             value: _partake,
+                            isPlugin: true,
                             onChanged: (v) {
                               setState(() {
                                 _partake = v;

@@ -24,7 +24,7 @@ async function connect(nodes: string[]) {
   (<any>window).api = undefined;
 
   return new Promise(async (resolve, reject) => {
-    const wsProvider = new WsProvider(nodes);
+    const wsProvider = new WsProvider(nodes, false);
     try {
       const res = new ApiPromise(
         options({

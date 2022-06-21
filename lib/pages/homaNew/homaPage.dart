@@ -15,6 +15,7 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/connectionChecker.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginIconButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
@@ -239,7 +240,8 @@ class _HomaPageState extends State<HomaPage> {
                   color: Color(0xFF17161F),
                 ),
               ),
-            )
+            ),
+            PluginAccountInfoAction(widget.keyring)
           ],
         ),
         body: Container(

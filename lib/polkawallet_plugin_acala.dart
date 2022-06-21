@@ -1,6 +1,5 @@
 library polkawallet_plugin_acala;
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -62,7 +61,7 @@ class PluginAcala extends PolkawalletPlugin {
           isTestNet: false,
           isXCMSupport: false,
           parachainId: '2000',
-          jsCodeVersion: 32001,
+          jsCodeVersion: 32901,
         );
 
   @override

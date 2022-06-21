@@ -10,6 +10,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTxDetail.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class SwapDetailPage extends StatelessWidget {
   SwapDetailPage(this.plugin, this.keyring);
@@ -30,7 +31,7 @@ class SwapDetailPage extends StatelessWidget {
     final tokenLP = '$token0-$token1 LP';
 
     final amountStyle = TextStyle(
-        fontSize: 16,
+        fontSize: UI.getTextSize(16, context),
         fontWeight: FontWeight.bold,
         color: PluginColorsDark.headline1);
 
@@ -41,7 +42,14 @@ class SwapDetailPage extends StatelessWidget {
     final List<TxDetailInfoItem> items = [
       TxDetailInfoItem(
         label: 'Event',
-        content: Text(tx.action!, style: amountStyle),
+        content: Text(tx.action!,
+            style: tx.isSuccess == null
+                ? TextStyle(
+                    fontFamily: UI.getFontFamily('TitilliumWeb', context),
+                    fontSize: UI.getTextSize(30, context),
+                    fontWeight: FontWeight.w600,
+                    color: PluginColorsDark.headline1)
+                : amountStyle),
       ),
       TxDetailInfoItem(
         label: dic['txs.action'],

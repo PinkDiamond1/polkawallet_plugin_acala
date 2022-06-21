@@ -11,6 +11,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTxDetail.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class LoanTxDetailPage extends StatelessWidget {
   LoanTxDetailPage(this.plugin, this.keyring);
@@ -24,7 +25,7 @@ class LoanTxDetailPage extends StatelessWidget {
     final Map<String, String> dic =
         I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
     final amountStyle = TextStyle(
-        fontSize: 16,
+        fontSize: UI.getTextSize(16, context),
         fontWeight: FontWeight.bold,
         color: PluginColorsDark.headline1);
 
@@ -34,7 +35,14 @@ class LoanTxDetailPage extends StatelessWidget {
     final List<TxDetailInfoItem> items = [
       TxDetailInfoItem(
         label: 'Event',
-        content: Text(tx.event!, style: amountStyle),
+        content: Text(tx.event!,
+            style: tx.isSuccess == null
+                ? TextStyle(
+                    fontFamily: UI.getFontFamily('TitilliumWeb', context),
+                    fontSize: UI.getTextSize(30, context),
+                    fontWeight: FontWeight.w600,
+                    color: PluginColorsDark.headline1)
+                : amountStyle),
       ),
       TxDetailInfoItem(
         label: dic['txs.action'],

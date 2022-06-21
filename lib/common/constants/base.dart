@@ -6,5 +6,6 @@ const ss58_prefix_acala = 10;
 
 const GraphQLConfig = {
   'httpUri':
-      'https://api.subquery.network/sq/AcalaNetwork/acala-transfer-history'
+      'https://api.subquery.network/sq/AcalaNetwork/acala-transfer-history',
+  'defiUri': 'https://api.subquery.network/sq/AcalaNetwork/acala'
 };

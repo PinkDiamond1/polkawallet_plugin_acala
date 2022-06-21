@@ -137,7 +137,7 @@ class _GovernancePageState extends State<GovernancePage> {
       widget.plugin.service!.gov.subscribeBestNumber();
     }
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _refreshKey.currentState!.show();
     });
   }
@@ -340,7 +340,8 @@ class _GovernancePageState extends State<GovernancePage> {
                                               .headline3
                                               ?.copyWith(
                                                   color: Colors.white,
-                                                  fontSize: 22,
+                                                  fontSize: UI.getTextSize(
+                                                      22, context),
                                                   fontWeight: FontWeight.bold),
                                         ),
                                         PluginInfoItem(
@@ -365,7 +366,8 @@ class _GovernancePageState extends State<GovernancePage> {
                                               .headline3
                                               ?.copyWith(
                                                   color: Colors.white,
-                                                  fontSize: 22,
+                                                  fontSize: UI.getTextSize(
+                                                      22, context),
                                                   fontWeight: FontWeight.bold),
                                         )
                                       ],
@@ -471,7 +473,7 @@ class _GovernancePageState extends State<GovernancePage> {
                     padding: EdgeInsets.only(left: 16, right: 16, top: 20),
                     child: StickyHeader(
                         header: Container(
-                            color: Color.fromARGB(255, 37, 39, 44),
+                            color: Colors.transparent,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -596,7 +598,8 @@ class _GovernancePageState extends State<GovernancePage> {
                                                 .textTheme
                                                 .headline5
                                                 ?.copyWith(
-                                                    fontSize: 12,
+                                                    fontSize: UI.getTextSize(
+                                                        12, context),
                                                     color: Colors.white),
                                           ),
                                           Padding(
@@ -611,7 +614,10 @@ class _GovernancePageState extends State<GovernancePage> {
                                                         .textTheme
                                                         .headline5
                                                         ?.copyWith(
-                                                            fontSize: 12,
+                                                            fontSize:
+                                                                UI.getTextSize(
+                                                                    12,
+                                                                    context),
                                                             color:
                                                                 Colors.white)),
                                                 Row(
@@ -665,13 +671,15 @@ class _GovernancePageState extends State<GovernancePage> {
                                                   .textTheme
                                                   .headline5
                                                   ?.copyWith(
-                                                      fontSize: 12,
+                                                      fontSize: UI.getTextSize(
+                                                          12, context),
                                                       color: Colors.white),
                                               contentStyle: Theme.of(context)
                                                   .textTheme
                                                   .headline5
                                                   ?.copyWith(
-                                                      fontSize: 12,
+                                                      fontSize: UI.getTextSize(
+                                                          12, context),
                                                       color: Colors.white),
                                             ),
                                           ),

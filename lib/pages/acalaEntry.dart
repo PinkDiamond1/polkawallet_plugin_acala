@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/earnPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homaNew/homaPage.dart';
@@ -13,6 +11,7 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginItemCard.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class AcalaEntry extends StatelessWidget {
   AcalaEntry(this.plugin, this.keyring);
@@ -71,10 +70,8 @@ class AcalaEntry extends StatelessWidget {
               alignment: Alignment.topCenter,
               child: Text(
                 "Under Construction",
-                style: Theme.of(context)
-                    .textTheme
-                    .headline1!
-                    .copyWith(fontSize: 36, color: Colors.white),
+                style: Theme.of(context).textTheme.headline1!.copyWith(
+                    fontSize: UI.getTextSize(36, context), color: Colors.white),
               ),
             )
           ],

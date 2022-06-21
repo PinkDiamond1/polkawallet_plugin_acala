@@ -2,6 +2,11 @@ import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 
 const node_list = [
   {
+    'name': 'Acala (via Dwellir)',
+    'ss58': ss58_prefix_acala,
+    'endpoint': 'wss://acala-rpc.dwellir.com',
+  },
+  {
     'name': 'Acala (via Polkawallet)',
     'ss58': ss58_prefix_acala,
     'endpoint': 'wss://acala.polkawallet.io',

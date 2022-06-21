@@ -232,7 +232,7 @@ async function getTransferParams(
   // parallel
   if (chainFrom.name === chain_name_parallel) {
     const tokenIds: Record<string, number> = {
-      PARA: 1,
+      "fa://1": 1,
       ACA: 108,
       AUSD: 104,
       LDOT: 110,

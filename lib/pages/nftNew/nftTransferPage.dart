@@ -11,7 +11,6 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
-import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAddressFormItem.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAddressTextFormField.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginIconButton.dart';
@@ -21,6 +20,7 @@ import 'package:polkawallet_ui/components/v3/plugin/pluginTxButton.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/index.dart';
 
 class NFTTransferPage extends StatefulWidget {
   NFTTransferPage(this.plugin, this.keyring);
@@ -59,7 +59,7 @@ class _NFTTransferPageState extends State<NFTTransferPage> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.keyring.allWithContacts.length > 0) {
         setState(() {
           _accountTo = widget.keyring.allWithContacts[0];
@@ -141,7 +141,9 @@ class _NFTTransferPageState extends State<NFTTransferPage> {
                               style: Theme.of(context)
                                   .textTheme
                                   .headline3
-                                  ?.copyWith(color: Colors.white, fontSize: 40),
+                                  ?.copyWith(
+                                      color: Colors.white,
+                                      fontSize: UI.getTextSize(40, context)),
                               decoration: InputDecoration(
                                 contentPadding: EdgeInsets.zero,
                                 border: InputBorder.none,

@@ -24,7 +24,7 @@ async function connect(nodes: string[]) {
   (<any>window).api = undefined;
 
   return new Promise(async (resolve, reject) => {
-    const wsProvider = new WsProvider(nodes, false);
+    const wsProvider = new WsProvider(nodes);
     try {
       const res = new ApiPromise(
         options({
@@ -35,7 +35,7 @@ async function connect(nodes: string[]) {
       if (!(<any>window).api) {
         (<any>window).api = res;
         // console.log(res);
-        const url = nodes[(<any>res)._options.provider.__private_29_endpointIndex];
+        const url = nodes[(<any>res)._options.provider.__private_40_endpointIndex];
         send("log", `${url} wss connected success`);
         resolve(url);
 
@@ -43,7 +43,7 @@ async function connect(nodes: string[]) {
         (<any>window).wallet.isReady;
       } else {
         res.disconnect();
-        const url = nodes[(<any>res)._options.provider.__private_29_endpointIndex];
+        const url = nodes[(<any>res)._options.provider.__private_40_endpointIndex];
         send("log", `${url} wss success and disconnected`);
         resolve(url);
       }

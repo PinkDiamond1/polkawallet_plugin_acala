@@ -52,7 +52,7 @@ class _EarnPageState extends State<EarnPage> {
         centerTitle: true,
         actions: [
           Container(
-            padding: EdgeInsets.only(right: 16),
+            padding: EdgeInsets.only(right: 12),
             child: PluginIconButton(
               icon: Icon(
                 Icons.history,

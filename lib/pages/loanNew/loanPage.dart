@@ -241,7 +241,7 @@ class _LoanPageState extends State<LoanPage> {
             title: Text(dic!['loan.title']!),
             actions: [
               Container(
-                margin: EdgeInsets.only(right: 16),
+                margin: EdgeInsets.only(right: 12),
                 child: PluginIconButton(
                   onPressed: () =>
                       Navigator.of(context).pushNamed(LoanHistoryPage.route),

@@ -230,7 +230,7 @@ class _HomaPageState extends State<HomaPage> {
           title: Text('${dic['homa.title']} $stakeSymbol'),
           actions: [
             Container(
-              margin: EdgeInsets.only(right: 16),
+              margin: EdgeInsets.only(right: 12),
               child: PluginIconButton(
                 onPressed: () =>
                     Navigator.of(context).pushNamed(HomaHistoryPage.route),

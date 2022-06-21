@@ -174,7 +174,7 @@ class _NftPageState extends State<NftPage> {
           title: Text('NFTs'),
           actions: [
             Padding(
-                padding: EdgeInsets.only(right: 16),
+                padding: EdgeInsets.only(right: 12),
                 child: PluginIconButton(
                   icon: Center(
                       child: Image.asset(

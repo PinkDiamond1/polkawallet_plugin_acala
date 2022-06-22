@@ -15,6 +15,7 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/connectionChecker.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginIconButton.dart';
@@ -59,7 +60,7 @@ class _HomaPageState extends State<HomaPage> {
       context: context,
       builder: (BuildContext context) {
         final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
-        return CupertinoAlertDialog(
+        return PolkawalletAlertDialog(
           title: Text(dic['homa.confirm']!),
           content: Text(dic['homa.redeem.hint']!),
           actions: <Widget>[

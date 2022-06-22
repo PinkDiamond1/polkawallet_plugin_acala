@@ -22,6 +22,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/circularProgressBar.dart';
 import 'package:polkawallet_ui/components/connectionChecker.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/infoItemRow.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
@@ -77,7 +78,7 @@ class _LoanPageState extends State<LoanPage> {
     final bool? res = await showCupertinoDialog(
         context: context,
         builder: (_) {
-          return CupertinoAlertDialog(
+          return PolkawalletAlertDialog(
             content: Text(message),
             actions: <Widget>[
               CupertinoDialogAction(
@@ -122,7 +123,7 @@ class _LoanPageState extends State<LoanPage> {
         ? await showCupertinoDialog(
             context: context,
             builder: (BuildContext ctx) {
-              return CupertinoAlertDialog(
+              return PolkawalletAlertDialog(
                 title: Text(dic!['loan.close']!),
                 content: Column(
                   children: [

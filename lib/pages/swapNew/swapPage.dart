@@ -81,7 +81,7 @@ class _SwapPageState extends State<SwapPage> {
         ),
         actions: [
           Container(
-            margin: EdgeInsets.only(right: 12),
+            margin: EdgeInsets.only(right: 8),
             child: PluginIconButton(
               onPressed: () =>
                   Navigator.of(context).pushNamed(SwapHistoryPage.route),

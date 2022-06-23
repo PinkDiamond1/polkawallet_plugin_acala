@@ -703,28 +703,27 @@ class _HomaPageState extends State<HomaPage> {
                                 visible: isRewardsOpen,
                                 child: Container(
                                   margin: EdgeInsets.only(bottom: 16),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        dic['event.vault.rewards']!,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline4
-                                            ?.copyWith(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w400),
-                                      ),
-                                      Text(
-                                        " ${(aprValue + rewardApr * 100).toStringAsFixed(2)}%!",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline4
-                                            ?.copyWith(
-                                                color: Color(0xFFFC8156),
-                                                fontWeight: FontWeight.w400),
-                                      )
-                                    ],
-                                  ),
+                                  child: RichText(
+                                      text: TextSpan(
+                                          text: dic['event.vault.rewards']!,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline4
+                                              ?.copyWith(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w400),
+                                          children: [
+                                        TextSpan(
+                                            text:
+                                                " ${(aprValue + rewardApr * 100).toStringAsFixed(2)}%!",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline4
+                                                ?.copyWith(
+                                                    color: Color(0xFFFC8156),
+                                                    fontWeight:
+                                                        FontWeight.w400)),
+                                      ])),
                                 )),
                           ],
                         ),

@@ -11,6 +11,7 @@ import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginIconButton.dart';
@@ -187,10 +188,10 @@ class _NftPageState extends State<NftPage> {
                       context: context,
                       barrierDismissible: true,
                       builder: (BuildContext context) {
-                        return CupertinoActionSheet(
+                        return PolkawalletActionSheet(
                           actions: [
                             ...filtersAll
-                                .map((e) => CupertinoActionSheetAction(
+                                .map((e) => PolkawalletActionSheetAction(
                                       child: Text(dic!['nft.$e']!),
                                       onPressed: () {
                                         Navigator.of(context).pop();
@@ -201,7 +202,7 @@ class _NftPageState extends State<NftPage> {
                                     ))
                                 .toList(),
                           ],
-                          cancelButton: CupertinoActionSheetAction(
+                          cancelButton: PolkawalletActionSheetAction(
                             onPressed: () {
                               Navigator.pop(context);
                             },

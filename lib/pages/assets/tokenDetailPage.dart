@@ -20,6 +20,7 @@ import 'package:polkawallet_ui/components/tokenIcon.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
 import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
 import 'package:polkawallet_ui/components/v3/cardButton.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/iconButton.dart' as v3;
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -190,9 +191,9 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
                                   showCupertinoModalPopup(
                                       context: context,
                                       builder: (context) {
-                                        return CupertinoActionSheet(
+                                        return PolkawalletActionSheet(
                                           actions: filterOptions.map((e) {
-                                            return CupertinoButton(
+                                            return PolkawalletActionSheetAction(
                                                 child: Text(e!),
                                                 onPressed: () {
                                                   setState(() {
@@ -203,7 +204,8 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
                                                   Navigator.pop(context);
                                                 });
                                           }).toList(),
-                                          cancelButton: CupertinoButton(
+                                          cancelButton:
+                                              PolkawalletActionSheetAction(
                                             child: Text(dic['cancel']!),
                                             onPressed: () =>
                                                 Navigator.pop(context),

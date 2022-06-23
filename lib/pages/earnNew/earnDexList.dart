@@ -13,6 +13,7 @@ import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTokenIcon.dart';
 import 'package:polkawallet_ui/components/v3/plugin/roundedPluginCard.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
@@ -354,11 +355,11 @@ class _EarnDexListState extends State<EarnDexList> {
                           dic['earn.dex.sort2'],
                           dic['earn.dex.sort3']
                         ];
-                        return CupertinoActionSheet(
+                        return PolkawalletActionSheet(
                           actions: <Widget>[
                             ...sortType.map((element) {
                               final index = sortType.indexOf(element);
-                              return CupertinoActionSheetAction(
+                              return PolkawalletActionSheetAction(
                                 onPressed: () {
                                   if ('earn.dex.sort$index' != _sort) {
                                     setState(() {

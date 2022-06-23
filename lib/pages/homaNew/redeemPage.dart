@@ -89,7 +89,8 @@ class _RedeemPageState extends State<RedeemPage> {
       ]);
 
       setState(() {
-        _fastReceiveAmount = data[0]!['receive'];
+        _fastReceiveAmount =
+            data[0]!['canTryFastRedeem'] ? data[0]!['receive'] : 0;
         _receiveAmount = data[1]!['receive'];
         if (data[0]!['receive'] == 0) {
           _selectIndex = 1;
@@ -397,38 +398,33 @@ class _RedeemPageState extends State<RedeemPage> {
                                 UnStakeTypeItemWidget(
                                   title: dic['homa.fast']!,
                                   value:
-                                      "$_fastReceiveAmount $relay_chain_token_symbol",
+                                      "${Fmt.priceFloor(_fastReceiveAmount.toDouble(), lengthMax: 4)} $relay_chain_token_symbol",
                                   margin: EdgeInsets.only(bottom: 14),
                                   describe: dic['homa.fast.describe']!,
                                   isSelect: _selectIndex == 0,
                                   ontap: () {
-                                    if (_fastReceiveAmount > 0) {
-                                      setState(() {
-                                        _selectIndex = 0;
-                                      });
-                                    }
+                                    setState(() {
+                                      _selectIndex = 0;
+                                    });
                                   },
                                 ),
-                                Visibility(
-                                  visible: _swapAmount > 0,
-                                  child: UnStakeTypeItemWidget(
-                                    title: dic['dex.swap']!,
-                                    value:
-                                        "$_swapAmount $relay_chain_token_symbol",
-                                    margin: EdgeInsets.only(bottom: 14),
-                                    describe: dic['dex.swap.describe']!,
-                                    isSelect: _selectIndex == 1,
-                                    ontap: () {
-                                      setState(() {
-                                        _selectIndex = 1;
-                                      });
-                                    },
-                                  ),
+                                UnStakeTypeItemWidget(
+                                  title: dic['dex.swap']!,
+                                  value:
+                                      "${Fmt.priceFloor(_swapAmount.toDouble(), lengthMax: 4)} $relay_chain_token_symbol",
+                                  margin: EdgeInsets.only(bottom: 14),
+                                  describe: dic['dex.swap.describe']!,
+                                  isSelect: _selectIndex == 1,
+                                  ontap: () {
+                                    setState(() {
+                                      _selectIndex = 1;
+                                    });
+                                  },
                                 ),
                                 UnStakeTypeItemWidget(
                                   title: dic['v3.homa.unbond']!,
                                   value:
-                                      "$_receiveAmount $relay_chain_token_symbol",
+                                      "${Fmt.priceFloor(_receiveAmount.toDouble(), lengthMax: 4)} $relay_chain_token_symbol",
                                   describe: dic['v3.homa.unbond.describe']!,
                                   isSelect: _selectIndex == 2,
                                   ontap: () {

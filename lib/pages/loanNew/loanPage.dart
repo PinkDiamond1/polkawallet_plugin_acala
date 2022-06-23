@@ -663,7 +663,7 @@ class _LoanPageState extends State<LoanPage> {
               child: Text('${dic['loan.collateral']!}:',
                   style: Theme.of(context).textTheme.headline3?.copyWith(
                         color: Color(0xFF26282d),
-                        fontSize: UI.getTextSize(12, context),
+                        fontSize: UI.getTextSize(10, context),
                       )),
             ),
             Container(
@@ -675,7 +675,7 @@ class _LoanPageState extends State<LoanPage> {
                   '${Fmt.priceFloorBigIntFormatter(loan.collaterals, loan.token!.decimals!)} ${PluginFmt.tokenView(loan.token!.symbol)}',
                   style: Theme.of(context).textTheme.headline5?.copyWith(
                         color: Colors.white,
-                        fontSize: UI.getTextSize(12, context),
+                        fontSize: UI.getTextSize(10, context),
                       )),
             ),
             Container(
@@ -686,7 +686,7 @@ class _LoanPageState extends State<LoanPage> {
                           '${dic['v3.loan.currentMinted']!}:',
                           Theme.of(context).textTheme.headline3?.copyWith(
                                 color: Color(0xFF26282d),
-                                fontSize: UI.getTextSize(12, context),
+                                fontSize: UI.getTextSize(10, context),
                               )).width,
                   bottom: (I18n.of(context)!.locale.languageCode == 'zh'
                           ? 51
@@ -697,7 +697,7 @@ class _LoanPageState extends State<LoanPage> {
               child: Text('${dic['v3.loan.currentMinted']!}:',
                   style: Theme.of(context).textTheme.headline3?.copyWith(
                         color: Color(0xFF26282d),
-                        fontSize: UI.getTextSize(12, context),
+                        fontSize: UI.getTextSize(10, context),
                       )),
             ),
             Container(

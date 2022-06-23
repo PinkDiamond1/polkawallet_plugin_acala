@@ -295,7 +295,7 @@ const Map<String, String> enDex = {
   'v3.loan.currentCollateral': 'Current Collateral',
   'v3.loan.requiredSafety': 'Required for safety',
   'v3.loan.newLiquidationPrice': 'New Liquidation Price',
-  'v3.loan.liquidRatio': 'Liquidation Loan Ratio',
+  'v3.loan.liquidRatio': 'Max Loan Ratio',
   'event.vault.rewards': '🚀 LDOT staking launched! Max. APY up to',
   'loan.multiply.maxMultiple': 'Max Multiple',
   'loan.multiply.variableAnnualFee': 'Variable Annual Fee',

@@ -21,23 +21,22 @@ const transferQuery = r'''
     }
   }
 ''';
-const loanQuery = r'''
+const loanQuery = r'''  
   query ($account: String) {
-    loanActions(filter: {accountId: {equalTo: $account}},
-      orderBy: TIMESTAMP_DESC, first: 20) {
-      nodes {
-        id
-        type
-        data
-        timestamp
-        extrinsic {
-          id
-          method
-          isSuccess
+   updatePositions(first:20,orderBy: TIMESTAMP_DESC, filter: {ownerId: {equalTo: $account}}) {
+          nodes{
+            collateralId
+            collateralAdjustment
+            debitAdjustment
+            timestamp
+            extrinsicId
+            debitExchangeRate
+            extrinsic {
+              method
+            }
+          }
         }
-      }
-    }
-  }
+}
 ''';
 const swapQuery = r'''
   query ($account: String) {

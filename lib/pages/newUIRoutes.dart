@@ -57,7 +57,7 @@ Map<String, WidgetBuilder> getNewUiRoutes(PluginAcala plugin, Keyring keyring) {
                 child: Builder(
                   builder: (_) => LoanHistoryPage(plugin, keyring),
                 ),
-                uri: GraphQLConfig['defiUri']!,
+                uri: GraphQLConfig['loanUri']!,
               ),
           LoanDepositPage.route: (_) => LoanDepositPage(plugin, keyring),
           LoanTxDetailPage.route: (_) => LoanTxDetailPage(plugin, keyring),

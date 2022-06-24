@@ -35,15 +35,16 @@ class LoanHistoryPage extends StatelessWidget {
         child: Query(
             options: QueryOptions(
               document: gql(loanQuery),
+              fetchPolicy: FetchPolicy.noCache,
               variables: <String, String?>{
                 'account': keyring.current.address,
               },
             ),
             builder: (
-                QueryResult result, {
-                  Future<QueryResult?> Function()? refetch,
-                  FetchMore? fetchMore,
-                }) {
+              QueryResult result, {
+              Future<QueryResult?> Function()? refetch,
+              FetchMore? fetchMore,
+            }) {
               if (result.data == null) {
                 return Container(
                   height: MediaQuery.of(context).size.height / 3,
@@ -53,9 +54,9 @@ class LoanHistoryPage extends StatelessWidget {
                   ),
                 );
               }
-              final list = List.of(result.data!['loanActions']['nodes'])
+              final list = List.of(result.data!['updatePositions']['nodes'])
                   .map((i) =>
-                  TxLoanData.fromJson(i as Map, acala_stable_coin, plugin))
+                      TxLoanData.fromJson(i as Map, acala_stable_coin, plugin))
                   .toList();
               return ListView.builder(
                 itemCount: list.length + 1,
@@ -76,30 +77,30 @@ class LoanHistoryPage extends StatelessWidget {
                   if (detail.actionType == TxLoanData.actionTypeDeposit) {
                     type = TransferIconType.deposit;
                     describe =
-                    "deposit ${detail.amountCollateral} ${PluginFmt.tokenView(detail.token)}";
+                        "deposit ${detail.amountCollateral} ${PluginFmt.tokenView(detail.token)}";
                   } else if (detail.actionType ==
                       TxLoanData.actionTypeWithdraw) {
                     type = TransferIconType.withdraw;
                     describe =
-                    "withdraw ${detail.amountCollateral} ${PluginFmt.tokenView(detail.token)}";
+                        "withdraw ${detail.amountCollateral} ${PluginFmt.tokenView(detail.token)}";
                   } else if (detail.actionType ==
                       TxLoanData.actionTypePayback) {
                     type = TransferIconType.payback;
                     describe =
-                    "payback ${detail.amountDebit} ${PluginFmt.tokenView(acala_stable_coin_view)} from collateral（${PluginFmt.tokenView(detail.token)}）";
+                        "payback ${detail.amountDebit} ${PluginFmt.tokenView(acala_stable_coin_view)} from collateral（${PluginFmt.tokenView(detail.token)}）";
                   } else if (detail.actionType == TxLoanData.actionTypeCreate) {
                     describe =
-                    "${detail.amountDebit} ${PluginFmt.tokenView(acala_stable_coin_view)}  to create vault（${PluginFmt.tokenView(detail.token)}）";
+                        "${detail.amountDebit} ${PluginFmt.tokenView(acala_stable_coin_view)}  to create vault（${PluginFmt.tokenView(detail.token)}）";
                   } else if (detail.actionType == TxLoanData.actionLiquidate) {
                     describe =
-                    "confiscate ${detail.amountCollateral} ${PluginFmt.tokenView(detail.token)} and ${detail.amountDebit} ${PluginFmt.tokenView(acala_stable_coin_view)}";
+                        "confiscate ${detail.amountCollateral} ${PluginFmt.tokenView(detail.token)} and ${detail.amountDebit} ${PluginFmt.tokenView(acala_stable_coin_view)}";
                   }
                   return Container(
                     decoration: BoxDecoration(
                       color: Color(0x14ffffff),
                       border: Border(
                           bottom:
-                          BorderSide(width: 0.5, color: Color(0x24ffffff))),
+                              BorderSide(width: 0.5, color: Color(0x24ffffff))),
                     ),
                     child: ListTile(
                       dense: true,
@@ -112,8 +113,8 @@ class LoanHistoryPage extends StatelessWidget {
                                 .textTheme
                                 .headline5
                                 ?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600),
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600),
                           ),
                           Text(describe,
                               textAlign: TextAlign.start,

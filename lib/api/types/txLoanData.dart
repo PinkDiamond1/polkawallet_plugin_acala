@@ -16,24 +16,22 @@ class TxLoanData extends _TxLoanData {
   static TxLoanData fromJson(
       Map json, String stableCoinSymbol, PluginAcala plugin) {
     TxLoanData data = TxLoanData();
-    data.event = json['type'];
-    data.hash = json['extrinsic']['id'];
-
-    final jsonData = json['data'] as List;
+    data.event = json['extrinsic']['method'];
+    data.hash = json['extrinsicId'];
 
     final token = AssetsUtils.tokenDataFromCurrencyId(
-        plugin, jsonDecode(jsonData[1]['value']));
+        plugin, {"token": json['collateralId']});
     data.token = token.symbol;
 
-    data.collateral = Fmt.balanceInt(jsonData[2]['value'].toString());
-    data.debit = jsonData.length > 4
-        ? Fmt.balanceInt(jsonData[3]['value'].toString()) *
-            Fmt.balanceInt(
-                (jsonData[4]['value'] ?? '1000000000000').toString()) ~/
-            BigInt.from(pow(10, acala_price_decimals))
-        : BigInt.zero;
-    data.amountCollateral = Fmt.priceFloorBigInt(
-        BigInt.zero - data.collateral!, token.decimals ?? 12);
+    data.collateral = Fmt.balanceInt(json['collateralAdjustment'].toString());
+    data.debit = Fmt.balanceInt((json['debitAdjustment'] ?? '0').toString()) *
+        Fmt.balanceInt(
+            (json['debitExchangeRate'] ?? '1000000000000').toString()) ~/
+        BigInt.from(pow(10, acala_price_decimals));
+
+    data.amountCollateral =
+        Fmt.priceFloorBigInt(data.collateral!.abs(), token.decimals ?? 12);
+
     data.amountDebit = Fmt.priceCeilBigInt(data.debit,
         plugin.store!.assets.tokenBalanceMap[acala_stable_coin]!.decimals!);
     if (data.event == 'ConfiscateCollateralAndDebit') {
@@ -52,7 +50,7 @@ class TxLoanData extends _TxLoanData {
     }
 
     data.time = (json['timestamp'] as String).replaceAll(' ', '');
-    data.isSuccess = json['extrinsic']['isSuccess'];
+    data.isSuccess = json['isSuccess'];
     return data;
   }
 }

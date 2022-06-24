@@ -124,7 +124,7 @@ query ($senderId: String) {
       section :{equalTo :"honzon"},
       or:[{method:{equalTo:"expandPositionCollateral"}}, {method:{equalTo:"shrinkPositionDebit"}}],
       senderId: {equalTo: $senderId}},
-      first: 20) {
+      first: 20,orderBy:BLOCK_ID_DESC) {
       nodes {
         id
         method

@@ -10,6 +10,7 @@ import 'package:polkawallet_plugin_acala/pages/nftNew/nftTransferPage.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/connectionChecker.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
 import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
@@ -266,6 +267,7 @@ class _NftPageState extends State<NftPage> {
                     ?.copyWith(color: PluginColorsDark.headline1);
                 return Stack(
                   children: [
+                    ConnectionChecker(widget.plugin, onConnected: _queryNFTs),
                     RefreshIndicator(
                         key: _refreshKey,
                         onRefresh: _queryNFTs,

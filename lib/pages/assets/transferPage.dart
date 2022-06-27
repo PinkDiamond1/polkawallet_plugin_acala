@@ -577,11 +577,10 @@ class _TransferPageState extends State<TransferPage> {
                             ),
                             RoundedCard(
                               margin: EdgeInsets.only(top: 16.h),
-                              padding: EdgeInsets.zero,
+                              padding: EdgeInsets.symmetric(vertical: 6),
                               child: Column(
                                 children: [
                                   Container(
-                                    height: 47,
                                     padding:
                                         EdgeInsets.symmetric(horizontal: 16.w),
                                     child: Row(
@@ -611,8 +610,10 @@ class _TransferPageState extends State<TransferPage> {
                                                       child: Text(
                                                           dicAcala[
                                                               'cross.exist.msg']!,
-                                                          style:
-                                                              subTitleStyle)),
+                                                          style: subTitleStyle
+                                                              ?.copyWith(
+                                                                  height:
+                                                                      1.3))),
                                                 ],
                                               )),
                                         ),
@@ -625,9 +626,11 @@ class _TransferPageState extends State<TransferPage> {
                                   Visibility(
                                       visible: _fee?.partialFee != null,
                                       child: Column(children: [
-                                        Divider(height: 1),
+                                        Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 6),
+                                            child: Divider(height: 1)),
                                         Container(
-                                          height: 47,
                                           padding: EdgeInsets.symmetric(
                                               horizontal: 16.w),
                                           child: Row(
@@ -658,9 +661,11 @@ class _TransferPageState extends State<TransferPage> {
                                       visible: tokenSymbol == nativeToken &&
                                           available > BigInt.zero,
                                       child: Column(children: [
-                                        Divider(height: 1),
+                                        Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 6),
+                                            child: Divider(height: 1)),
                                         Container(
-                                          height: 67,
                                           padding: EdgeInsets.symmetric(
                                               horizontal: 16.w),
                                           child: Row(

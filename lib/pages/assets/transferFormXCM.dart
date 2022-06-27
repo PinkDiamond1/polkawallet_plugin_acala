@@ -785,11 +785,10 @@ class _TransferFormXCMState extends State<TransferFormXCM> {
             ),
             RoundedCard(
               margin: EdgeInsets.only(top: 16.h),
-              padding: EdgeInsets.zero,
+              padding: EdgeInsets.symmetric(vertical: 6),
               child: Column(
                 children: [
                   Container(
-                    height: 47,
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     child: Row(
                       children: [
@@ -808,9 +807,10 @@ class _TransferFormXCMState extends State<TransferFormXCM> {
                       ],
                     ),
                   ),
-                  Divider(height: 1),
+                  Padding(
+                      padding: EdgeInsets.symmetric(vertical: 6),
+                      child: Divider(height: 1)),
                   Container(
-                    height: 47,
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -833,9 +833,10 @@ class _TransferFormXCMState extends State<TransferFormXCM> {
                   Visibility(
                     visible: isFromKar && sendFee.length > 0,
                     child: Column(children: [
-                      Divider(height: 1),
+                      Padding(
+                          padding: EdgeInsets.symmetric(vertical: 6),
+                          child: Divider(height: 1)),
                       Container(
-                        height: 47,
                         padding: EdgeInsets.symmetric(horizontal: 16.w),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -859,9 +860,10 @@ class _TransferFormXCMState extends State<TransferFormXCM> {
                   Visibility(
                     visible: isFromKar,
                     child: Column(children: [
-                      Divider(height: 1),
+                      Padding(
+                          padding: EdgeInsets.symmetric(vertical: 6),
+                          child: Divider(height: 1)),
                       Container(
-                        height: 47,
                         padding: EdgeInsets.symmetric(horizontal: 16.w),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -881,7 +883,8 @@ class _TransferFormXCMState extends State<TransferFormXCM> {
                                           padding: EdgeInsets.only(top: 2),
                                           child: Text(
                                               dicAcala['cross.exist.msg']!,
-                                              style: subTitleStyle)),
+                                              style: subTitleStyle?.copyWith(
+                                                  height: 1.3))),
                                     ],
                                   )),
                             ),
@@ -896,9 +899,10 @@ class _TransferFormXCMState extends State<TransferFormXCM> {
                   Visibility(
                       visible: _fee != null,
                       child: Column(children: [
-                        Divider(height: 1),
+                        Padding(
+                            padding: EdgeInsets.symmetric(vertical: 6),
+                            child: Divider(height: 1)),
                         Container(
-                          height: 47,
                           padding: EdgeInsets.symmetric(horizontal: 16.w),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -923,9 +927,10 @@ class _TransferFormXCMState extends State<TransferFormXCM> {
                           tokenSymbol == nativeToken &&
                           available > BigInt.zero,
                       child: Column(children: [
-                        Divider(height: 1),
+                        Padding(
+                            padding: EdgeInsets.symmetric(vertical: 6),
+                            child: Divider(height: 1)),
                         Container(
-                          height: 67,
                           padding: EdgeInsets.symmetric(horizontal: 16.w),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,

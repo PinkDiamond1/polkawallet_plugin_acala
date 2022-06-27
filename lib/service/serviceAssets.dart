@@ -47,8 +47,7 @@ class ServiceAssets {
     };
 
     try {
-      if (prices[relay_chain_token_symbol] != null &&
-          await (api!.homa.isHomaAlive() as Future<bool>)) {
+      if (prices[relay_chain_token_symbol] != null) {
         final homaEnv = await plugin.service!.homa.queryHomaEnv();
         prices['L$relay_chain_token_symbol'] =
             prices[relay_chain_token_symbol]! * homaEnv.exchangeRate;
@@ -104,7 +103,7 @@ class ServiceAssets {
         locked: res['frozen'].toString(),
         reserved: res['reserved'].toString(),
         detailPageRoute: token.detailPageRoute,
-        price: store!.assets.marketPrices[token.symbol]);
+        price: AssetsUtils.getMarketPrice(plugin, token.symbol ?? ''));
     balances[token.tokenNameId] = data;
 
     store!.assets

@@ -160,13 +160,9 @@ class PluginAcala extends PolkawalletPlugin {
           onSwitchHideBalance!,
           hideBalance: hideBalance,
         );
-      final Map<String, double> marketPrices = Map<String, double>();
-      store!.assets.marketPrices.forEach((key, value) {
-        marketPrices[key] = value * rate;
-      });
 
       final data = AssetsUtils.aggregatedAssetsDataFromJson(
-          store!.assets.aggregatedAssets!, balances, marketPrices);
+          this, store!.assets.aggregatedAssets!, balances);
       // // data.forEach((element) => print(element));
       // final total = data.map((e) => e.value).reduce((a, b) => a + b);
       // return Text('total: ${hideBalance ? '***' : total}');

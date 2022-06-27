@@ -9,6 +9,7 @@ import 'package:polkawallet_plugin_acala/common/constants/subQuery.dart';
 import 'package:polkawallet_plugin_acala/pages/assets/transferDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/assets/transferPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
@@ -97,9 +98,8 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
                   balance,
                   symbol: tokenSymbol ?? '',
                   decimals: token.decimals!,
-                  tokenPrice:
-                      widget.plugin.store?.assets.marketPrices[tokenSymbol] ??
-                          0,
+                  tokenPrice: AssetsUtils.getMarketPrice(
+                      widget.plugin, tokenSymbol ?? ''),
                   bgColors: [Color(0xFFFD4732), Color(0xFF645AFF)],
                   icon: TokenIcon(
                     tokenSymbol ?? '',

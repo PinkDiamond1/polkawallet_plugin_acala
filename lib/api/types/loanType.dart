@@ -135,7 +135,6 @@ class LoanData extends _LoanData {
     data.maxToBorrow = type.calcMaxToBorrow(data.collaterals, tokenPrice,
         stableCoinDecimals: stableCoinDecimals,
         collateralDecimals: collateralDecimals);
-    data.stableFeeYear = data.calcStableFee(SECONDS_OF_YEAR);
     data.liquidationPrice = type.calcLiquidationPrice(
         data.debitInUSD, data.collaterals,
         stableCoinDecimals: stableCoinDecimals,
@@ -159,7 +158,6 @@ class LoanData extends _LoanData {
     data.maxToBorrow = this.maxToBorrow;
     data.stableCoinPrice = this.stableCoinPrice;
     data.liquidationPrice = this.liquidationPrice;
-    data.stableFeeYear = this.stableFeeYear;
     return data;
   }
 }
@@ -179,14 +177,7 @@ abstract class _LoanData {
   double collateralRatio = 0;
   BigInt requiredCollateral = BigInt.zero;
   BigInt maxToBorrow = BigInt.zero;
-  double stableFeeYear = 0;
   BigInt liquidationPrice = BigInt.zero;
-
-  double calcStableFee(int seconds) {
-    final base =
-        type.interestRatePerSec / BigInt.from(pow(10, acala_price_decimals));
-    return pow((1 + base), seconds) - 1;
-  }
 }
 
 class CollateralIncentiveData extends _CollateralIncentiveData {

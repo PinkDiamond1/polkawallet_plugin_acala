@@ -216,6 +216,7 @@ const Map<String, String> zhDex = {
   'v3.loan.canMint': '可铸造',
   'v3.loan.loanRatio': '借贷率',
   'v3.loan.submit': '提交',
+  'v3.loan.unavailable': '生成 aUSD 暂不可用',
   'v3.homa.minStakingAmount': '质押最小值',
   'v3.homa.minUnstakingAmount': '提取最小值',
   'v3.homa.unbond': '解绑',

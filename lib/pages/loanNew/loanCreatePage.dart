@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
@@ -12,6 +13,7 @@ import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/infoItemRow.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
@@ -326,8 +328,6 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
       final available = balance;
 
       final loans = widget.plugin.store!.loan.loans.values.toList();
-      final loan =
-          loans.firstWhere((data) => data.token!.symbol == token.symbol);
 
       final maxToBorrow =
           Fmt.priceFloorBigInt(_maxToBorrow, balancePair[1].decimals!);
@@ -435,16 +435,34 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
                   requiredRatio: loanType.requiredCollateralRatio,
                   currentRatio: _currentRatio,
                   liquidationPrice: _liquidationPrice,
-                  stableFeeYear: loan.stableFeeYear,
+                  stableFeeYear: loanType.stableFeeYear,
                 ),
                 Padding(
                     padding: EdgeInsets.only(top: 37, bottom: 38),
                     child: PluginButton(
                       title: '${dic['v3.loan.submit']}',
                       onPressed: () {
-                        if (loanType.maximumTotalDebitValue > BigInt.zero &&
-                            _error1 == null &&
-                            _error2 == null) {
+                        if (loanType.maximumTotalDebitValue == BigInt.zero) {
+                          showCupertinoDialog(
+                              context: context,
+                              builder: (_) {
+                                return PolkawalletAlertDialog(
+                                  content: Text(
+                                      '${PluginFmt.tokenView(loanType.token!.symbol)} ${dic['v3.loan.unavailable']}'),
+                                  actions: [
+                                    CupertinoButton(
+                                        child: Text(I18n.of(context)!.getDic(
+                                            i18n_full_dic_acala,
+                                            'common')!['cancel']!),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop())
+                                  ],
+                                );
+                              });
+                          return;
+                        }
+
+                        if (_error1 == null && _error2 == null) {
                           _onSubmit(pageTitle, loanType,
                               stableCoinDecimals: balancePair[1].decimals!,
                               collateralDecimals: balancePair[0].decimals!);

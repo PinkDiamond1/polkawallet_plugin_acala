@@ -185,7 +185,8 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
   }
 
   Widget buildLastInputView() {
-    if (_editorLoan == null) {
+    if (_editorLoan == null ||
+        _loan?.type.maximumTotalDebitValue == BigInt.zero) {
       return Container();
     }
     var titleTag = '';

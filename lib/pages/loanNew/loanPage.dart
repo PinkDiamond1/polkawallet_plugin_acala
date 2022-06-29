@@ -451,6 +451,31 @@ class _LoanPageState extends State<LoanPage> {
                                         ],
                                       ),
                                       onTap: () async {
+                                        if (loan.type.maximumTotalDebitValue ==
+                                            BigInt.zero) {
+                                          showCupertinoDialog(
+                                              context: context,
+                                              builder: (_) {
+                                                return PolkawalletAlertDialog(
+                                                  content: Text(
+                                                      '${PluginFmt.tokenView(loan.token!.symbol)} ${dic['v3.loan.unavailable']}'),
+                                                  actions: [
+                                                    CupertinoButton(
+                                                        child: Text(I18n.of(
+                                                                    context)!
+                                                                .getDic(
+                                                                    i18n_full_dic_acala,
+                                                                    'common')![
+                                                            'cancel']!),
+                                                        onPressed: () =>
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop())
+                                                  ],
+                                                );
+                                              });
+                                          return;
+                                        }
                                         final res = await Navigator.of(context)
                                             .pushNamed(LoanAdjustPage.route,
                                                 arguments: {
@@ -620,7 +645,7 @@ class _LoanPageState extends State<LoanPage> {
                             color: Colors.white,
                             fontSize: UI.getTextSize(12, context),
                           )),
-                  Text('≈ ${Fmt.ratio(loan.stableFeeYear)}',
+                  Text('≈ ${Fmt.ratio(loan.type.stableFeeYear)}',
                       style: Theme.of(context).textTheme.headline3?.copyWith(
                             color: colorSafe[0],
                             height: 1.1,

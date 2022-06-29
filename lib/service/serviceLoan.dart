@@ -58,7 +58,7 @@ class ServiceLoan {
     await plugin.service!.earn.updateAllDexPoolInfo();
     final res = await api!.loan.queryLoanTypes();
     res?.removeWhere((e) => e.requiredCollateralRatio == BigInt.zero);
-    store!.loan.setLoanTypes(res??[]);
+    store!.loan.setLoanTypes(res ?? []);
 
     queryTotalCDPs();
   }
@@ -76,6 +76,11 @@ class ServiceLoan {
         _calcLiquidTokenPrice(prices, homaEnv);
       } catch (_) {
         // ignore
+      }
+
+      if (prices[relay_chain_token_symbol] != null) {
+        // set price of tDOT from DOT
+        prices['sa://0'] = prices[relay_chain_token_symbol]!;
       }
 
       store!.assets.setPrices(prices);

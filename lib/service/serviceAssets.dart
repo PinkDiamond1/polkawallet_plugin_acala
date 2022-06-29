@@ -51,6 +51,8 @@ class ServiceAssets {
         final homaEnv = await plugin.service!.homa.queryHomaEnv();
         prices['L$relay_chain_token_symbol'] =
             prices[relay_chain_token_symbol]! * homaEnv.exchangeRate;
+        prices['t$relay_chain_token_symbol'] =
+            prices[relay_chain_token_symbol]!;
       }
     } catch (err) {
       print(err);

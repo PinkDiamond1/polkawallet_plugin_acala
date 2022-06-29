@@ -462,7 +462,7 @@ class _tabBarState extends State<_tabBar> {
         children: [
           Expanded(
               child: Container(
-                  constraints: BoxConstraints(maxHeight: _isOpen ? 1000 : 28),
+                  constraints: BoxConstraints(maxHeight: _isOpen ? 1000 : 22),
                   child: Wrap(
                       spacing: 10,
                       runSpacing: 10,

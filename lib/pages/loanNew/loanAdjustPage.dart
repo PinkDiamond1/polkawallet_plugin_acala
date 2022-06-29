@@ -812,6 +812,8 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
     if (debitShares != BigInt.zero) {
       var dicValue = 'loan.mint';
 
+      if (loan.type.maximumTotalDebitValue == BigInt.zero) return null;
+
       if (originalLoan.debits == BigInt.zero &&
           debits < loan.type.minimumDebitValue) {
         final minimumDebitValue = Fmt.bigIntToDouble(

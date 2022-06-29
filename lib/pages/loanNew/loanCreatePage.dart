@@ -17,8 +17,8 @@ import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
-import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
+import 'package:polkawallet_ui/utils/format.dart';
 
 class LoanCreatePage extends StatefulWidget {
   LoanCreatePage(this.plugin, this.keyring);
@@ -442,7 +442,9 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
                     child: PluginButton(
                       title: '${dic['v3.loan.submit']}',
                       onPressed: () {
-                        if (_error1 == null && _error2 == null) {
+                        if (loanType.maximumTotalDebitValue > BigInt.zero &&
+                            _error1 == null &&
+                            _error2 == null) {
                           _onSubmit(pageTitle, loanType,
                               stableCoinDecimals: balancePair[1].decimals!,
                               collateralDecimals: balancePair[0].decimals!);

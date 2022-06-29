@@ -196,6 +196,9 @@ class _LPStakePage extends State<LPStakePage> {
         Navigator.of(context).pop(res);
       }
     } else {
+      if (input.trim().isEmpty) {
+        return;
+      }
       final res = (await Navigator.of(context).pushNamed(TxConfirmPage.route,
           arguments: TxConfirmParams(
             module: 'incentives',
@@ -710,6 +713,7 @@ class _LPStakePage extends State<LPStakePage> {
                           setState(() {
                             _error1 = null;
                             _amountCtrl.text = "";
+                            _isMax = false;
                           });
                         },
                         balance: TokenBalanceData(

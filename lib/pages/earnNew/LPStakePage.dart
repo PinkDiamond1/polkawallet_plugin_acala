@@ -196,7 +196,7 @@ class _LPStakePage extends State<LPStakePage> {
         Navigator.of(context).pop(res);
       }
     } else {
-      if (input.trim() == "0") {
+      if (input.trim() == "0" || input.trim().isEmpty) {
         return;
       }
       final res = (await Navigator.of(context).pushNamed(TxConfirmPage.route,

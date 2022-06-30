@@ -23,6 +23,7 @@ import 'package:polkawallet_ui/components/v3/txButton.dart';
 import 'package:polkawallet_ui/pages/v3/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class LoanAdjustPage extends StatefulWidget {
@@ -904,7 +905,8 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
             content: Text(message),
             actions: <Widget>[
               PolkawalletActionSheetAction(
-                child: Text(dic['loan.warn.back']!),
+                child: Text(I18n.of(context)!
+                    .getDic(i18n_full_dic_ui, 'common')!['cancel']!),
                 onPressed: () => Navigator.of(context).pop(false),
               ),
               PolkawalletActionSheetAction(

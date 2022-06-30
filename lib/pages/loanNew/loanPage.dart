@@ -82,7 +82,8 @@ class _LoanPageState extends State<LoanPage> {
             content: Text(message),
             actions: <Widget>[
               PolkawalletActionSheetAction(
-                child: Text(dic['loan.warn.back']!),
+                child: Text(I18n.of(context)!
+                    .getDic(i18n_full_dic_ui, 'common')!['cancel']!),
                 onPressed: () => Navigator.of(context).pop(false),
               ),
               PolkawalletActionSheetAction(

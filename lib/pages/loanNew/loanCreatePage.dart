@@ -350,7 +350,7 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
                       v, loanType, price, available,
                       stableCoinDecimals: balancePair[1].decimals,
                       collateralDecimals: balancePair[0].decimals),
-                  balance: token,
+                  balance: balancePair[0],
                   tokenIconsMap: widget.plugin.tokenIcons,
                   onClear: () {
                     _amountCtrl.text = '';

@@ -76,13 +76,13 @@ class _MultiplyPageState extends State<MultiplyPage> {
       final List<LoanType> loantypes = [], ortherType = [];
       widget.plugin.store!.loan.loanTypes.forEach((element) {
         if (element.maximumTotalDebitValue != BigInt.zero) {
-          loans.forEach((loan) {
-            if (loan.token?.tokenNameId == element.token?.tokenNameId) {
-              loantypes.add(element);
-            } else {
-              ortherType.add(element);
-            }
-          });
+          if (loans.indexWhere((loan) =>
+                  loan.token?.tokenNameId == element.token?.tokenNameId) >=
+              0) {
+            loantypes.add(element);
+          } else {
+            ortherType.add(element);
+          }
         }
       });
       loantypes.addAll(ortherType);
@@ -105,7 +105,7 @@ class _MultiplyPageState extends State<MultiplyPage> {
                   icon: Icon(
                     Icons.history,
                     size: 22,
-                    color: Color(0xFF17161F),
+                    color: Colors.white,
                   ),
                 ),
               ),

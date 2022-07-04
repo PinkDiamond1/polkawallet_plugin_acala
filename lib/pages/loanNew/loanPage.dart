@@ -230,13 +230,13 @@ class _LoanPageState extends State<LoanPage> {
 
       final loanTypes = [], ortherType = [];
       widget.plugin.store!.loan.loanTypes.forEach((element) {
-        loans.forEach((loan) {
-          if (loan.token?.tokenNameId == element.token?.tokenNameId) {
-            loanTypes.add(element);
-          } else {
-            ortherType.add(element);
-          }
-        });
+        if (loans.indexWhere((loan) =>
+                loan.token?.tokenNameId == element.token?.tokenNameId) >=
+            0) {
+          loanTypes.add(element);
+        } else {
+          ortherType.add(element);
+        }
       });
       loanTypes.addAll(ortherType);
 
@@ -261,7 +261,7 @@ class _LoanPageState extends State<LoanPage> {
                   icon: Icon(
                     Icons.history,
                     size: 22,
-                    color: Color(0xFF17161F),
+                    color: Colors.white,
                   ),
                 ),
               ),

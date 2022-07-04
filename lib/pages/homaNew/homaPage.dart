@@ -166,7 +166,7 @@ class _HomaPageState extends State<HomaPage> {
                   icon: Icon(
                     Icons.history,
                     size: 22,
-                    color: Color(0xFF17161F),
+                    color: Colors.white,
                   ),
                 ),
               )
@@ -240,7 +240,7 @@ class _HomaPageState extends State<HomaPage> {
                 icon: Icon(
                   Icons.history,
                   size: 22,
-                  color: Color(0xFF17161F),
+                  color: Colors.white,
                 ),
               ),
             ),

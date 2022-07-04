@@ -57,7 +57,7 @@ class _EarnPageState extends State<EarnPage> {
               icon: Icon(
                 Icons.history,
                 size: 22,
-                color: Color(0xFF17161F),
+                color: Colors.white,
               ),
               onPressed: () =>
                   Navigator.of(context).pushNamed(EarnHistoryPage.route),

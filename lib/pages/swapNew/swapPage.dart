@@ -77,7 +77,7 @@ class _SwapPageState extends State<SwapPage> {
               icon: Icon(
                 Icons.history,
                 size: 22,
-                color: Color(0xFF17161F),
+                color: Colors.white,
               ),
             ),
           ),
@@ -88,11 +88,11 @@ class _SwapPageState extends State<SwapPage> {
           child: Column(
         children: [
           Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.only(top: 15, left: 16, right: 16, bottom: 5),
               child: PluginPageTitleTaps(
                 names: [dic['dex.title']!, dic['dex.lp']!, dic['boot.title']!],
                 activeTab: _tab,
-                isSpaceBetween: false,
+                isSpaceBetween: true,
                 onTap: (i) {
                   if (i != _tab) {
                     setState(() {

@@ -1,23 +1,26 @@
 import { createDexShareName, FixedPointNumber, forceToCurrencyId, forceToCurrencyName, Token } from "@acala-network/sdk-core";
+import { ApiPromise, ApiRx } from "@polkadot/api";
 import { SwapPromise } from "@acala-network/sdk-swap";
-import { ApiPromise } from "@polkadot/api";
 import { hexToString } from "@polkadot/util";
 import { nft_image_config } from "../constants/acala";
 import { BN } from "@polkadot/util/bn/bn";
-import { Wallet } from "@acala-network/sdk";
+import { AcalaDex, AggregateDex, NutsDex, Wallet } from "@acala-network/sdk";
 import { Homa } from "@acala-network/sdk";
 import { OraclePriceProvider } from "@acala-network/sdk/wallet/price-provider/oracle-price-provider";
 import axios from "axios";
-import { IncentiveResult } from "../types/acalaTypes";
-import { firstValueFrom } from "rxjs";
+import { IncentiveResult, TaigaUserReward } from "../types/acalaTypes";
+import { firstValueFrom, take, throttleTime } from "rxjs";
 import { HomaEnvironment } from "@acala-network/sdk/homa/types";
 import { BalanceData } from "@acala-network/sdk/wallet/type";
+import { StableAssetRx } from "@nuts-finance/sdk-stable-asset";
+import { BigNumber } from "bignumber.js";
 
 const ONE = FixedPointNumber.ONE;
 const SECONDS_OF_YEAR = new BN(365 * 24 * 3600);
 const DOT_DECIMAL = 10;
 const native_token = "ACA";
 const native_token_list = [native_token, "DOT", "LDOT", "AUSD", "lc://13"];
+const taigaPoolApy: Record<string, number> = {};
 
 let ACA_SYS_BLOCK_TIME = new BN(12000);
 
@@ -53,10 +56,87 @@ function _getTokenSymbol(allTokens: any[], tokenNameId: string): string {
 // }
 // _fetchBlockDuration();
 
-// let swapper: SwapPromise;
+let swapper: AggregateDex;
+async function _initDexSDK(api: ApiRx) {
+  const wallet = (<any>window).wallet;
+  swapper = new AggregateDex({
+    api,
+    wallet,
+    providers: [new AcalaDex({ api, wallet }), new NutsDex({ api, wallet })],
+  });
+
+  await swapper.isReady;
+}
+async function getSwapTokens(apiRx: ApiRx) {
+  if (!swapper) {
+    await _initDexSDK(apiRx);
+  }
+
+  const tokens = await firstValueFrom(swapper.tradableTokens$.pipe(take(1)));
+  return tokens.map((e) => {
+    return {
+      type: _getTokenType(e),
+      tokenNameId: e.name,
+      symbol: e.symbol === "aUSD" ? e.name : e.symbol,
+      id: Object.values(e.toChainData())[0].toString(),
+      src: e.locations,
+      currencyId: e.toChainData(),
+      decimals: e.decimals,
+      minBalance: e.ed.toChainData().toString(),
+    };
+  });
+}
 /**
  * calc token swap amount
  */
+// async function calcTokenSwapAmount(apiRx: ApiRx, input: number, output: number, swapPair: string[], slippage: number) {
+//   if (!swapper) {
+//     await _initDexSDK(apiRx);
+//   }
+
+//   const inputToken = await ((<any>window).wallet as Wallet).getToken(swapPair[0]);
+//   const outputToken = await ((<any>window).wallet as Wallet).getToken(swapPair[1]);
+//   const i = new FixedPointNumber(input || 0, inputToken.decimals);
+//   const o = new FixedPointNumber(output || 0, outputToken.decimals);
+
+//   const mode = output === null ? "EXACT_INPUT" : "EXACT_OUTPUT";
+
+//   try {
+//     const result = await firstValueFrom(
+//       swapper
+//         .swap({
+//           source: "aggregate",
+//           mode,
+//           path: [inputToken, outputToken],
+//           input: output === null ? i : o,
+//           acceptiveSlippage: slippage,
+//         })
+//         .pipe(throttleTime(100))
+//     );
+
+//     const res = result.result;
+//     const path = result.tracker;
+//     if (res.input) {
+//       const tx = swapper.getTradingTx(result);
+//       return {
+//         amount: output === null ? res.output.amount.toNumber(6) : res.input.amount.toNumber(6),
+//         priceImpact: path.map((e) => e.naturalPriceImpact.toNumber(6)),
+//         fee: path.map((e) => e.exchangeFee.toNumber(6)),
+//         feeToken: path.map((e) => (e.source === "acala" ? e.input.token.name : e.output.token.name)),
+//         path: res.path.map((e) => ({ dex: e[0], path: e[1].map((i) => i.name) })),
+//         tx: {
+//           section: tx.method.section,
+//           method: tx.method.method,
+//           params: tx.args.map((e) => e.toJSON()),
+//         },
+//       };
+//     }
+//     return { error: "dex error" };
+//   } catch (err) {
+//     return { error: err };
+//   }
+// }
+
 async function calcTokenSwapAmount(api: ApiPromise, input: number, output: number, swapPair: Object[], slippage: number) {
   // if (!swapper) {
   //   swapper = new SwapPromise(api);
@@ -118,6 +198,14 @@ async function getAllTokens(api: ApiPromise) {
     .filter((e) => e.tokenNameId !== native_token && e.type !== "DexShare");
 }
 
+/**
+ * getTokensPrices
+ */
+async function getTokenPrices(tokens: string[]) {
+  const prices = await Promise.all(tokens.map((e) => ((<any>window).wallet as Wallet).getPrice(e)));
+  return prices.reduce((res, e, i) => ({ ...res, [tokens[i]]: e.toNumber(6) }), {});
+}
+
 function _getTokenType(token: Token) {
   return native_token_list.includes(token.name)
     ? "Token"
@@ -166,6 +254,74 @@ async function getTokenPairs(api: ApiPromise) {
       tokens: item.toJSON(),
       tokenNameId: createDexShareName(forceToCurrencyName(item[0]), forceToCurrencyName(item[1])),
     }));
+}
+
+async function getTaigaTokenPairs(apiRx: ApiRx) {
+  if (!homa) {
+    homa = new Homa((<any>window).api, (<any>window).wallet);
+  }
+
+  const [stablePools, homaEnv] = await Promise.all([
+    firstValueFrom(new StableAssetRx(apiRx).subscribeAllPools().pipe(take(1))),
+    homa.getEnv(),
+  ]);
+  return stablePools.map(({ poolAsset, assets, balances, precisions }) => {
+    if (assets[1].toJSON()["token"] === "LDOT") {
+      balances[1] = balances[1].div(new BigNumber(homaEnv.exchangeRate.toNumber()));
+    }
+    return {
+      tokens: assets,
+      balances: balances.map((e, i) => e.div(precisions[i])),
+      tokenNameId: forceToCurrencyName(poolAsset),
+    };
+  });
+}
+
+async function _queryTaigaPoolApy(network: string, pool: number) {
+  const key = `${network}-${pool}`;
+
+  if (taigaPoolApy[key]) {
+    return taigaPoolApy[key];
+  }
+
+  const result = await axios.get(`https://api.taigaprotocol.io/rewards/apr?network=${network}&pool=${pool}`);
+
+  if (result.status === 200 && Object.keys(result.data).length > 0) {
+    taigaPoolApy[key] = result.data as number;
+  }
+
+  return taigaPoolApy[key];
+}
+
+async function _queryTaigaUserRewards(network: string, pool: number, user: string) {
+  const result = await axios.get(`https://api.taigaprotocol.io/rewards/user/${user}?network=${network}&pool=${pool}`);
+
+  if (result.status === 200 && Object.keys(result.data).length > 0) {
+    return result.data as TaigaUserReward;
+  }
+}
+
+async function getTaigaPoolInfo(api: ApiPromise, address: string) {
+  const [tDOTApy] = await Promise.all([0].map((i) => _queryTaigaPoolApy("acala", i)));
+  const [tDOTReward] = await Promise.all([0].map((i) => _queryTaigaUserRewards("acala", i, address)));
+  const tDOTshares = await _fetchCollateralRewards(api, { StableAssetPoolToken: 0 }, address);
+  // const threeUSDshares = await (<any>window).wallet.getIssuance("sa://1");
+  return {
+    "sa://0": {
+      apy: tDOTApy,
+      reward: tDOTReward.claimable,
+      rewardTokens: ["sa://0"],
+      userShares: tDOTshares.shares,
+      totalShares: tDOTshares.sharesTotal,
+    },
+    // "sa://1": {
+    //   apy: threeUSDApy,
+    //   reward: threeUSDReward.claimable,
+    //   rewardTokens: ["sa://1", "TAI", "sa://0", "LKSM", "KAR"],
+    //   userShares: "0",
+    //   totalShares: threeUSDshares.toChainData(),
+    // },
+  };
 }
 
 /**
@@ -229,16 +385,16 @@ async function _fetchCollateralRewards(api: ApiPromise, pool: any, address: stri
   const incentives = Array.from(res[0].rewards.entries()).map((e: any) => {
     const currencyId = forceToCurrencyId(api, e[0]);
     const tokenNameId = forceToCurrencyName(currencyId);
+
     return {
       tokenNameId,
       currencyId,
-      amount: (
+      amount:
         FPNum(e[1][0], _getTokenDecimal(res[2], tokenNameId))
           .times(proportion)
           .minus(withdrawns.find((i) => i.tokenNameId === tokenNameId)?.amount || new FixedPointNumber(0))
           .plus(pendings.find((i) => i.tokenNameId === tokenNameId)?.amount || new FixedPointNumber(0))
-          .toNumber() || 0
-      ).toString(),
+          .toNumber() || 0,
     };
   });
   pendings.forEach((e) => {
@@ -246,7 +402,7 @@ async function _fetchCollateralRewards(api: ApiPromise, pool: any, address: stri
       incentives.push({
         tokenNameId: e.tokenNameId,
         currencyId: e.currencyId,
-        amount: e.amount.toNumber().toString(),
+        amount: e.amount.toNumber(),
       });
     }
   });
@@ -256,7 +412,7 @@ async function _fetchCollateralRewards(api: ApiPromise, pool: any, address: stri
     sharesTotal: res[0].totalShares,
     shares: res[1][0],
     proportion: proportion.toNumber() || 0,
-    reward: incentives,
+    reward: incentives.filter((e) => !!e.amount),
   };
 }
 
@@ -816,10 +972,14 @@ async function queryDexIncentiveLoyaltyEndBlock(api: ApiPromise) {
 }
 
 export default {
+  getSwapTokens,
   calcTokenSwapAmount,
   getAllTokens,
+  getTokenPrices,
   getTokenBalance,
   getTokenPairs,
+  getTaigaTokenPairs,
+  getTaigaPoolInfo,
   getBootstraps,
   fetchCollateralRewards,
   fetchDexPoolInfo,

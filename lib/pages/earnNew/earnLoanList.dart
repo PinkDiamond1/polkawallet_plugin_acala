@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_acala/api/earn/types/incentivesData.dart';
 import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
@@ -58,40 +57,33 @@ class _EarnLoanListState extends State<EarnLoanList> {
   @override
   Widget build(BuildContext context) {
     final incentiveTokenSymbol = widget.plugin.networkState.tokenSymbol![0];
-    return Observer(
-      builder: (_) {
-        final loans = widget.plugin.store!.loan.loans.values.toList();
-        loans.retainWhere((loan) =>
-            loan.debits > BigInt.zero || loan.collaterals > BigInt.zero);
 
-        return _loading
-            ? ListView(
-                padding: EdgeInsets.all(16),
-                children: [
-                  ConnectionChecker(widget.plugin, onConnected: _fetchData),
-                  Center(
-                    child: Container(
-                      height: MediaQuery.of(context).size.width,
-                      child: ListTail(
-                        isEmpty: true,
-                        isLoading: true,
-                        color: Colors.white,
-                      ),
-                    ),
-                  )
-                ],
+    return _loading
+        ? ListView(
+            padding: EdgeInsets.all(16),
+            children: [
+              ConnectionChecker(widget.plugin, onConnected: _fetchData),
+              Center(
+                child: Container(
+                  height: MediaQuery.of(context).size.width,
+                  child: ListTail(
+                    isEmpty: true,
+                    isLoading: true,
+                    color: Colors.white,
+                  ),
+                ),
               )
-            : CollateralIncentiveList(
-                plugin: widget.plugin,
-                tokenIcons: widget.plugin.tokenIcons,
-                incentives: widget.plugin.store!.earn.incentives.loans,
-                rewards: widget.plugin.store!.loan.collateralRewards,
-                incentiveTokenSymbol: incentiveTokenSymbol,
-                dexIncentiveLoyaltyEndBlock:
-                    widget.plugin.store!.earn.dexIncentiveLoyaltyEndBlock,
-              );
-      },
-    );
+            ],
+          )
+        : CollateralIncentiveList(
+            plugin: widget.plugin,
+            tokenIcons: widget.plugin.tokenIcons,
+            incentives: widget.plugin.store!.earn.incentives.loans,
+            rewards: widget.plugin.store!.loan.collateralRewards,
+            incentiveTokenSymbol: incentiveTokenSymbol,
+            dexIncentiveLoyaltyEndBlock:
+                widget.plugin.store!.earn.dexIncentiveLoyaltyEndBlock,
+          );
   }
 }
 
@@ -246,7 +238,7 @@ class CollateralIncentiveList extends StatelessWidget {
           TokenBalanceData? edErrorToken;
           final rewardView = reward != null && reward.reward!.length > 0
               ? reward.reward!.map((e) {
-                  double amount = double.parse(e['amount']);
+                  num amount = e['amount'];
                   if (amount < 0) {
                     amount = 0;
                   }
@@ -261,7 +253,7 @@ class CollateralIncentiveList extends StatelessWidget {
                               amount.toString(), rewardToken.decimals!)) {
                     edErrorToken = rewardToken;
                   }
-                  return '${Fmt.priceFloor(amount)} ${PluginFmt.tokenView(rewardToken.symbol)}';
+                  return '${Fmt.priceFloor(amount.toDouble())} ${PluginFmt.tokenView(rewardToken.symbol)}';
                 }).join(' + ')
               : '0.00';
 

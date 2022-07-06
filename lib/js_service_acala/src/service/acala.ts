@@ -25,6 +25,7 @@ const taigaPoolApy: Record<string, number> = {};
 let ACA_SYS_BLOCK_TIME = new BN(12000);
 
 let homa: Homa;
+let stableAssetApi: StableAssetRx;
 let oracle: OraclePriceProvider;
 
 function _computeExchangeFee(path: Token[], fee: FixedPointNumber) {
@@ -256,15 +257,10 @@ async function getTokenPairs(api: ApiPromise) {
     }));
 }
 
-async function getTaigaTokenPairs(apiRx: ApiRx) {
-  if (!homa) {
-    homa = new Homa((<any>window).api, (<any>window).wallet);
-  }
+async function getTaigaTokenPairs() {
+  _ensureTaigaEnv();
 
-  const [stablePools, homaEnv] = await Promise.all([
-    firstValueFrom(new StableAssetRx(apiRx).subscribeAllPools().pipe(take(1))),
-    homa.getEnv(),
-  ]);
+  const [stablePools, homaEnv] = await Promise.all([firstValueFrom(stableAssetApi.subscribeAllPools().pipe(take(1))), homa.getEnv()]);
   return stablePools.map(({ poolAsset, assets, balances, precisions }) => {
     if (assets[1].toJSON()["token"] === "LDOT") {
       balances[1] = balances[1].div(new BigNumber(homaEnv.exchangeRate.toNumber()));
@@ -305,7 +301,7 @@ async function getTaigaPoolInfo(api: ApiPromise, address: string) {
   const [tDOTApy] = await Promise.all([0].map((i) => _queryTaigaPoolApy("acala", i)));
   const [tDOTReward] = await Promise.all([0].map((i) => _queryTaigaUserRewards("acala", i, address)));
   const tDOTshares = await _fetchCollateralRewards(api, { StableAssetPoolToken: 0 }, address);
-  // const threeUSDshares = await (<any>window).wallet.getIssuance("sa://1");
+  const [tDOTIssurance] = await Promise.all([0].map((i) => (<any>window).wallet.getIssuance(`sa://${i}`)));
   return {
     "sa://0": {
       apy: tDOTApy,
@@ -313,6 +309,7 @@ async function getTaigaPoolInfo(api: ApiPromise, address: string) {
       rewardTokens: ["sa://0"],
       userShares: tDOTshares.shares,
       totalShares: tDOTshares.sharesTotal,
+      issurance: tDOTIssurance.toChainData(),
     },
     // "sa://1": {
     //   apy: threeUSDApy,
@@ -322,6 +319,60 @@ async function getTaigaPoolInfo(api: ApiPromise, address: string) {
     //   totalShares: threeUSDshares.toChainData(),
     // },
   };
+}
+
+async function getTaigaMintAmount(poolNameId: string, input: string[], slippage: number) {
+  _ensureTaigaEnv();
+
+  const [stablePools, homaEnv] = await Promise.all([firstValueFrom(stableAssetApi.subscribeAllPools().pipe(take(1))), homa.getEnv()]);
+  const pool = stablePools.find((e) => forceToCurrencyName(e.poolAsset) === poolNameId);
+  const poolTokens = pool.assets.map((e) => (<any>window).wallet.__getToken(e));
+  const adjustedExchangeRate = homaEnv.exchangeRate.times(new FixedPointNumber(0.999));
+  const res = await firstValueFrom(
+    stableAssetApi
+      .getMintAmount(
+        poolNameId.match("sa://0") ? 0 : 1,
+        input.map((e, i) => FixedPointNumber.fromInner(e, poolTokens[i].decimals)) as any[],
+        slippage,
+        adjustedExchangeRate as any
+      )
+      .pipe(take(1))
+  );
+  return {
+    minAmount: res.getMinMintAmount().toChainData(),
+    params: res.toChainData(),
+  };
+}
+
+async function getTaigaRedeemAmount(poolNameId: string, input: string, slippage: number) {
+  _ensureTaigaEnv();
+
+  const [stablePools, homaEnv] = await Promise.all([firstValueFrom(stableAssetApi.subscribeAllPools().pipe(take(1))), homa.getEnv()]);
+  const pool = stablePools.find((e) => forceToCurrencyName(e.poolAsset) === poolNameId);
+  const adjustedExchangeRate = homaEnv.exchangeRate.times(new FixedPointNumber(0.999));
+  const res = await firstValueFrom(
+    stableAssetApi
+      .getRedeemProportionAmount(
+        poolNameId.match("sa://0") ? 0 : 1,
+        FixedPointNumber.fromInner(input, (<any>window).wallet.__getToken(pool.poolAsset).decimals) as any,
+        slippage,
+        adjustedExchangeRate as any
+      )
+      .pipe(take(1))
+  );
+  return {
+    minAmount: res.getMinOutputAmounts().map((e) => e.toChainData()),
+    params: res.toChainData(),
+  };
+}
+
+function _ensureTaigaEnv() {
+  if (!stableAssetApi) {
+    stableAssetApi = new StableAssetRx((<any>window).apiRx);
+  }
+  if (!homa) {
+    homa = new Homa((<any>window).api, (<any>window).wallet);
+  }
 }
 
 /**
@@ -412,7 +463,7 @@ async function _fetchCollateralRewards(api: ApiPromise, pool: any, address: stri
     sharesTotal: res[0].totalShares,
     shares: res[1][0],
     proportion: proportion.toNumber() || 0,
-    reward: incentives.filter((e) => !!e.amount),
+    reward: incentives.filter((e) => !!e.amount && e.amount > 0),
   };
 }
 
@@ -980,6 +1031,8 @@ export default {
   getTokenPairs,
   getTaigaTokenPairs,
   getTaigaPoolInfo,
+  getTaigaMintAmount,
+  getTaigaRedeemAmount,
   getBootstraps,
   fetchCollateralRewards,
   fetchDexPoolInfo,

@@ -539,8 +539,9 @@ class _MultiplyAdjustPanelState extends State<MultiplyAdjustPanel> {
                       color: Color(0xFFFFFFFF).withAlpha(204)),
                 ),
                 onTap: () async {
-                  final res =
-                      await Navigator.of(context).pushNamed(LoanPage.route);
+                  final res = await Navigator.of(context).pushNamed(
+                      LoanPage.route,
+                      arguments: {'loanType': token.tokenNameId});
                   if (res != null) {
                     Future.delayed(Duration(milliseconds: 500), () {
                       widget.onRefresh();

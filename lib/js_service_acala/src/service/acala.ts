@@ -87,94 +87,56 @@ async function getSwapTokens(apiRx: ApiRx) {
     };
   });
 }
+
 /**
  * calc token swap amount
  */
-// async function calcTokenSwapAmount(apiRx: ApiRx, input: number, output: number, swapPair: string[], slippage: number) {
-//   if (!swapper) {
-//     await _initDexSDK(apiRx);
-//   }
+async function calcTokenSwapAmount(apiRx: ApiRx, input: number, output: number, swapPair: string[], slippage: number) {
+  if (!swapper) {
+    await _initDexSDK(apiRx);
+  }
 
-//   const inputToken = await ((<any>window).wallet as Wallet).getToken(swapPair[0]);
-//   const outputToken = await ((<any>window).wallet as Wallet).getToken(swapPair[1]);
-//   const i = new FixedPointNumber(input || 0, inputToken.decimals);
-//   const o = new FixedPointNumber(output || 0, outputToken.decimals);
-
-//   const mode = output === null ? "EXACT_INPUT" : "EXACT_OUTPUT";
-
-//   try {
-//     const result = await firstValueFrom(
-//       swapper
-//         .swap({
-//           source: "aggregate",
-//           mode,
-//           path: [inputToken, outputToken],
-//           input: output === null ? i : o,
-//           acceptiveSlippage: slippage,
-//         })
-//         .pipe(throttleTime(100))
-//     );
-
-//     const res = result.result;
-//     const path = result.tracker;
-//     if (res.input) {
-//       const tx = swapper.getTradingTx(result);
-//       return {
-//         amount: output === null ? res.output.amount.toNumber(6) : res.input.amount.toNumber(6),
-//         priceImpact: path.map((e) => e.naturalPriceImpact.toNumber(6)),
-//         fee: path.map((e) => e.exchangeFee.toNumber(6)),
-//         feeToken: path.map((e) => (e.source === "acala" ? e.input.token.name : e.output.token.name)),
-//         path: res.path.map((e) => ({ dex: e[0], path: e[1].map((i) => i.name) })),
-//         tx: {
-//           section: tx.method.section,
-//           method: tx.method.method,
-//           params: tx.args.map((e) => e.toJSON()),
-//         },
-//       };
-//     }
-//     return { error: "dex error" };
-//   } catch (err) {
-//     return { error: err };
-//   }
-// }
-
-async function calcTokenSwapAmount(api: ApiPromise, input: number, output: number, swapPair: Object[], slippage: number) {
-  // if (!swapper) {
-  //   swapper = new SwapPromise(api);
-  // }
-  const swapper = new SwapPromise(api);
-
-  const inputToken = Token.fromCurrencyId(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, swapPair[0]), {
-    decimal: swapPair[0]["decimals"],
-  });
-  const outputToken = Token.fromCurrencyId(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, swapPair[1]), {
-    decimal: swapPair[1]["decimals"],
-  });
+  const inputToken = await ((<any>window).wallet as Wallet).getToken(swapPair[0]);
+  const outputToken = await ((<any>window).wallet as Wallet).getToken(swapPair[1]);
   const i = new FixedPointNumber(input || 0, inputToken.decimals);
   const o = new FixedPointNumber(output || 0, outputToken.decimals);
 
   const mode = output === null ? "EXACT_INPUT" : "EXACT_OUTPUT";
 
-  return new Promise((resolve, reject) => {
-    const exchangeFee = api.consts.dex.getExchangeFee as any;
+  try {
+    const result = await firstValueFrom(
+      swapper
+        .swap({
+          source: "aggregate",
+          mode,
+          path: [inputToken, outputToken],
+          input: output === null ? i : o,
+          acceptiveSlippage: slippage,
+        })
+        .pipe(throttleTime(100))
+    );
 
-    swapper
-      .swap([inputToken, outputToken], output === null ? i : o, mode)
-      .then((res: any) => {
-        const feeRate = new FixedPointNumber(exchangeFee[0].toString()).div(new FixedPointNumber(exchangeFee[1].toString()));
-        if (res.input) {
-          resolve({
-            amount: output === null ? res.output.balance.toNumber(6) : res.input.balance.toNumber(6),
-            priceImpact: res.naturalPriceImpact.toNumber(6),
-            fee: res.input.balance.times(_computeExchangeFee(res.path, feeRate)).toNumber(6),
-            path: res.path,
-          });
-        }
-      })
-      .catch((err) => {
-        resolve({ error: err });
-      });
-  });
+    const res = result.result;
+    const path = result.tracker;
+    if (res.input) {
+      const tx = swapper.getTradingTx(result);
+      return {
+        amount: output === null ? res.output.amount.toNumber(6) : res.input.amount.toNumber(6),
+        priceImpact: path.map((e) => e.naturalPriceImpact.toNumber(6)),
+        fee: path.map((e) => e.exchangeFee.toNumber(6)),
+        feeToken: path.map((e) => (e.source === "acala" ? e.input.token.name : e.output.token.name)),
+        path: res.path.map((e) => ({ dex: e[0], path: e[1].map((i) => i.name) })),
+        tx: {
+          section: tx.method.section,
+          method: tx.method.method,
+          params: tx.args.map((e) => e.toJSON()),
+        },
+      };
+    }
+    return { error: "dex error" };
+  } catch (err) {
+    return { error: err };
+  }
 }
 
 /**

@@ -8,6 +8,11 @@ class AcalaServiceSwap {
 
   final PluginAcala plugin;
 
+  Future<List?> getSwapTokens() async {
+    return await plugin.sdk.webView!
+        .evalJavascript('acala.getSwapTokens(apiRx)');
+  }
+
   Future<Map?> queryTokenSwapAmount(
     String? supplyAmount,
     String? targetAmount,
@@ -15,7 +20,7 @@ class AcalaServiceSwap {
     String slippage,
   ) async {
     final code =
-        'acala.calcTokenSwapAmount(api, $supplyAmount, $targetAmount, ${jsonEncode(swapPair)}, $slippage)';
+        'acala.calcTokenSwapAmount(apiRx, $supplyAmount, $targetAmount, ${jsonEncode(swapPair)}, $slippage)';
     final output = await plugin.sdk.webView!.evalJavascript(code);
     return output;
   }

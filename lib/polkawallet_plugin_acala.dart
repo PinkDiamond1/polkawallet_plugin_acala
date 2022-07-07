@@ -371,6 +371,7 @@ class PluginAcala extends PolkawalletPlugin {
     _service!.connected = true;
 
     if (keyring.current.address != null) {
+      await _store?.swap.initDexTokens(this);
       _subscribeTokenBalances(keyring.current);
     }
   }

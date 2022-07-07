@@ -43,7 +43,7 @@ class ServiceAssets {
         (e?.symbol ?? '').toLowerCase().contains('tai'));
 
     final output = await plugin.sdk.webView?.evalJavascript(
-        'Promise.all([${tokens.map((e) => 'acala.calcTokenSwapAmount(api, 1, null, ${jsonEncode([
+        'Promise.all([${tokens.map((e) => 'acala.calcTokenSwapAmount(apiRx, 1, null, ${jsonEncode([
               e?.tokenNameId,
               acala_stable_coin
             ].map((e) {

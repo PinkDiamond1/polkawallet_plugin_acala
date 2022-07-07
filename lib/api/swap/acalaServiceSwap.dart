@@ -16,7 +16,7 @@ class AcalaServiceSwap {
   Future<Map?> queryTokenSwapAmount(
     String? supplyAmount,
     String? targetAmount,
-    List<Map> swapPair,
+    List<String?> swapPair,
     String slippage,
   ) async {
     final code =

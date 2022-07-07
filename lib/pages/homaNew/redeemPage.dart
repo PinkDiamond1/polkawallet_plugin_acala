@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_acala/api/types/calcHomaRedeemAmount.dart';
+import 'package:polkawallet_plugin_acala/api/types/swapOutputData.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/swapNew/bootstrapPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
@@ -44,6 +45,7 @@ class _RedeemPageState extends State<RedeemPage> {
   num _receiveAmount = 0;
   num _fastReceiveAmount = 0;
   num _swapAmount = 0;
+  SwapOutputData _swapOutput = SwapOutputData();
 
   List<String>? symbols;
   final stakeToken = relay_chain_token_symbol;
@@ -102,16 +104,18 @@ class _RedeemPageState extends State<RedeemPage> {
             widget.plugin, 'L$stakeToken');
         final token =
             AssetsUtils.getBalanceFromTokenNameId(widget.plugin, stakeToken);
+        const slippage = 0.005;
         final swapRes = await widget.plugin.api!.swap.queryTokenSwapAmount(
             input.toString(),
             null,
             [
-              {...lToken.currencyId!, 'decimals': lToken.decimals},
-              {...token.currencyId!, 'decimals': token.decimals},
+              lToken.tokenNameId!,
+              token.tokenNameId!,
             ],
-            '0.1');
+            slippage.toString());
         setState(() {
-          _swapAmount = swapRes.amount!;
+          _swapAmount = swapRes.amount! * (1 - slippage);
+          _swapOutput = swapRes;
           isLoading = false;
         });
       } catch (err) {
@@ -247,26 +251,12 @@ class _RedeemPageState extends State<RedeemPage> {
         params = [];
         paramsRaw = '[['
             'api.tx.homa.requestRedeem(...${jsonEncode([0, false])}),'
-            'api.tx.dex.swapWithExactSupply(...${jsonEncode([
-              [
-                {'Token': 'L$stakeToken'},
-                {'Token': stakeToken}
-              ],
-              (_maxInput ?? Fmt.tokenInt(pay, stakeDecimal)).toString(),
-              "0",
-            ])})'
+            'api.tx.${_swapOutput.tx!["section"]}.${_swapOutput.tx!["method"]}(...${jsonEncode(_swapOutput.tx!["params"])})'
             ']]';
       } else {
-        module = 'dex';
-        call = 'swapWithExactSupply';
-        params = [
-          [
-            {'Token': 'L$stakeToken'},
-            {'Token': stakeToken}
-          ],
-          (_maxInput ?? Fmt.tokenInt(pay, stakeDecimal)).toString(),
-          "0",
-        ];
+        module = _swapOutput.tx!["section"];
+        call = _swapOutput.tx!["method"];
+        params = _swapOutput.tx!["params"];
       }
     }
 

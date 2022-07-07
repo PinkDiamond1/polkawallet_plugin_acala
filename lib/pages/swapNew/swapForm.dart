@@ -219,11 +219,7 @@ class _SwapFormState extends State<SwapForm>
         final output = await widget.plugin.api!.swap.queryTokenSwapAmount(
           supply,
           target.isEmpty ? '1' : target,
-          _swapPair.map((e) {
-            final token =
-                AssetsUtils.getBalanceFromTokenNameId(widget.plugin, e);
-            return {...token.currencyId!, 'decimals': token.decimals};
-          }).toList(),
+          _swapPair,
           _slippage.toString(),
         );
         if (mounted) {
@@ -247,11 +243,7 @@ class _SwapFormState extends State<SwapForm>
         final output = await widget.plugin.api!.swap.queryTokenSwapAmount(
           supply.isEmpty ? '1' : supply,
           target,
-          _swapPair.map((e) {
-            final token =
-                AssetsUtils.getBalanceFromTokenNameId(widget.plugin, e);
-            return {...token.currencyId!, 'decimals': token.decimals};
-          }).toList(),
+          _swapPair,
           _slippage.toString(),
         );
         if (mounted) {
@@ -1002,7 +994,7 @@ class RouteWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Image.asset(
-                    "packages/polkawallet_plugin_karura/assets/images/swapRoute/${path![index].dex == "acala" ? "acala" : "${path![index].dex}-tapio-icon"}.png",
+                    "packages/polkawallet_plugin_acala/assets/images/swapRoute/${path![index].dex == "acala" ? "acala" : "${path![index].dex}-tapio-icon"}.png",
                     height: 18),
                 Padding(
                     padding: EdgeInsets.only(top: 15),

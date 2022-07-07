@@ -104,13 +104,8 @@ class _LoanPageState extends State<LoanPage> {
       null,
       debit.toStringAsFixed(2),
       [
-        {...collateral.currencyId!, 'decimals': collateral.decimals},
-        {
-          'Token': acala_stable_coin,
-          'decimals': AssetsUtils.getBalanceFromTokenNameId(
-                  widget.plugin, acala_stable_coin)
-              .decimals
-        }
+        collateral.tokenNameId!,
+        acala_stable_coin,
       ],
       '0.01',
     );

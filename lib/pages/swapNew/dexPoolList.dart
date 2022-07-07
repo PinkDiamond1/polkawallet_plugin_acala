@@ -198,17 +198,16 @@ class _DexPoolCard extends StatelessWidget {
                               padding: EdgeInsets.only(left: 4),
                               child: Image.asset(
                                 "packages/polkawallet_plugin_acala/assets/images/unstaked.png",
-                                width: 24,
+                                width: 22,
                               ))),
                       Visibility(
                           visible:
                               (poolInfo?.shares ?? BigInt.zero) != BigInt.zero,
                           child: Padding(
                               padding: EdgeInsets.only(left: 4),
-                              child: SvgPicture.asset(
-                                "packages/polkawallet_plugin_acala/assets/images/staked.svg",
-                                color: Colors.white,
-                                width: 24,
+                              child: Image.asset(
+                                "packages/polkawallet_plugin_acala/assets/images/staked_1.png",
+                                width: 22,
                               ))),
                       Visibility(
                           visible: canClaim,
@@ -216,7 +215,7 @@ class _DexPoolCard extends StatelessWidget {
                               padding: EdgeInsets.only(left: 4),
                               child: Image.asset(
                                 "packages/polkawallet_plugin_acala/assets/images/rewards.png",
-                                width: 24,
+                                width: 22,
                               ))),
                     ],
                   )

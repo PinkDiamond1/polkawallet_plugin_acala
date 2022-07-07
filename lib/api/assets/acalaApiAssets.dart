@@ -33,6 +33,7 @@ class AcalaApiAssets {
   }
 
   Future<Map<String, num>> getTokenPrices(List<String> tokens) async {
+    tokens.add('ACA');
     final res = await service.getTokenPrices(tokens);
     return Map<String, num>.from(res);
   }

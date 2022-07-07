@@ -185,9 +185,9 @@ class _HomaPageState extends State<HomaPage> {
       final balances = AssetsUtils.getBalancePairFromTokenNameId(
           widget.plugin, [stakeSymbol, 'L$stakeSymbol']);
       final balanceStakeToken =
-          Fmt.balanceDouble(balances[0].amount!, balances[0].decimals!);
+          Fmt.balanceDouble(balances[0].amount ?? '0', balances[0].decimals!);
       final balanceLiquidToken =
-          Fmt.balanceDouble(balances[1].amount!, balances[1].decimals!);
+          Fmt.balanceDouble(balances[1].amount ?? '0', balances[1].decimals!);
       double unbonding = 0;
       (widget.plugin.store?.homa.userInfo?.unbondings ?? []).forEach((e) {
         unbonding += e['amount'];
@@ -201,9 +201,7 @@ class _HomaPageState extends State<HomaPage> {
           MediaQuery.of(context).size.width - paddingHorizontal * 2;
       final riveHeight = riveWidget / 360 * 292;
 
-      // todo: use fixed APY 14.78% here.
-      final aprValue = 14.78;
-      // "${Fmt.priceFloor((env?.apy ?? 0) * 100, lengthFixed: 0)}%";
+      final aprValue = (env?.apy ?? 0) * 100;
       bool isRewardsOpen = false;
       double rewardApr = 0;
       final rewards =

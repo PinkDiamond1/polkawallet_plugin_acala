@@ -165,7 +165,7 @@ async function getAllTokens(api: ApiPromise) {
  * getTokensPrices
  */
 async function getTokenPrices(tokens: string[]) {
-  const prices = await Promise.all(tokens.map((e) => ((<any>window).wallet as Wallet).getPrice(e)));
+  const prices = await Promise.all(tokens.map((e) => ((<any>window).wallet as Wallet).getPrice(e === 'LCDOT' ? 'lcDOT' : e)));
   return prices.reduce((res, e, i) => ({ ...res, [tokens[i]]: e.toNumber(6) }), {});
 }
 
@@ -853,12 +853,12 @@ function _calcLPAssets(api: ApiPromise, allTokens: any[], poolInfos: any[], lpTo
   return [res, lpTokensFree, lpRewards];
 }
 
-function _formatHomaEnv(env: HomaEnvironment) {
+function _formatHomaEnv(env: HomaEnvironment, apy: number) {
   return {
     totalStaking: env.totalStaking.toNumber(),
     totalLiquidity: env.totalLiquidity.toNumber(),
     exchangeRate: env.exchangeRate.toNumber(),
-    apy: env.apy || 0,
+    apy,
     fastMatchFeeRate: env.fastMatchFeeRate.toNumber(),
     mintThreshold: env.mintThreshold.toNumber(),
     redeemThreshold: env.redeemThreshold.toNumber(),
@@ -872,8 +872,11 @@ async function queryHomaNewEnv(api: ApiPromise) {
     homa = new Homa(api, (<any>window).wallet);
   }
 
-  const result = await homa.getEnv();
-  return _formatHomaEnv(result);
+  const [homaEnv, apy] = await Promise.all([
+    homa.getEnv(),
+    axios.get('https://api.polkawallet.io/height-time-avg/apr?network=acala')
+  ]);
+  return _formatHomaEnv(homaEnv, apy.data as number || 0);
 }
 
 async function calcHomaNewMintAmount(api: ApiPromise, amount: number) {

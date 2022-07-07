@@ -234,7 +234,7 @@ class _MintPageState extends State<MintPage> {
 
         final minStake = widget.plugin.store!.homa.env!.mintThreshold;
 
-        final baseApy = 14.78;
+        final baseApy = (widget.plugin.store!.homa.env?.apy ?? 0) * 100;
         bool isRewardsOpen = false;
         double rewardApr = 0;
         final rewards = widget

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/common/components/videoPlayerContainer.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/api/types/nftData.dart';
@@ -178,12 +179,11 @@ class _NftPageState extends State<NftPage> {
             Padding(
                 padding: EdgeInsets.only(right: 12),
                 child: PluginIconButton(
-                  icon: Center(
-                      child: Image.asset(
-                    'packages/polkawallet_plugin_acala/assets/images/screening.png',
-                    color: Colors.black,
-                    width: 25,
-                  )),
+                  icon: SvgPicture.asset(
+                    'assets/images/icon_screening.svg',
+                    color: PluginColorsDark.headline1,
+                    width: 22,
+                  ),
                   onPressed: () {
                     showCupertinoModalPopup(
                       context: context,

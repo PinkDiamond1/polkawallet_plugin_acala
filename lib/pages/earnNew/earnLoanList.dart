@@ -235,7 +235,6 @@ class CollateralIncentiveList extends StatelessWidget {
 
           bool canClaim = false;
           final reward = rewards![token.tokenNameId];
-          TokenBalanceData? edErrorToken;
           final rewardView = reward != null && reward.reward!.length > 0
               ? reward.reward!.map((e) {
                   num amount = e['amount'];
@@ -247,12 +246,6 @@ class CollateralIncentiveList extends StatelessWidget {
                   }
                   final rewardToken = AssetsUtils.getBalanceFromTokenNameId(
                       plugin, e['tokenNameId']);
-                  if (rewardToken.amount == BigInt.zero.toString() &&
-                      BigInt.parse(rewardToken.minBalance!) >
-                          Fmt.tokenInt(
-                              amount.toString(), rewardToken.decimals!)) {
-                    edErrorToken = rewardToken;
-                  }
                   return '${Fmt.priceFloor(amount.toDouble())} ${PluginFmt.tokenView(rewardToken.symbol)}';
                 }).join(' + ')
               : '0.00';
@@ -434,17 +427,6 @@ class CollateralIncentiveList extends StatelessWidget {
                                 ),
                               ],
                             )),
-                        edErrorToken != null
-                            ? Text(
-                                "${dic['earn.dex.edError1']} ${Fmt.priceFloorBigIntFormatter(BigInt.parse(edErrorToken!.minBalance!), edErrorToken!.decimals!, lengthMax: 6)} ${PluginFmt.tokenView(edErrorToken!.symbol)} ${dic['earn.dex.edError2']}",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline5
-                                    ?.copyWith(
-                                        color: Colors.white,
-                                        fontSize: UI.getTextSize(10, context)),
-                              )
-                            : Container()
                       ],
                     )),
                 Container(

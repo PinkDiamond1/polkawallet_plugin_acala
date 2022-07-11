@@ -586,7 +586,6 @@ class _UserCard extends StatelessWidget {
         stableCoinDecimal!);
     canClaim = rewardSaving > savingRewardTokenMin;
     var rewardPrice = 0.0;
-    TokenBalanceData? edErrorToken;
     final String rewardV2 = poolInfo!.reward!.incentive.map((e) {
       double amount = double.parse(e['amount']);
       if (amount < 0) {
@@ -599,11 +598,6 @@ class _UserCard extends StatelessWidget {
           AssetsUtils.getBalanceFromTokenNameId(plugin, e['tokenNameId']);
       rewardPrice +=
           AssetsUtils.getMarketPrice(plugin, rewardToken.symbol ?? '') * amount;
-      if (rewardToken.amount == BigInt.zero.toString() &&
-          BigInt.parse(rewardToken.minBalance!) >
-              Fmt.tokenInt(amount.toString(), rewardToken.decimals!)) {
-        edErrorToken = rewardToken;
-      }
       return Fmt.priceFloor(amount, lengthMax: 4) +
           ' ${PluginFmt.tokenView(rewardToken.symbol)}';
     }).join(' + ');
@@ -625,11 +619,6 @@ class _UserCard extends StatelessWidget {
       reward =
           "$reward + ${Fmt.priceFloor(rewardSaving, lengthMax: 2)} $stableCoinSymbol";
       rewardPrice += rewardSaving;
-      if (plugin.store!.assets.tokenBalanceMap[stableCoinSymbol]!.amount ==
-              BigInt.zero.toString() &&
-          rewardSaving < savingRewardTokenMin) {
-        edErrorToken = plugin.store!.assets.tokenBalanceMap[stableCoinSymbol]!;
-      }
     }
 
     return Visibility(
@@ -674,19 +663,6 @@ class _UserCard extends StatelessWidget {
                                 context, rewardV2, rewardSaving, blocksToEnd)
                             : null),
                   ),
-                  edErrorToken != null
-                      ? Padding(
-                          padding: EdgeInsets.only(top: 16),
-                          child: Text(
-                            "${dic['earn.dex.edError1']} ${Fmt.priceFloorBigIntFormatter(BigInt.parse(edErrorToken!.minBalance!), edErrorToken!.decimals!, lengthMax: 6)} ${PluginFmt.tokenView(edErrorToken!.symbol)} ${dic['earn.dex.edError2']}",
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline5
-                                ?.copyWith(
-                                    color: Colors.white,
-                                    fontSize: UI.getTextSize(10, context)),
-                          ))
-                      : Container()
                 ],
               ),
             )));

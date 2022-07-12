@@ -154,7 +154,7 @@ class XcmChainSelector extends StatelessWidget {
               padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
               margin: EdgeInsets.only(bottom: 15),
               child: Image.asset(
-                  "packages/polkawallet_plugin_karura/assets/images/xcm_to.png",
+                  "packages/polkawallet_plugin_acala/assets/images/xcm_to.png",
                   width: 13),
             ),
             onTap: fromChains.length > 0 ? _switch : null,

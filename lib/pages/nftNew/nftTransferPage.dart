@@ -27,7 +27,7 @@ class NFTTransferPage extends StatefulWidget {
   final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/nft/transfer';
+  static const String route = '/acala/nft/transfer';
 
   @override
   _NFTTransferPageState createState() => _NFTTransferPageState();

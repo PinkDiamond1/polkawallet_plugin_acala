@@ -630,12 +630,16 @@ class _UserCard extends StatelessWidget {
               margin: EdgeInsets.zero,
               child: Column(
                 children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.only(bottom: 12),
-                    child: Image.asset(
-                      "packages/polkawallet_plugin_acala/assets/images/lp_detail_rewards.png",
-                      width: 100,
-                    ),
+                  Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(bottom: 12),
+                        child: Image.asset(
+                          "packages/polkawallet_plugin_acala/assets/images/lp_detail_reward.png",
+                          width: 150,
+                        ),
+                      ),
+                    ],
                   ),
                   Text(
                     "\$ ${Fmt.doubleFormat(rewardPrice)}",

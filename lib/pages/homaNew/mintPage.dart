@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/homaNew/completedPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homaNew/redeemPage.dart';
 import 'package:polkawallet_plugin_acala/pages/swapNew/bootstrapPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
@@ -37,7 +38,15 @@ class _MintPageState extends State<MintPage> {
   String _amountReceive = '';
   BigInt? _maxInput;
   bool isLoading = false;
-  int _selectIndex = 0;
+  int _selectIndex = 1;
+
+  Future<void> _queryTaigaPoolInfo() async {
+    final info = await widget.plugin.api!.earn
+        .getTaigaPoolInfo(widget.keyring.current.address!);
+    widget.plugin.store!.earn.setTaigaPoolInfo(info);
+    final data = await widget.plugin.api!.earn.getTaigaTokenPairs();
+    widget.plugin.store!.earn.setTaigaTokenPairs(data!);
+  }
 
   Future<void> _updateReceiveAmount(double input) async {
     if (input == 0) {
@@ -201,8 +210,18 @@ class _MintPageState extends State<MintPage> {
         ))) as Map?;
 
     if (res != null) {
-      Navigator.of(context)
-          .pop('${Fmt.balanceDouble(_amountReceive, liquidDecimals)}');
+      final data = ModalRoute.of(context)!.settings.arguments as Map;
+      if (data != null &&
+          data["selectMethod"] != null &&
+          data["selectMethod"]) {
+        Navigator.of(context).popAndPushNamed(CompletedPage.route, arguments: {
+          "receive": Fmt.priceFloorBigInt(Fmt.balanceInt(_amountReceive), 12,
+              lengthMax: 4)
+        });
+      } else {
+        Navigator.of(context)
+            .pop('${Fmt.balanceDouble(_amountReceive, liquidDecimals)}');
+      }
     }
   }
 
@@ -210,6 +229,18 @@ class _MintPageState extends State<MintPage> {
   void dispose() {
     _amountPayCtrl.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final data = ModalRoute.of(context)!.settings.arguments as Map;
+      if (data != null && data["selectMethod"] != null) {
+        _queryTaigaPoolInfo();
+      }
+    });
   }
 
   @override
@@ -232,7 +263,15 @@ class _MintPageState extends State<MintPage> {
         final balanceDouble = Fmt.balanceDouble(
             balances[0].amount ?? "0", balances[0].decimals ?? 12);
 
+        final isDataLoading = widget.plugin.store!.homa.env == null;
+
         final minStake = widget.plugin.store!.homa.env!.mintThreshold;
+
+        final data = ModalRoute.of(context)!.settings.arguments as Map;
+        bool isSelectMethod = false;
+        if (data != null && data["selectMethod"] != null) {
+          isSelectMethod = data["selectMethod"];
+        }
 
         final baseApy = (widget.plugin.store!.homa.env?.apy ?? 0) * 100;
         bool isRewardsOpen = false;
@@ -248,164 +287,191 @@ class _MintPageState extends State<MintPage> {
           });
         }
 
+        final dexPools = widget.plugin.store!.earn.taigaPoolInfoMap;
+        double taigaApr = 0;
+        dexPools["sa://0"]?.apy.forEach((key, value) {
+          taigaApr += value;
+        });
+
         return PluginScaffold(
           appBar: PluginAppBar(
               title: Text('${dic['homa.mint']} L$relay_chain_token_symbol'),
               centerTitle: true),
           body: SafeArea(
-              child: ListView(
-            padding: EdgeInsets.all(16),
-            children: <Widget>[
-              PluginInputBalance(
-                tokenViewFunction: (value) {
-                  return PluginFmt.tokenView(value);
-                },
-                inputCtrl: _amountPayCtrl,
-                margin: EdgeInsets.only(bottom: 2),
-                titleTag: dic['earn.stake'],
-                onInputChange: (v) =>
-                    _onSupplyAmountChange(v, balanceDouble, minStake),
-                onSetMax: karBalance > 0.1
-                    ? (v) =>
-                        _onSetMax(v, stakeDecimals, balanceDouble, minStake)
-                    : null,
-                onClear: () {
-                  setState(() {
-                    _amountPayCtrl.text = '';
-                  });
-                  _onSupplyAmountChange('', balanceDouble, minStake);
-                },
-                balance: balances[0],
-                tokenIconsMap: widget.plugin.tokenIcons,
-              ),
-              ErrorMessage(
-                _error,
-                margin: EdgeInsets.symmetric(vertical: 2),
-              ),
-              Visibility(visible: isLoading, child: PluginLoadingWidget()),
-              Visibility(
-                  visible: _amountReceive.isNotEmpty &&
-                      _amountPayCtrl.text.length > 0,
-                  child: PluginInputBalance(
-                    tokenViewFunction: (value) {
-                      return PluginFmt.tokenView(value);
-                    },
-                    enabled: false,
-                    text: Fmt.priceFloorBigInt(
-                        Fmt.balanceInt(_amountReceive), liquidDecimals,
-                        lengthMax: 4),
-                    margin: EdgeInsets.only(bottom: 2),
-                    titleTag: dic['homa.mint'],
-                    balance: widget.plugin.store!.assets
-                        .tokenBalanceMap["L$relay_chain_token_symbol"],
-                    tokenIconsMap: widget.plugin.tokenIcons,
-                  )),
-              Container(
-                margin: EdgeInsets.only(top: 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      dic['v3.homa.minStakingAmount']!,
-                      style: Theme.of(context).textTheme.headline4?.copyWith(
-                          color: Colors.white,
-                          fontSize: UI.getTextSize(12, context),
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Text(
-                      "$minStake $relay_chain_token_symbol",
-                      style: Theme.of(context).textTheme.headline4?.copyWith(
-                          color: Colors.white,
-                          fontSize: UI.getTextSize(12, context),
-                          fontWeight: FontWeight.w600),
+              child: isDataLoading ||
+                      (isRewardsOpen && isSelectMethod && dexPools.length == 0)
+                  ? Container(
+                      height: double.infinity,
+                      width: double.infinity,
+                      child: Center(child: PluginLoadingWidget()),
                     )
-                  ],
-                ),
-              ),
-              Visibility(
-                visible: isRewardsOpen,
-                child: Padding(
-                    padding: EdgeInsets.only(top: 36),
-                    child: Column(
-                      children: [
-                        PluginTextTag(
-                          title: dic['v3.homa.stake.method']!,
+                  : ListView(
+                      padding: EdgeInsets.all(16),
+                      children: <Widget>[
+                        PluginInputBalance(
+                          tokenViewFunction: (value) {
+                            return PluginFmt.tokenView(value);
+                          },
+                          inputCtrl: _amountPayCtrl,
+                          margin: EdgeInsets.only(bottom: 2),
+                          titleTag: dic['earn.stake'],
+                          onInputChange: (v) =>
+                              _onSupplyAmountChange(v, balanceDouble, minStake),
+                          onSetMax: karBalance > 0.1
+                              ? (v) => _onSetMax(
+                                  v, stakeDecimals, balanceDouble, minStake)
+                              : null,
+                          onClear: () {
+                            setState(() {
+                              _amountPayCtrl.text = '';
+                            });
+                            _onSupplyAmountChange('', balanceDouble, minStake);
+                          },
+                          balance: balances[0],
+                          tokenIconsMap: widget.plugin.tokenIcons,
                         ),
+                        ErrorMessage(
+                          _error,
+                          margin: EdgeInsets.symmetric(vertical: 2),
+                        ),
+                        Visibility(
+                            visible: isLoading, child: PluginLoadingWidget()),
+                        Visibility(
+                            visible: _amountReceive.isNotEmpty &&
+                                _amountPayCtrl.text.length > 0,
+                            child: PluginInputBalance(
+                              tokenViewFunction: (value) {
+                                return PluginFmt.tokenView(value);
+                              },
+                              enabled: false,
+                              text: Fmt.priceFloorBigInt(
+                                  Fmt.balanceInt(_amountReceive),
+                                  liquidDecimals,
+                                  lengthMax: 4),
+                              margin: EdgeInsets.only(bottom: 2),
+                              titleTag: dic['homa.mint'],
+                              balance:
+                                  widget.plugin.store!.assets.tokenBalanceMap[
+                                      "L$relay_chain_token_symbol"],
+                              tokenIconsMap: widget.plugin.tokenIcons,
+                            )),
                         Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 11, vertical: 14),
-                          margin: EdgeInsets.only(bottom: 20),
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Color(0x4AFFFFFF), width: 1),
-                              borderRadius: const BorderRadius.only(
-                                  bottomLeft: Radius.circular(17),
-                                  topRight: Radius.circular(17),
-                                  bottomRight: Radius.circular(17))),
-                          child: Column(
+                          margin: EdgeInsets.only(top: 4),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              UnStakeTypeItemWidget(
-                                title: dic['v3.homa.stake.more']!,
-                                value:
-                                    "${dic['v3.homa.stake.apy.total']!} ${(baseApy + rewardApr * 100).toStringAsFixed(2)}%",
-                                subtitle: Container(
-                                  margin: EdgeInsets.only(top: 8),
-                                  child: Text(
-                                    '(${dic['v3.homa.stake.apy.protocol']} ${baseApy.toStringAsFixed(2)}% + ${dic['v3.homa.stake.apy.reward']} ${(rewardApr * 100).toStringAsFixed(2)}%)',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        ?.copyWith(color: Color(0xFFFC8156)),
-                                  ),
-                                ),
-                                describe: dic['v3.homa.stake.more.describe']!,
-                                margin: EdgeInsets.only(bottom: 12),
-                                valueColor: Color(0xFFFC8156),
-                                isSelect: _selectIndex == 0,
-                                ontap: () {
-                                  setState(() {
-                                    _selectIndex = 0;
-                                  });
-                                },
+                              Text(
+                                dic['v3.homa.minStakingAmount']!,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline4
+                                    ?.copyWith(
+                                        color: Colors.white,
+                                        fontSize: UI.getTextSize(12, context),
+                                        fontWeight: FontWeight.w600),
                               ),
-                              UnStakeTypeItemWidget(
-                                title: dic['v3.homa.stake']!,
-                                value:
-                                    "${dic['v3.homa.stake.apy.total']!} ${baseApy.toStringAsFixed(2)}%",
-                                subtitle: Container(
-                                  margin: EdgeInsets.only(top: 8),
-                                  child: Text(
-                                    '(${dic['v3.homa.stake.apy.protocol']} ${baseApy.toStringAsFixed(2)}%)',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        ?.copyWith(color: Color(0xFFFC8156)),
-                                  ),
-                                ),
-                                describe: dic['v3.homa.stake.more.describe']!,
-                                valueColor: Color(0xFFFC8156),
-                                isSelect: _selectIndex == 1,
-                                ontap: () {
-                                  setState(() {
-                                    _selectIndex = 1;
-                                  });
-                                },
-                              ),
+                              Text(
+                                "$minStake $relay_chain_token_symbol",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline4
+                                    ?.copyWith(
+                                        color: Colors.white,
+                                        fontSize: UI.getTextSize(12, context),
+                                        fontWeight: FontWeight.w600),
+                              )
                             ],
                           ),
                         ),
+                        Visibility(
+                          visible: isRewardsOpen && isSelectMethod,
+                          child: Padding(
+                              padding: EdgeInsets.only(top: 36),
+                              child: Column(
+                                children: [
+                                  PluginTextTag(
+                                    title: dic['v3.homa.stake.method']!,
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 11, vertical: 14),
+                                    margin: EdgeInsets.only(bottom: 20),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Color(0x4AFFFFFF), width: 1),
+                                        borderRadius: const BorderRadius.only(
+                                            bottomLeft: Radius.circular(17),
+                                            topRight: Radius.circular(17),
+                                            bottomRight: Radius.circular(17))),
+                                    child: Column(
+                                      children: [
+                                        UnStakeTypeItemWidget(
+                                          title: dic['earn.dex.joinPool']!,
+                                          value:
+                                              "${dic['v3.homa.stake.apy.total']!} ${(baseApy + taigaApr * 100).toStringAsFixed(2)}%",
+                                          subtitle: Container(
+                                            margin: EdgeInsets.only(top: 8),
+                                            child: Text(
+                                              '(${dic['v3.homa.stake.apy.protocol']} ${baseApy.toStringAsFixed(2)}% + ${dic['v3.homa.stake.apy.reward']} ${(taigaApr * 100).toStringAsFixed(2)}%)',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline6
+                                                  ?.copyWith(
+                                                      color: Color(0xFFFC8156)),
+                                            ),
+                                          ),
+                                          describe: dic[
+                                              'earn.dex.joinPool.describe']!,
+                                          margin: EdgeInsets.only(bottom: 12),
+                                          valueColor: Color(0xFFFC8156),
+                                          isSelect: _selectIndex == 1,
+                                          ontap: () {
+                                            setState(() {
+                                              _selectIndex = 1;
+                                            });
+                                          },
+                                        ),
+                                        UnStakeTypeItemWidget(
+                                          title: dic['v3.homa.stake.more']!,
+                                          value:
+                                              "${dic['v3.homa.stake.apy.total']!} ${(baseApy + rewardApr * 100).toStringAsFixed(2)}%",
+                                          subtitle: Container(
+                                            margin: EdgeInsets.only(top: 8),
+                                            child: Text(
+                                              '(${dic['v3.homa.stake.apy.protocol']} ${baseApy.toStringAsFixed(2)}% + ${dic['v3.homa.stake.apy.reward']} ${(rewardApr * 100).toStringAsFixed(2)}%)',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline6
+                                                  ?.copyWith(
+                                                      color: Color(0xFFFC8156)),
+                                            ),
+                                          ),
+                                          describe: dic[
+                                              'v3.homa.stake.more.describe']!,
+                                          valueColor: Color(0xFFFC8156),
+                                          isSelect: _selectIndex == 0,
+                                          ontap: () {
+                                            setState(() {
+                                              _selectIndex = 0;
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              )),
+                        ),
+                        Padding(
+                            padding: EdgeInsets.only(top: 8, bottom: 32),
+                            child: PluginButton(
+                              title: dic['v3.loan.submit']!,
+                              onPressed: () =>
+                                  _onSubmit(stakeDecimals, liquidDecimals),
+                            ))
                       ],
                     )),
-              ),
-              Padding(
-                  padding: EdgeInsets.only(top: 8, bottom: 32),
-                  child: PluginButton(
-                    title: dic['v3.loan.submit']!,
-                    onPressed: () => _onSubmit(stakeDecimals, liquidDecimals),
-                  ))
-            ],
-          )),
         );
       },
     );

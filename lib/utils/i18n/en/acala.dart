@@ -325,5 +325,21 @@ const Map<String, String> enDex = {
   'earn.dex.sort1': 'By apy',
   'earn.dex.sort2': 'By staked LP',
   'earn.dex.sort3': 'By earn',
-  'earn.dex.searchPools': 'Search Pools'
+  'earn.dex.searchPools': 'Search Pools',
+  'earn.dex.joinPool': 'Join LDOT-DOT Pool',
+  'earn.dex.joinPool.describe':
+      'By adding liquidity into the DOT-LDOT Pool of Taiga, you will get tons of rewards.',
+  'earn.dex.joinPool.completed': 'Completed',
+  'earn.dex.joinPool.back': 'Back',
+  'earn.dex.joinPool.message1': 'Add liquidity to the',
+  'earn.dex.joinPool.message2': 'pool can get rewards up to',
+  'earn.dex.joinPool.message3': 'APR!',
+  'earn.taiga.claimAirdrop': 'Claim Airdrop',
+  'earn.taiga.stakeNotRequired': 'Stake not Required',
+  'earn.taiga.claimMessage':
+      'Tap claim to see your LP detail and claim your rewards',
+  'earn.taiga.addLiquidity': 'Add all assets in a balanced proportion',
+  'earn.taiga.poolSize': 'Pool Size',
+  'earn.taiga.edMessage':
+      'This transaction may fail due to insufficient existing deposit in the current address '
 };

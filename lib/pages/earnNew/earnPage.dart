@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/earnDexList.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/earnHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/earnLoanList.dart';
+import 'package:polkawallet_plugin_acala/pages/earnNew/earnTaigaList.dart';
 import 'package:polkawallet_plugin_acala/pages/types/earnPageParams.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
@@ -70,9 +71,10 @@ class _EarnPageState extends State<EarnPage> {
         child: Column(
           children: [
             Container(
-              margin: EdgeInsets.fromLTRB(16, 16, 0, 16),
+              margin: EdgeInsets.all(16),
               child: PluginPageTitleTaps(
-                names: [dic['earn.dex']!, dic['earn.loan']!],
+                names: [dic['earn.dex']!, dic['earn.loan']!, dic['airdrop']!],
+                isSpaceBetween: true,
                 activeTab: _tab,
                 // fontSize: 20,
                 // lineWidth: 6,
@@ -86,7 +88,9 @@ class _EarnPageState extends State<EarnPage> {
             Expanded(
               child: _tab == 0
                   ? EarnDexList(widget.plugin)
-                  : EarnLoanList(widget.plugin, widget.keyring),
+                  : _tab == 1
+                      ? EarnLoanList(widget.plugin, widget.keyring)
+                      : EarnTaigaList(widget.plugin, widget.keyring),
             )
           ],
         ),

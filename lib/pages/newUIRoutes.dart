@@ -5,11 +5,15 @@ import 'package:polkawallet_plugin_acala/pages/earnNew/addLiquidityPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/earnDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/earnHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/earnPage.dart';
+import 'package:polkawallet_plugin_acala/pages/earnNew/earnTaigaDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/earnTxDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/inviteFriendsPage.dart';
+import 'package:polkawallet_plugin_acala/pages/earnNew/taigaAddLiquidityPage.dart';
+import 'package:polkawallet_plugin_acala/pages/earnNew/taigaWithdrawLiquidityPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/withdrawLiquidityPage.dart';
 import 'package:polkawallet_plugin_acala/pages/governanceNew/governancePage.dart';
 import 'package:polkawallet_plugin_acala/pages/governanceNew/referendumVotePage.dart';
+import 'package:polkawallet_plugin_acala/pages/homaNew/completedPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homaNew/homaHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homaNew/homaPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homaNew/homaTxDetailPage.dart';
@@ -49,6 +53,7 @@ Map<String, WidgetBuilder> getNewUiRoutes(PluginAcala plugin, Keyring keyring) {
                 uri: GraphQLConfig['defiUri']!,
               ),
           HomaTxDetailPage.route: (_) => HomaTxDetailPage(plugin, keyring),
+          CompletedPage.route: (_) => CompletedPage(plugin),
 
           //loan
           LoanPage.route: (_) => LoanPage(plugin, keyring),
@@ -65,12 +70,7 @@ Map<String, WidgetBuilder> getNewUiRoutes(PluginAcala plugin, Keyring keyring) {
 
           //swap
           SwapPage.route: (_) => SwapPage(plugin, keyring),
-          SwapHistoryPage.route: (_) => ClientProvider(
-                child: Builder(
-                  builder: (_) => SwapHistoryPage(plugin, keyring),
-                ),
-                uri: GraphQLConfig['defiUri']!,
-              ),
+          SwapHistoryPage.route: (_) => SwapHistoryPage(plugin, keyring),
           BootstrapPage.route: (_) => BootstrapPage(plugin, keyring),
           SwapDetailPage.route: (_) => SwapDetailPage(plugin, keyring),
 
@@ -94,6 +94,12 @@ Map<String, WidgetBuilder> getNewUiRoutes(PluginAcala plugin, Keyring keyring) {
           LPStakePage.route: (_) => LPStakePage(plugin, keyring),
           InviteFriendsPage.route: (_) => InviteFriendsPage(plugin, keyring),
           EarnTxDetailPage.route: (_) => EarnTxDetailPage(plugin, keyring),
+          EarnTaigaDetailPage.route: (_) =>
+              EarnTaigaDetailPage(plugin, keyring),
+          TaigaAddLiquidityPage.route: (_) =>
+              TaigaAddLiquidityPage(plugin, keyring),
+          TaigaWithdrawLiquidityPage.route: (_) =>
+              TaigaWithdrawLiquidityPage(plugin, keyring),
 
           //nft
           NftPage.route: (_) => NftPage(plugin, keyring),

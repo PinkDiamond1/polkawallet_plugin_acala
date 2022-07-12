@@ -108,7 +108,8 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
   }
 
   Future<Map?> _getTxParams(int? stableCoinDecimals) async {
-    if (_amountCtrl.text.trim().length == 0) {
+    if (_amountCtrl.text.trim().length == 0 ||
+        double.parse(_amountCtrl.text.trim()) == 0) {
       return null;
     }
     final params = ModalRoute.of(context)!.settings.arguments as Map;

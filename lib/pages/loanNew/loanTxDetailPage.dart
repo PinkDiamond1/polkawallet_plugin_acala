@@ -18,7 +18,7 @@ class LoanTxDetailPage extends StatelessWidget {
   final PluginAcala plugin;
   final Keyring keyring;
 
-  static final String route = '/karura/loan/tx';
+  static final String route = '/acala/loan/tx';
 
   @override
   Widget build(BuildContext context) {

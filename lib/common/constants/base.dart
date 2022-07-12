@@ -8,5 +8,7 @@ const GraphQLConfig = {
   'httpUri':
       'https://api.subquery.network/sq/AcalaNetwork/acala-transfer-history',
   'defiUri': 'https://api.subquery.network/sq/AcalaNetwork/acala',
-  'loanUri': 'https://api.subquery.network/sq/AcalaNetwork/acala-loans'
+  'loanUri': 'https://api.subquery.network/sq/AcalaNetwork/acala-loans',
+  "taigaUri":
+      "https://api.subquery.network/sq/nutsfinance/tapio-protocol"
 };

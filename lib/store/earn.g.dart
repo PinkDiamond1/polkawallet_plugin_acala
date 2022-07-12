@@ -69,6 +69,36 @@ mixin _$EarnStore on _EarnStore, Store {
     });
   }
 
+  final _$taigaPoolInfoMapAtom = Atom(name: '_EarnStore.taigaPoolInfoMap');
+
+  @override
+  ObservableMap<String?, TaigaPoolInfoData> get taigaPoolInfoMap {
+    _$taigaPoolInfoMapAtom.reportRead();
+    return super.taigaPoolInfoMap;
+  }
+
+  @override
+  set taigaPoolInfoMap(ObservableMap<String?, TaigaPoolInfoData> value) {
+    _$taigaPoolInfoMapAtom.reportWrite(value, super.taigaPoolInfoMap, () {
+      super.taigaPoolInfoMap = value;
+    });
+  }
+
+  final _$taigaTokenPairsAtom = Atom(name: '_EarnStore.taigaTokenPairs');
+
+  @override
+  List<DexPoolData> get taigaTokenPairs {
+    _$taigaTokenPairsAtom.reportRead();
+    return super.taigaTokenPairs;
+  }
+
+  @override
+  set taigaTokenPairs(List<DexPoolData> value) {
+    _$taigaTokenPairsAtom.reportWrite(value, super.taigaTokenPairs, () {
+      super.taigaTokenPairs = value;
+    });
+  }
+
   final _$dexIncentiveEndBlockAtom =
       Atom(name: '_EarnStore.dexIncentiveEndBlock');
 
@@ -168,6 +198,7 @@ incentives: ${incentives},
 dexPools: ${dexPools},
 bootstraps: ${bootstraps},
 dexPoolInfoMap: ${dexPoolInfoMap},
+taigaPoolInfoMap: ${taigaPoolInfoMap},
 dexIncentiveEndBlock: ${dexIncentiveEndBlock},
 dexIncentiveLoyaltyEndBlock: ${dexIncentiveLoyaltyEndBlock}
     ''';

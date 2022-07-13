@@ -508,7 +508,7 @@ class _SwapFormState extends State<SwapForm>
 
         final labelStyle = Theme.of(context)
             .textTheme
-            .headline6
+            .headline5
             ?.copyWith(color: Colors.white);
 
         return ListView(
@@ -625,7 +625,7 @@ class _SwapFormState extends State<SwapForm>
             Visibility(
                 visible: showExchangeRate && _interfaceError == null,
                 child: Container(
-                  margin: EdgeInsets.only(top: 16, bottom: 7),
+                  margin: EdgeInsets.only(top: 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -658,26 +658,28 @@ class _SwapFormState extends State<SwapForm>
                   ),
                 )),
             Container(
-              margin: EdgeInsets.only(right: 1, bottom: 7, top: 5),
+              margin: EdgeInsets.only(right: 1, bottom: 7, top: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text("${dic['dex.slippage']!}:", style: labelStyle),
                   GestureDetector(
-                      child: Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(right: 4),
-                            child: Text(
-                              Fmt.ratio(_slippage),
-                              style: labelStyle,
-                            ),
-                          ),
-                          Image.asset(
-                              "packages/polkawallet_plugin_acala/assets/images/swap_set.png",
-                              width: 14)
-                        ],
-                      ),
+                      child: Padding(
+                          padding: EdgeInsets.all(5),
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(right: 4),
+                                child: Text(
+                                  Fmt.ratio(_slippage),
+                                  style: labelStyle,
+                                ),
+                              ),
+                              Image.asset(
+                                  "packages/polkawallet_plugin_acala/assets/images/swap_set.png",
+                                  width: 18)
+                            ],
+                          )),
                       onTap: _onSetSlippage),
                 ],
               ),

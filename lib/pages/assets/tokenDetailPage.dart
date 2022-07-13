@@ -23,6 +23,7 @@ import 'package:polkawallet_ui/components/v3/borderedTitle.dart';
 import 'package:polkawallet_ui/components/v3/cardButton.dart';
 import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/iconButton.dart' as v3;
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
@@ -118,7 +119,7 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
                               icon: Padding(
                                 padding: EdgeInsets.only(left: 3),
                                 child: Image.asset(
-                                  "packages/polkawallet_plugin_acala/assets/images/send.png",
+                                  "packages/polkawallet_plugin_acala/assets/images/send${UI.isDarkTheme(context) ? "_dark" : ""}.png",
                                   width: 37,
                                 ),
                               ),
@@ -142,7 +143,7 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
                             padding: EdgeInsets.symmetric(horizontal: 3.w),
                             child: CardButton(
                               icon: Image.asset(
-                                  "packages/polkawallet_plugin_acala/assets/images/qr.png",
+                                  "packages/polkawallet_plugin_acala/assets/images/qr${UI.isDarkTheme(context) ? "_dark" : ""}.png",
                                   width: 37),
                               text: dic['receive']!,
                               onPressed: () {
@@ -169,11 +170,22 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
                               height: 28.h,
                               margin: EdgeInsets.only(right: 8.w),
                               decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                image: DecorationImage(
-                                    image: AssetImage(
-                                        "packages/polkawallet_plugin_acala/assets/images/bg_tag.png"),
-                                    fit: BoxFit.fill),
+                                color: UI.isDarkTheme(context)
+                                    ? Color(0x52000000)
+                                    : Colors.transparent,
+                                borderRadius: UI.isDarkTheme(context)
+                                    ? BorderRadius.all(Radius.circular(5))
+                                    : null,
+                                border: UI.isDarkTheme(context)
+                                    ? Border.all(
+                                        color: Color(0x26FFFFFF), width: 1)
+                                    : null,
+                                image: UI.isDarkTheme(context)
+                                    ? null
+                                    : DecorationImage(
+                                        image: AssetImage(
+                                            "packages/polkawallet_plugin_acala/assets/images/bg_tag.png"),
+                                        fit: BoxFit.fill),
                               ),
                               child: Center(
                                 child: Text(filterOptions[_txFilterIndex]!,
@@ -181,8 +193,10 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
                                         .textTheme
                                         .headline5
                                         ?.copyWith(
-                                            color: Theme.of(context)
-                                                .toggleableActiveColor,
+                                            color: UI.isDarkTheme(context)
+                                                ? Colors.white
+                                                : Theme.of(context)
+                                                    .toggleableActiveColor,
                                             fontWeight: FontWeight.w600)),
                               ),
                             ),
@@ -216,7 +230,9 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
                                 child: v3.IconButton(
                                   icon: SvgPicture.asset(
                                     'assets/images/icon_screening.svg',
-                                    color: Color(0xFF979797),
+                                    color: UI.isDarkTheme(context)
+                                        ? Colors.white
+                                        : Color(0xFF979797),
                                     width: 22.h,
                                   ),
                                 ))
@@ -355,12 +371,12 @@ class BalanceCard extends StatelessWidget {
           : 0;
     }
 
-    final titleColor = Theme.of(context).cardColor;
-    return Container(
-      margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.w),
+    final titleColor =
+        UI.isDarkTheme(context) ? Colors.white : Theme.of(context).cardColor;
+    final child = Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(const Radius.circular(16)),
+        borderRadius: const BorderRadius.all(const Radius.circular(8)),
         gradient: LinearGradient(
           colors: bgColors ??
               [Theme.of(context).primaryColor, Theme.of(context).hoverColor],
@@ -467,6 +483,14 @@ class BalanceCard extends StatelessWidget {
         ],
       ),
     );
+
+    return UI.isDarkTheme(context)
+        ? RoundedCard(
+            margin: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.w),
+            child: child,
+          )
+        : Padding(
+            padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.w), child: child);
   }
 }
 
@@ -499,7 +523,8 @@ class TransferListItem extends StatelessWidget {
                   bgColor: Theme.of(context).cardColor)
           : TransferIcon(
               type: TransferIconType.failure, bgColor: Color(0xFFD7D7D7)),
-      title: Text('$title${crossChain != null ? ' ($crossChain)' : ''}'),
+      title: Text('$title${crossChain != null ? ' ($crossChain)' : ''}',
+          style: Theme.of(context).textTheme.headline4),
       subtitle: Text(Fmt.dateTime(DateTime.parse(data!.timestamp))),
       trailing: Container(
         width: 110,

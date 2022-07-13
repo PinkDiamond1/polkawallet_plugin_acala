@@ -215,7 +215,8 @@ class _MintPageState extends State<MintPage> {
           data["selectMethod"] != null &&
           data["selectMethod"]) {
         Navigator.of(context).popAndPushNamed(CompletedPage.route, arguments: {
-          "receive": Fmt.priceFloorBigInt(Fmt.balanceInt(_amountReceive), 12,
+          "receive": Fmt.priceFloorBigInt(
+              Fmt.balanceInt(_amountReceive), liquidDecimals,
               lengthMax: 4)
         });
       } else {

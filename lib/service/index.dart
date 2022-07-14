@@ -3,6 +3,7 @@ import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/service/serviceAssets.dart';
 import 'package:polkawallet_plugin_acala/service/serviceEarn.dart';
 import 'package:polkawallet_plugin_acala/service/serviceGov.dart';
+import 'package:polkawallet_plugin_acala/service/serviceHistory.dart';
 import 'package:polkawallet_plugin_acala/service/serviceHoma.dart';
 import 'package:polkawallet_plugin_acala/service/serviceLoan.dart';
 import 'package:polkawallet_plugin_acala/service/walletApi.dart';
@@ -19,12 +20,14 @@ class PluginService {
         earn = ServiceEarn(plugin, keyring),
         homa = ServiceHoma(plugin, keyring),
         gov = ServiceGov(plugin, keyring),
+        history = ServiceHistory(plugin, keyring),
         plugin = plugin;
   final ServiceAssets assets;
   final ServiceLoan loan;
   final ServiceEarn earn;
   final ServiceHoma homa;
   final ServiceGov gov;
+  final ServiceHistory history;
 
   final PluginAcala plugin;
 

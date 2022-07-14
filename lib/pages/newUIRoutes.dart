@@ -46,24 +46,15 @@ Map<String, WidgetBuilder> getNewUiRoutes(PluginAcala plugin, Keyring keyring) {
           HomaPage.route: (_) => HomaPage(plugin, keyring),
           MintPage.route: (_) => MintPage(plugin, keyring),
           RedeemPage.route: (_) => RedeemPage(plugin, keyring),
-          HomaHistoryPage.route: (_) => ClientProvider(
-                child: Builder(
-                  builder: (_) => HomaHistoryPage(plugin, keyring),
-                ),
-                uri: GraphQLConfig['defiUri']!,
-              ),
+          HomaHistoryPage.route: (_) => HomaHistoryPage(plugin, keyring),
+
           HomaTxDetailPage.route: (_) => HomaTxDetailPage(plugin, keyring),
           CompletedPage.route: (_) => CompletedPage(plugin),
 
           //loan
           LoanPage.route: (_) => LoanPage(plugin, keyring),
           LoanCreatePage.route: (_) => LoanCreatePage(plugin, keyring),
-          LoanHistoryPage.route: (_) => ClientProvider(
-                child: Builder(
-                  builder: (_) => LoanHistoryPage(plugin, keyring),
-                ),
-                uri: GraphQLConfig['loanUri']!,
-              ),
+          LoanHistoryPage.route: (_) => LoanHistoryPage(plugin, keyring),
           LoanDepositPage.route: (_) => LoanDepositPage(plugin, keyring),
           LoanTxDetailPage.route: (_) => LoanTxDetailPage(plugin, keyring),
           LoanAdjustPage.route: (_) => LoanAdjustPage(plugin, keyring),
@@ -79,18 +70,8 @@ Map<String, WidgetBuilder> getNewUiRoutes(PluginAcala plugin, Keyring keyring) {
           AddLiquidityPage.route: (_) => AddLiquidityPage(plugin, keyring),
           WithdrawLiquidityPage.route: (_) =>
               WithdrawLiquidityPage(plugin, keyring),
-          EarnHistoryPage.route: (_) => ClientProvider(
-                child: Builder(
-                  builder: (_) => EarnHistoryPage(plugin, keyring),
-                ),
-                uri: GraphQLConfig['defiUri']!,
-              ),
-          EarnDetailPage.route: (_) => ClientProvider(
-                child: Builder(
-                  builder: (_) => EarnDetailPage(plugin, keyring),
-                ),
-                uri: GraphQLConfig['defiUri']!,
-              ),
+          EarnHistoryPage.route: (_) => EarnHistoryPage(plugin, keyring),
+          EarnDetailPage.route: (_) => EarnDetailPage(plugin, keyring),
           LPStakePage.route: (_) => LPStakePage(plugin, keyring),
           InviteFriendsPage.route: (_) => InviteFriendsPage(plugin, keyring),
           EarnTxDetailPage.route: (_) => EarnTxDetailPage(plugin, keyring),

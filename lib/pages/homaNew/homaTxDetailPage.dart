@@ -18,7 +18,6 @@ class HomaTxDetailPage extends StatelessWidget {
   final Keyring keyring;
 
   static final String route = '/acala/homa/tx';
-
   @override
   Widget build(BuildContext context) {
     final Map<String, String> dic =
@@ -41,18 +40,11 @@ class HomaTxDetailPage extends StatelessWidget {
     final infoItems = <TxDetailInfoItem>[
       TxDetailInfoItem(
         label: 'Event',
-        content: Text(tx.action!,
-            style: tx.isSuccess == null
-                ? TextStyle(
-                    fontFamily: UI.getFontFamily('TitilliumWeb', context),
-                    fontSize: UI.getTextSize(30, context),
-                    fontWeight: FontWeight.w600,
-                    color: PluginColorsDark.headline1)
-                : amountStyle),
+        content: Text(tx.action!.replaceAll('homa.', ''), style: amountStyle),
       ),
       TxDetailInfoItem(
         label: dic['txs.action'],
-        content: Text(dic['homa.${tx.action}']!, style: amountStyle),
+        content: Text(dic['${tx.action}']!, style: amountStyle),
       )
     ];
 
@@ -90,6 +82,7 @@ class HomaTxDetailPage extends StatelessWidget {
         ]);
         break;
       case TxHomaData.actionRedeem:
+      case TxHomaData.actionLiteRedeem:
         infoItems.add(TxDetailInfoItem(
           label: dic['dex.pay'],
           content: Text(
@@ -98,6 +91,7 @@ class HomaTxDetailPage extends StatelessWidget {
         ));
         break;
       case TxHomaData.actionRedeemed:
+      case TxHomaData.actionLiteRedeemed:
       case TxHomaData.actionRedeemedByUnbond:
       case TxHomaData.actionWithdrawRedemption:
         infoItems.add(TxDetailInfoItem(
@@ -119,7 +113,7 @@ class HomaTxDetailPage extends StatelessWidget {
     return PluginTxDetail(
       current: keyring.current,
       success: tx.isSuccess,
-      action: dic['homa.${tx.action}'],
+      action: dic['${tx.action}'],
       // blockNum: int.parse(tx.block),
       hash: tx.hash,
       blockTime:

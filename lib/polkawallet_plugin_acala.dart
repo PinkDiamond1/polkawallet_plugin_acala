@@ -21,7 +21,6 @@ import 'package:polkawallet_plugin_acala/pages/multiply/multiplyCreatePage.dart'
 import 'package:polkawallet_plugin_acala/pages/multiply/multiplyPage.dart';
 import 'package:polkawallet_plugin_acala/pages/newUIRoutes.dart';
 import 'package:polkawallet_plugin_acala/pages/nftNew/nftPage.dart';
-import 'package:polkawallet_plugin_acala/service/graphql.dart';
 import 'package:polkawallet_plugin_acala/service/index.dart';
 import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
 import 'package:polkawallet_plugin_acala/store/index.dart';
@@ -258,12 +257,7 @@ class PluginAcala extends PolkawalletPlugin {
       CurrencySelectPage.route: (_) => CurrencySelectPage(this),
       AccountQrCodePage.route: (_) => AccountQrCodePage(this, keyring),
 
-      TokenDetailPage.route: (_) => ClientProvider(
-            child: Builder(
-              builder: (_) => TokenDetailPage(this, keyring),
-            ),
-            uri: GraphQLConfig['httpUri']!,
-          ),
+      TokenDetailPage.route: (_) => TokenDetailPage(this, keyring),
       TransferPage.route: (_) => TransferPage(this, keyring),
       TransferDetailPage.route: (_) => TransferDetailPage(this, keyring),
 
@@ -338,6 +332,7 @@ class PluginAcala extends PolkawalletPlugin {
       _store!.earn.setDexPoolInfo({}, reset: true);
       _store!.earn.setBootstraps([]);
       _store!.homa.setUserInfo(null);
+      _store!.history.loadCache(acc.pubKey);
       print('acala plugin cache data loaded');
     } catch (err) {
       print(err);

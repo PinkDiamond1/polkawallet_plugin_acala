@@ -181,6 +181,28 @@ mixin _$EarnStore on _EarnStore, Store {
   }
 
   @override
+  void setTaigaPoolInfo(Map<String?, TaigaPoolInfoData> data) {
+    final _$actionInfo = _$_EarnStoreActionController.startAction(
+        name: '_EarnStore.setTaigaPoolInfo');
+    try {
+      return super.setTaigaPoolInfo(data);
+    } finally {
+      _$_EarnStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setTaigaTokenPairs(List<DexPoolData> data) {
+    final _$actionInfo = _$_EarnStoreActionController.startAction(
+        name: '_EarnStore.setTaigaTokenPairs');
+    try {
+      return super.setTaigaTokenPairs(data);
+    } finally {
+      _$_EarnStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setIncentives(IncentivesData data) {
     final _$actionInfo = _$_EarnStoreActionController.startAction(
         name: '_EarnStore.setIncentives');
@@ -199,6 +221,7 @@ dexPools: ${dexPools},
 bootstraps: ${bootstraps},
 dexPoolInfoMap: ${dexPoolInfoMap},
 taigaPoolInfoMap: ${taigaPoolInfoMap},
+taigaTokenPairs: ${taigaTokenPairs},
 dexIncentiveEndBlock: ${dexIncentiveEndBlock},
 dexIncentiveLoyaltyEndBlock: ${dexIncentiveLoyaltyEndBlock}
     ''';

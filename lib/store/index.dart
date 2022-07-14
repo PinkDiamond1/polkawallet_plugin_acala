@@ -3,6 +3,7 @@ import 'package:polkawallet_plugin_acala/store/assets.dart';
 import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
 import 'package:polkawallet_plugin_acala/store/earn.dart';
 import 'package:polkawallet_plugin_acala/store/gov/governance.dart';
+import 'package:polkawallet_plugin_acala/store/historys.dart';
 import 'package:polkawallet_plugin_acala/store/homa.dart';
 import 'package:polkawallet_plugin_acala/store/loan.dart';
 import 'package:polkawallet_plugin_acala/store/setting.dart';
@@ -16,7 +17,8 @@ class PluginStore {
         loan = LoanStore(cache),
         earn = EarnStore(cache),
         swap = SwapStore(cache),
-        homa = HomaStore(cache);
+        homa = HomaStore(cache),
+        history = HistoryStore(cache);
 
   final accounts = AccountsStore();
 
@@ -27,4 +29,5 @@ class PluginStore {
   final HomaStore homa;
   final GovernanceStore gov;
   final SwapStore swap;
+  final HistoryStore history;
 }

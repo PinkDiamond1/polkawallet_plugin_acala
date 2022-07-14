@@ -7,11 +7,11 @@ import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
 const earn_actions_map = {
-  'incentives.AddLiquidity': 'earn.add',
-  'incentives.RemoveLiquidity': 'earn.remove',
-  'incentives.DepositDexShare': 'earn.stake',
-  'incentives.WithdrawDexShare': 'earn.unStake',
-  'incentives.ClaimRewards': 'earn.claim',
+  'incentives.AddLiquidity': 'earn.AddLiquidity',
+  'incentives.RemoveLiquidity': 'earn.RemoveLiquidity',
+  'incentives.DepositDexShare': 'earn.DepositDexShare',
+  'incentives.WithdrawDexShare': 'earn.WithdrawDexShare',
+  'incentives.ClaimRewards': 'earn.ClaimRewards',
 };
 
 class TxDexIncentiveData extends _TxDexIncentiveData {

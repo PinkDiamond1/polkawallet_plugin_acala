@@ -11,8 +11,8 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
+import 'package:polkawallet_ui/components/v3/addressTextFormField.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAddressFormItem.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginAddressTextFormField.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginIconButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTagCard.dart';
@@ -90,7 +90,7 @@ class _NFTTransferPageState extends State<NFTTransferPage> {
                 icon: Center(
                     child: SvgPicture.asset(
                   'assets/images/scan.svg',
-                  color: Colors.black,
+                  color: Colors.white,
                   width: 25,
                 )),
                 onPressed: _onScan,
@@ -118,7 +118,7 @@ class _NFTTransferPageState extends State<NFTTransferPage> {
                       ),
                       Padding(
                           padding: EdgeInsets.only(top: 24),
-                          child: PluginAddressTextFormField(
+                          child: AddressTextFormField(
                             widget.plugin.sdk.api,
                             widget.keyring.allWithContacts,
                             initialValue: _accountTo,
@@ -129,6 +129,9 @@ class _NFTTransferPageState extends State<NFTTransferPage> {
                                 _accountTo = acc;
                               });
                             },
+                            key: ValueKey<KeyPairData?>(_accountTo),
+                            isHubTheme: true,
+                            sdk: widget.plugin.sdk,
                           )),
                       Form(
                           key: _formKey,

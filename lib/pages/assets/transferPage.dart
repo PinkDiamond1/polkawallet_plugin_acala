@@ -68,26 +68,6 @@ class _TransferPageState extends State<TransferPage> {
 
   bool _submitting = false;
 
-  Future<String?> _checkBlackList(KeyPairData acc) async {
-    final addresses =
-        await widget.plugin.sdk.api.account.decodeAddress([acc.address!]);
-    if (addresses != null) {
-      final pubKey = addresses.keys.toList()[0];
-      if (widget.plugin.sdk.blackList.indexOf(pubKey) > -1) {
-        return I18n.of(context)!
-            .getDic(i18n_full_dic_acala, 'common')!['transfer.scam'];
-      }
-    }
-    return null;
-  }
-
-  Future<String?> _checkAccountTo(KeyPairData acc) async {
-    final blackListCheck = await _checkBlackList(acc);
-    if (blackListCheck != null) return blackListCheck;
-
-    return null;
-  }
-
   Future<void> _getAccountSysInfo() async {
     final info = await widget.plugin.sdk.webView?.evalJavascript(
         'api.query.system.account("${widget.keyring.current.address}")');
@@ -125,17 +105,13 @@ class _TransferPageState extends State<TransferPage> {
     final acc = KeyPairData();
     acc.address = (to as QRCodeResult).address!.address;
     acc.name = to.address!.name;
-    final res = await Future.wait([
-      widget.plugin.sdk.api.account.getAddressIcons([acc.address]),
-      _checkAccountTo(acc),
-    ]);
-    if (res[0] != null) {
-      final List icon = res[0] as List<dynamic>;
-      acc.icon = icon[0][1];
+    final res =
+        await widget.plugin.sdk.api.account.getAddressIcons([acc.address]);
+    if (res != null) {
+      acc.icon = res[0][1];
     }
     setState(() {
       _accountTo = acc;
-      _accountToError = res[1] as String?;
     });
     print(_accountTo!.address);
   }
@@ -470,12 +446,11 @@ class _TransferPageState extends State<TransferPage> {
                                     hintText: dic['address'],
                                     initialValue: _accountTo,
                                     onChanged: (KeyPairData acc) async {
-                                      final error = await _checkAccountTo(acc);
                                       setState(() {
                                         _accountTo = acc;
-                                        _accountToError = error;
                                       });
                                     },
+                                    sdk: widget.plugin.sdk,
                                     key: ValueKey<KeyPairData?>(_accountTo),
                                   ),
                                   Visibility(

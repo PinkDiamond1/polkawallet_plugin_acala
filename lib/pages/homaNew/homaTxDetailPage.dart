@@ -54,13 +54,13 @@ class HomaTxDetailPage extends StatelessWidget {
           TxDetailInfoItem(
             label: dic['dex.pay'],
             content: Text(
-                '${Fmt.priceFloorBigInt(tx.amountPay, nativeDecimal)} $symbol',
+                '${Fmt.priceFloorBigInt(tx.amountPay, nativeDecimal, lengthMax: 6)} $symbol',
                 style: amountStyle),
           ),
           TxDetailInfoItem(
             label: dic['dex.receive'],
             content: Text(
-                '${Fmt.priceFloorBigInt(tx.amountReceive, liquidDecimal)} L$symbol',
+                '${Fmt.priceFloorBigInt(tx.amountReceive, liquidDecimal, lengthMax: 6)} L$symbol',
                 style: amountStyle),
           )
         ]);
@@ -70,13 +70,13 @@ class HomaTxDetailPage extends StatelessWidget {
           TxDetailInfoItem(
             label: dic['dex.pay'],
             content: Text(
-                '${Fmt.priceFloorBigInt(tx.amountPay, liquidDecimal)} L$symbol',
+                '${Fmt.priceFloorBigInt(tx.amountPay, liquidDecimal, lengthMax: 6)} L$symbol',
                 style: amountStyle),
           ),
           TxDetailInfoItem(
             label: dic['dex.receive'],
             content: Text(
-                '${Fmt.priceFloorBigInt(tx.amountReceive, nativeDecimal)} $symbol',
+                '${Fmt.priceFloorBigInt(tx.amountReceive, nativeDecimal, lengthMax: 6)} $symbol',
                 style: amountStyle),
           )
         ]);
@@ -86,7 +86,7 @@ class HomaTxDetailPage extends StatelessWidget {
         infoItems.add(TxDetailInfoItem(
           label: dic['dex.pay'],
           content: Text(
-              '${Fmt.priceFloorBigInt(tx.amountPay, liquidDecimal)} L$symbol',
+              '${Fmt.priceFloorBigInt(tx.amountPay, liquidDecimal, lengthMax: 6)} L$symbol',
               style: amountStyle),
         ));
         break;
@@ -97,7 +97,7 @@ class HomaTxDetailPage extends StatelessWidget {
         infoItems.add(TxDetailInfoItem(
           label: dic['dex.receive'],
           content: Text(
-              '${Fmt.priceFloorBigInt(tx.amountReceive, nativeDecimal)} $symbol',
+              '${Fmt.priceFloorBigInt(tx.amountReceive, nativeDecimal, lengthMax: 6)} $symbol',
               style: amountStyle),
         ));
         break;
@@ -105,7 +105,7 @@ class HomaTxDetailPage extends StatelessWidget {
         infoItems.add(TxDetailInfoItem(
           label: dic['dex.receive'],
           content: Text(
-              '${Fmt.priceFloorBigInt(tx.amountReceive, liquidDecimal)} L$symbol',
+              '${Fmt.priceFloorBigInt(tx.amountReceive, liquidDecimal, lengthMax: 6)} L$symbol',
               style: amountStyle),
         ));
     }

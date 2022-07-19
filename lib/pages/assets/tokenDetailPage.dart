@@ -90,6 +90,8 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
             transferDisabled = List.of(disabledTokens).contains(tokenSymbol);
           }
           return RefreshIndicator(
+            color: Colors.black,
+            backgroundColor: Colors.white,
             key: _refreshKey,
             onRefresh: () =>
                 widget.plugin.service!.assets.updateTokenBalances(token),

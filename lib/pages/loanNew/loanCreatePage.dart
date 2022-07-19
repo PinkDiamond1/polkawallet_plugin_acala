@@ -327,8 +327,6 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
       final balance = Fmt.balanceInt(balancePair[0].amount);
       final available = balance;
 
-      final loans = widget.plugin.store!.loan.loans.values.toList();
-
       final maxToBorrow =
           Fmt.priceFloorBigInt(_maxToBorrow, balancePair[1].decimals!);
 

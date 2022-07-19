@@ -165,7 +165,7 @@ async function getAllTokens(api: ApiPromise) {
  * getTokensPrices
  */
 async function getTokenPrices(tokens: string[]) {
-  const prices = await Promise.all(tokens.map((e) => ((<any>window).wallet as Wallet).getPrice(e === 'LCDOT' ? 'lcDOT' : e)));
+  const prices = await Promise.all(tokens.map((e) => ((<any>window).wallet as Wallet).getPrice(e === "LCDOT" ? "lcDOT" : e)));
   return prices.reduce((res, e, i) => ({ ...res, [tokens[i]]: e.toNumber(6) }), {});
 }
 
@@ -301,6 +301,7 @@ async function getTaigaMintAmount(poolNameId: string, input: string[], slippage:
       .pipe(take(1))
   );
   return {
+    output: res.outputAmount.toChainData(),
     minAmount: res.getMinMintAmount().toChainData(),
     params: res.toChainData(),
   };
@@ -323,6 +324,7 @@ async function getTaigaRedeemAmount(poolNameId: string, input: string, slippage:
       .pipe(take(1))
   );
   return {
+    output: res.outputAmounts.map((e) => e.toChainData()),
     minAmount: res.getMinOutputAmounts().map((e) => e.toChainData()),
     params: res.toChainData(),
   };
@@ -872,11 +874,8 @@ async function queryHomaNewEnv(api: ApiPromise) {
     homa = new Homa(api, (<any>window).wallet);
   }
 
-  const [homaEnv, apy] = await Promise.all([
-    homa.getEnv(),
-    axios.get('https://api.polkawallet.io/height-time-avg/apr?network=acala')
-  ]);
-  return _formatHomaEnv(homaEnv, apy.data as number || 0);
+  const [homaEnv, apy] = await Promise.all([homa.getEnv(), axios.get("https://api.polkawallet.io/height-time-avg/apr?network=acala")]);
+  return _formatHomaEnv(homaEnv, (apy.data as number) || 0);
 }
 
 async function calcHomaNewMintAmount(api: ApiPromise, amount: number) {

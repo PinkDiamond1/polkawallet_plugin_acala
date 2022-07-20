@@ -81,8 +81,9 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                               fontSize: UI.getTextSize(14, context),
                               fontWeight: FontWeight.w400,
                               color: Theme.of(context)
-                                  .textSelectionTheme
-                                  .selectionColor
+                                  .textTheme
+                                  .headline1
+                                  ?.color
                                   ?.withAlpha(191))),
                       GestureDetector(
                           onTap: () {
@@ -98,8 +99,9 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                                   fontSize: UI.getTextSize(18, context),
                                   fontWeight: FontWeight.w600,
                                   color: Theme.of(context)
-                                      .textSelectionTheme
-                                      .selectionColor))),
+                                      .textTheme
+                                      .headline1
+                                      ?.color))),
                       Container(
                         margin: EdgeInsets.only(top: 15.h),
                         child: GestureDetector(
@@ -232,8 +234,9 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                                   fontSize: UI.getTextSize(12, context),
                                   fontWeight: FontWeight.w400,
                                   color: Theme.of(context)
-                                      .textSelectionTheme
-                                      .selectionColor),
+                                      .textTheme
+                                      .headline1
+                                      ?.color),
                             )
                           ],
                         ),
@@ -246,9 +249,8 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
                                   UI.getFontFamily('TitilliumWeb', context),
                               fontSize: UI.getTextSize(12, context),
                               fontWeight: FontWeight.w400,
-                              color: Theme.of(context)
-                                  .textSelectionTheme
-                                  .selectionColor),
+                              color:
+                                  Theme.of(context).textTheme.headline1?.color),
                         )
                       ],
                     ),

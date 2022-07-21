@@ -241,7 +241,7 @@ const Map<String, String> zhDex = {
   'loan.warn.KSM3': ' aUSD 的债务。确认继续吗？',
   'loan.warn.KSM4': '为了使你的债仓保持活跃，您本次必须最少铸造 ',
   'loan.warn.KSM5': ' aUSD',
-  'v3.earn.lpTokenReceived': '收到的LP Token',
+  'v3.earn.lpTokenReceived': '至少收到',
   'v3.earn.amount': '数量',
   'v3.earn.tokenReceived': '收到的Token',
   'v3.swap.max': '最大兑换',

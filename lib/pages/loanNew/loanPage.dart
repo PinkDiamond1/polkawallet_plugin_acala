@@ -263,10 +263,9 @@ class _LoanPageState extends State<LoanPage> {
                 child: PluginIconButton(
                   onPressed: () =>
                       Navigator.of(context).pushNamed(LoanHistoryPage.route),
-                  icon: Icon(
-                    Icons.history,
-                    size: 22,
-                    color: Colors.white,
+                  icon: Image.asset(
+                    'packages/polkawallet_plugin_acala/assets/images/history.png',
+                    width: 16,
                   ),
                 ),
               ),

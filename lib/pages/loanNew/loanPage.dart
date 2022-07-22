@@ -135,7 +135,17 @@ class _LoanPageState extends State<LoanPage> {
                                   loan.collaterals, collateralDecimal!) -
                               snapshot.data!.amount!;
                           return InfoItemRow(dic['loan.close.receive']!,
-                              "${Fmt.priceFloor(left)} ${loan.token!.symbol}");
+                              "${Fmt.priceFloor(left)} ${loan.token!.symbol}",
+                              labelStyle: Theme.of(context)
+                                  .textTheme
+                                  .headline5!
+                                  .copyWith(color: Color(0xFF565554)),
+                              contentStyle: Theme.of(context)
+                                  .textTheme
+                                  .headline5!
+                                  .copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF565554)));
                         } else {
                           return Container();
                         }

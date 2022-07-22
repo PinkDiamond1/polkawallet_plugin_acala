@@ -928,7 +928,7 @@ class CreateVaultWidget extends StatelessWidget {
         children: [
           Column(children: [
             Container(
-                margin: EdgeInsets.only(top: 17, bottom: 14),
+                margin: EdgeInsets.only(top: 30, bottom: 14),
                 width: 110,
                 height: 110,
                 decoration: BoxDecoration(
@@ -968,7 +968,7 @@ class CreateVaultWidget extends StatelessWidget {
                         fontWeight: FontWeight.w300),
                   ),
                   Padding(
-                      padding: EdgeInsets.only(top: 12),
+                      padding: EdgeInsets.only(top: 6),
                       child: Text(
                         "${dic['v3.loan.message1']} ${Fmt.priceFloorBigInt(_maxToBorrow, balancePair[1].decimals!)} ${PluginFmt.tokenView(acala_stable_coin_view)} ${dic['loan.multiply.message2']}",
                         style: Theme.of(context).textTheme.headline3?.copyWith(

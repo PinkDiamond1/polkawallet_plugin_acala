@@ -948,7 +948,8 @@ class CreateVaultWidget extends StatelessWidget {
               style: Theme.of(context).textTheme.headline1?.copyWith(
                   fontSize: UI.getTextSize(26, context),
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFFF6D37)),
+                  color: Color(0xFFFF6D37),
+                  height: 1.1),
             ),
             Container(
               margin: EdgeInsets.only(top: 36),

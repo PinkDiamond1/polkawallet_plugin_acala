@@ -35,24 +35,11 @@ class LoanTxDetailPage extends StatelessWidget {
     final List<TxDetailInfoItem> items = [
       TxDetailInfoItem(
         label: 'Event',
-        content: Text(tx.event!,
-            style: tx.isSuccess == null
-                ? TextStyle(
-                    fontFamily: UI.getFontFamily('TitilliumWeb', context),
-                    fontSize: UI.getTextSize(30, context),
-                    fontWeight: FontWeight.w600,
-                    color: PluginColorsDark.headline1)
-                : amountStyle),
+        content: Text(tx.event!.replaceAll('loans.', ''), style: amountStyle),
       ),
       TxDetailInfoItem(
         label: dic['txs.action'],
-        content: Text(
-            dic['loan.${tx.actionType}']! +
-                (tx.actionType == TxLoanData.actionTypeBorrow ||
-                        tx.actionType == TxLoanData.actionTypePayback
-                    ? ' $acala_stable_coin_view'
-                    : ' ${PluginFmt.tokenView(tx.token)}'),
-            style: amountStyle),
+        content: Text(dic['loan.${tx.actionType}']!, style: amountStyle),
       )
     ];
     if (tx.collateral != BigInt.zero) {

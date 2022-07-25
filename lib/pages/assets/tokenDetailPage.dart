@@ -98,6 +98,8 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
                 widget.keyring.current.address);
           }
           return RefreshIndicator(
+            color: Colors.black,
+            backgroundColor: Colors.white,
             key: _refreshKey,
             onRefresh: () =>
                 widget.plugin.service!.assets.updateTokenBalances(token),
@@ -128,7 +130,7 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
                                 padding: EdgeInsets.only(left: 3),
                                 child: Image.asset(
                                   "packages/polkawallet_plugin_acala/assets/images/send${UI.isDarkTheme(context) ? "_dark" : ""}.png",
-                                  width: 37,
+                                  width: 32,
                                 ),
                               ),
                               text: dic['send']!,
@@ -152,7 +154,7 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
                             child: CardButton(
                               icon: Image.asset(
                                   "packages/polkawallet_plugin_acala/assets/images/qr${UI.isDarkTheme(context) ? "_dark" : ""}.png",
-                                  width: 37),
+                                  width: 32),
                               text: dic['receive']!,
                               onPressed: () {
                                 Navigator.pushNamed(

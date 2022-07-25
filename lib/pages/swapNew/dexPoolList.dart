@@ -80,6 +80,8 @@ class _DexPoolListState extends State<DexPoolList> {
       dexPools.retainWhere((e) => e.provisioning == null);
       dexPools.addAll(widget.plugin.store!.earn.dexPools.toList());
       return RefreshIndicator(
+        color: Colors.black,
+        backgroundColor: Colors.white,
         key: _refreshKey,
         onRefresh: _updateData,
         child: dexPools.length == 0
@@ -201,9 +203,7 @@ class _TaigaDexPoolCard extends StatelessWidget {
                 children: [
                   Container(
                     child: PluginTokenIcon(
-                      tokenPairView.split("-").length > 2
-                          ? balance.symbol!
-                          : tokenPairView,
+                      balance.symbol!,
                       tokenIcons!,
                       size: 26,
                       bgColor: Color(0xFF9E98E7),

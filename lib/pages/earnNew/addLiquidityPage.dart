@@ -4,10 +4,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
-import 'package:polkawallet_plugin_acala/pages/swapNew/swapPage.dart';
-import 'package:polkawallet_ui/components/connectionChecker.dart';
 import 'package:polkawallet_plugin_acala/common/components/InsufficientACAWarn.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/swapNew/swapPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_plugin_acala/utils/format.dart';
@@ -15,6 +14,7 @@ import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/connectionChecker.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
@@ -462,6 +462,11 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
           }
         }
 
+        const slippage = 0.005;
+        if (userShare > 0) {
+          userShare = userShare * (1 - slippage);
+        }
+
         return PluginScaffold(
           appBar: PluginAppBar(
             title: Text(dic['earn.add']!),
@@ -572,7 +577,7 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
                         ),
                       ),
                       Text(
-                          '≈ ${Fmt.doubleFormat(issuance * userShare, length: 4)}',
+                          '${Fmt.doubleFormat(issuance * userShare, length: 4)} LP Token',
                           textAlign: TextAlign.right,
                           style:
                               Theme.of(context).textTheme.headline4?.copyWith(

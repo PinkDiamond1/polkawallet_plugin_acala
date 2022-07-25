@@ -269,6 +269,8 @@ class _NftPageState extends State<NftPage> {
                   children: [
                     ConnectionChecker(widget.plugin, onConnected: _queryNFTs),
                     RefreshIndicator(
+                        color: Colors.black,
+                        backgroundColor: Colors.white,
                         key: _refreshKey,
                         onRefresh: _queryNFTs,
                         child: SingleChildScrollView(
@@ -452,6 +454,15 @@ class _tabBarState extends State<_tabBar> {
 
   @override
   Widget build(BuildContext context) {
+    final TextPainter textPainter = TextPainter(
+        textDirection: TextDirection.ltr,
+        text: TextSpan(
+            text: widget.nfts[0].metadata!['name'],
+            style: Theme.of(context).textTheme.headline5?.copyWith(
+                fontSize: UI.getTextSize(12, context),
+                fontWeight: FontWeight.w600,
+                color: PluginColorsDark.headline1)))
+      ..layout();
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 6, vertical: 7),
       decoration: BoxDecoration(
@@ -462,7 +473,8 @@ class _tabBarState extends State<_tabBar> {
         children: [
           Expanded(
               child: Container(
-                  constraints: BoxConstraints(maxHeight: _isOpen ? 1000 : 22),
+                  constraints: BoxConstraints(
+                      maxHeight: _isOpen ? 1000 : textPainter.size.height + 10),
                   child: Wrap(
                       spacing: 10,
                       runSpacing: 10,

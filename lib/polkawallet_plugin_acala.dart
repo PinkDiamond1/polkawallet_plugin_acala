@@ -191,9 +191,8 @@ class PluginAcala extends PolkawalletPlugin {
     data.forEach((element) {
       totalBalance.items.add(InstrumentItemData(
           _instrumentColor(element.category),
-          element.category!,
-          element.value!,
-          _instrumentIconName(element.category)));
+          element.category == "LP Staking" ? "LP Stake" : element.category!,
+          element.value!));
     });
     datas.add(totalBalance);
     datas.add(totalBalance1);
@@ -216,28 +215,13 @@ class PluginAcala extends PolkawalletPlugin {
       case "Tokens":
         return Color(0xFF5E5C59);
       case "Vaults":
-        return Color(0xFFCE623C);
+        return Color(0xFFFF7647);
       case "LP Staking":
-        return Color(0xFF768FE1);
+        return Color(0xFF7D97EE);
       case "Rewards":
         return Color(0xFFFFC952);
       default:
         return Color(0xFFFFC952);
-    }
-  }
-
-  String _instrumentIconName(String? category) {
-    switch (category) {
-      case "Tokens":
-        return "packages/polkawallet_plugin_acala/assets/images/icon_instrument_black.png";
-      case "Vaults":
-        return "packages/polkawallet_plugin_acala/assets/images/icon_instrument_orange.png";
-      case "LP Staking":
-        return "packages/polkawallet_plugin_acala/assets/images/icon_instrument_blue.png";
-      case "Rewards":
-        return "packages/polkawallet_plugin_acala/assets/images/icon_instrument_yellow.png";
-      default:
-        return "packages/polkawallet_plugin_acala/assets/images/icon_instrument_yellow.png";
     }
   }
 

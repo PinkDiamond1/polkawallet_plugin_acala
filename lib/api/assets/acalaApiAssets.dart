@@ -1,6 +1,7 @@
 import 'package:polkawallet_plugin_acala/api/assets/acalaServiceAssets.dart';
 import 'package:polkawallet_plugin_acala/api/types/nftData.dart';
 import 'package:polkawallet_plugin_acala/pages/assets/tokenDetailPage.dart';
+import 'package:polkawallet_plugin_acala/service/index.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
@@ -76,23 +77,25 @@ class AcalaApiAssets {
         final decimal = e['decimals'] ??
             tokens.firstWhere((t) => t.symbol == e['symbol']).decimals;
         return TokenBalanceData(
-          id: e['id'] ?? e['symbol'],
-          symbol: e['symbol'],
-          type: e['type'],
-          tokenNameId: e['tokenNameId'],
-          currencyId: e['currencyId'],
-          minBalance: e['minBalance'],
-          name: PluginFmt.tokenView(e['symbol']),
-          fullName: tokensConfig['tokenName'] != null
-              ? tokensConfig['tokenName'][e['symbol']]
-              : null,
-          decimals: decimal,
-          amount: e['balance']['free'].toString(),
-          locked: e['balance']['frozen'].toString(),
-          reserved: e['balance']['reserved'].toString(),
-          price: AssetsUtils.getMarketPrice(service.plugin, e['symbol']),
-          detailPageRoute: TokenDetailPage.route,
-        );
+            id: e['id'] ?? e['symbol'],
+            symbol: e['symbol'],
+            type: e['type'],
+            tokenNameId: e['tokenNameId'],
+            currencyId: e['currencyId'],
+            minBalance: e['minBalance'],
+            name: PluginFmt.tokenView(e['symbol']),
+            fullName: tokensConfig['tokenName'] != null
+                ? tokensConfig['tokenName'][e['symbol']]
+                : null,
+            decimals: decimal,
+            amount: e['balance']['free'].toString(),
+            locked: e['balance']['frozen'].toString(),
+            reserved: e['balance']['reserved'].toString(),
+            price: AssetsUtils.getMarketPrice(service.plugin, e['symbol']),
+            detailPageRoute: TokenDetailPage.route,
+            getPrice: () {
+              return AssetsUtils.getMarketPrice(service.plugin, e['symbol']);
+            });
       }).toList());
     });
   }

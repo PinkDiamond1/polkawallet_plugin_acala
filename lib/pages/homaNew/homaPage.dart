@@ -175,10 +175,9 @@ class _HomaPageState extends State<HomaPage> {
                 child: PluginIconButton(
                   onPressed: () =>
                       Navigator.of(context).pushNamed(HomaHistoryPage.route),
-                  icon: Icon(
-                    Icons.history,
-                    size: 22,
-                    color: Colors.white,
+                  icon: Image.asset(
+                    'packages/polkawallet_plugin_acala/assets/images/history.png',
+                    width: 16,
                   ),
                 ),
               )
@@ -253,10 +252,9 @@ class _HomaPageState extends State<HomaPage> {
               child: PluginIconButton(
                 onPressed: () =>
                     Navigator.of(context).pushNamed(HomaHistoryPage.route),
-                icon: Icon(
-                  Icons.history,
-                  size: 22,
-                  color: Colors.white,
+                icon: Image.asset(
+                  'packages/polkawallet_plugin_acala/assets/images/history.png',
+                  width: 16,
                 ),
               ),
             ),

@@ -13,7 +13,6 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/TransferIcon.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_plugin_acala/api/types/txSwapData.dart';
@@ -51,7 +50,6 @@ class _SwapHistoryPageState extends State<SwapHistoryPage> {
       ));
 
       List<TxSwapData> list = [];
-      log(jsonEncode(result.data));
       if (result.data != null) {
         list = List.of(result.data!['dexActions']['nodes'])
             .map((i) => TxSwapData.fromJson(i as Map, widget.plugin))
@@ -68,7 +66,6 @@ class _SwapHistoryPageState extends State<SwapHistoryPage> {
           'address': widget.keyring.current.address,
         },
       ));
-      log(jsonEncode(resultTaiga.data));
       if (resultTaiga.data != null) {
         resultTaiga.data!.forEach((key, value) {
           if (value is Map && value['nodes'] != null) {

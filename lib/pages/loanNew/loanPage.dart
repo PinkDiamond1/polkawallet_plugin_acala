@@ -79,6 +79,11 @@ class _LoanPageState extends State<LoanPage> {
       var _debit = 0.0;
       final balancePair = AssetsUtils.getBalancePairFromTokenNameId(
           widget.plugin, [acala_stable_coin]);
+
+      if (widget.plugin.store!.loan.loanTypes.length == 0) {
+        await widget.plugin.service!.loan
+            .queryLoanTypes(widget.keyring.current.address);
+      }
       widget.plugin.store!.loan.loanTypes.forEach((element) {
         if (_collateras
                 .where((e) => e['id'] == element.token?.tokenNameId)
@@ -300,8 +305,6 @@ class _LoanPageState extends State<LoanPage> {
             loanTypes.indexWhere((e) => e.token?.tokenNameId == args.loanType);
       }
 
-      final headCardWidth = MediaQuery.of(context).size.width - 16 * 2 - 6 * 2;
-      final headCardHeight = headCardWidth / 694 * 420;
       return PluginScaffold(
           appBar: PluginAppBar(
             title: Text(dic!['loan.title']!),
@@ -405,8 +408,6 @@ class _LoanPageState extends State<LoanPage> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     headView(
-                                        headCardHeight,
-                                        headCardWidth,
                                         loan,
                                         double.parse(Fmt.token(
                                             loan.type.requiredCollateralRatio,
@@ -662,23 +663,11 @@ class _LoanPageState extends State<LoanPage> {
     });
   }
 
-  Widget headView(double headCardHeight, double headCardWidth, LoanData loan,
-      double requiredCollateralRatio) {
+  Widget headView(LoanData loan, double requiredCollateralRatio) {
     final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
 
     final balancePair = AssetsUtils.getBalancePairFromTokenNameId(
         widget.plugin, [loan.token!.tokenNameId, acala_stable_coin]);
-    final availableView =
-        "${Fmt.priceFloorBigIntFormatter(loan.debits, balancePair[1].decimals!, lengthMax: 4)} ${PluginFmt.tokenView(acala_stable_coin)}";
-    var availableViewRight = 3 / 347 * headCardWidth +
-        85 / 347 * headCardWidth -
-        PluginFmt.boundingTextSize(
-            '$availableView',
-            Theme.of(context).textTheme.headline5?.copyWith(
-                  color: Colors.white,
-                  fontSize: UI.getTextSize(12, context),
-                )).width;
-    availableViewRight = availableViewRight < 0 ? 0 : availableViewRight;
 
     final debitRatio = loan.collateralInUSD == BigInt.zero
         ? 0.0

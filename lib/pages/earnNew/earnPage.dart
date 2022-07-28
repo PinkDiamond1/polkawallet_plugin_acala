@@ -8,6 +8,7 @@ import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/connectionChecker.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginIconButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginPageTitleTaps.dart';
@@ -27,9 +28,12 @@ class EarnPage extends StatefulWidget {
 class _EarnPageState extends State<EarnPage> {
   int _tab = 0;
 
+  Future<void> _fetchData() async {
+    widget.plugin.service!.earn.getDexIncentiveLoyaltyEndBlock();
+  }
+
   @override
   void initState() {
-    widget.plugin.service!.earn.getDexIncentiveLoyaltyEndBlock();
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -52,6 +56,10 @@ class _EarnPageState extends State<EarnPage> {
         title: Text(dic['earn.title']!),
         centerTitle: true,
         actions: [
+          ConnectionChecker(
+            widget.plugin,
+            onConnected: _fetchData,
+          ),
           Container(
             padding: EdgeInsets.only(right: 12),
             child: PluginIconButton(

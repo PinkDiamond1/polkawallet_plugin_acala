@@ -43,8 +43,8 @@ class TransferDetailPage extends StatelessWidget {
       action: txType,
       // blockNum: int.parse(tx.block),
       hash: tx.hash,
-      blockTime: Fmt.dateTime(DateFormat("yyyy-MM-ddTHH:mm:ss")
-          .parse(tx!.data!['timestamp'], true)),
+      blockTime: Fmt.dateTime(
+          DateFormat("yyyy-MM-ddTHH:mm:ss").parse(tx.data!['timestamp'], true)),
       networkName: networkName,
       infoItems: <TxDetailInfoItem>[
         TxDetailInfoItem(

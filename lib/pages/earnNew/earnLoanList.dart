@@ -40,6 +40,9 @@ class _EarnLoanListState extends State<EarnLoanList> {
     await widget.plugin.service!.loan
         .queryLoanTypes(widget.keyring.current.address);
 
+    await widget.plugin.service!.earn.queryIncentives();
+
+    widget.plugin.service!.gov.updateBestNumber();
     widget.plugin.service!.assets.queryMarketPrices();
 
     if (mounted) {

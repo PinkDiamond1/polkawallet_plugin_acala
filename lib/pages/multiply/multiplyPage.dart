@@ -317,6 +317,32 @@ class LoanView extends StatelessWidget {
                 ],
               ),
               Padding(
+                  padding: EdgeInsets.only(top: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(6.0)),
+                        ),
+                      ),
+                      Padding(
+                          padding: EdgeInsets.only(left: 5),
+                          child: Text(
+                            "${dic['loan.multiply.debt']} ${Fmt.priceFloorBigIntFormatter(_loan.debits, balancePair[1].decimals!)} $acala_stable_coin_view",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline5
+                                ?.copyWith(
+                                    fontSize: UI.getTextSize(12, context),
+                                    color: PluginColorsDark.headline1),
+                          ))
+                    ],
+                  )),
+              Padding(
                   padding: EdgeInsets.only(top: 18),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -342,32 +368,6 @@ class LoanView extends StatelessWidget {
                           ))
                     ],
                   )),
-              Padding(
-                  padding: EdgeInsets.only(top: 4),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(6.0)),
-                        ),
-                      ),
-                      Padding(
-                          padding: EdgeInsets.only(left: 5),
-                          child: Text(
-                            "${dic['loan.multiply.debt']} ${Fmt.priceFloorBigIntFormatter(_loan.debits, balancePair[1].decimals!)} $acala_stable_coin_view",
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline5
-                                ?.copyWith(
-                                    fontSize: UI.getTextSize(12, context),
-                                    color: PluginColorsDark.headline1),
-                          ))
-                    ],
-                  ))
             ],
           ),
         ),

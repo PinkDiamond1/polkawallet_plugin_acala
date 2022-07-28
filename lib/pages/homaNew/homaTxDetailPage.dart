@@ -116,6 +116,7 @@ class HomaTxDetailPage extends StatelessWidget {
       action: dic['${tx.action}'],
       // blockNum: int.parse(tx.block),
       hash: tx.hash,
+      resolveLinks: tx.resolveLinks,
       blockTime:
           Fmt.dateTime(DateFormat("yyyy-MM-ddTHH:mm:ss").parse(tx.time, true)),
       networkName: plugin.basic.name,

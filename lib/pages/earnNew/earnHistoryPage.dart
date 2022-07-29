@@ -9,6 +9,7 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/TransferIcon.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginFilterWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginPopLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/utils/format.dart';
@@ -26,6 +27,7 @@ class EarnHistoryPage extends StatefulWidget {
 }
 
 class _EarnHistoryPageState extends State<EarnHistoryPage> {
+  String filterString = PluginFilterWidget.pluginAllFilter;
   @override
   void initState() {
     super.initState();
@@ -46,86 +48,137 @@ class _EarnHistoryPageState extends State<EarnHistoryPage> {
       body: SafeArea(
         child: Observer(
           builder: (_) {
-            final list = widget.plugin.store?.history.earns;
-            if (list == null) {
+            final originList = widget.plugin.store?.history.earns;
+            if (originList == null) {
               return PluginPopLoadingContainer(loading: true);
             }
-            return ListView.builder(
-              itemCount: list.length + 1,
-              itemBuilder: (BuildContext context, int i) {
-                if (i == list.length) {
-                  return ListTail(
-                    isEmpty: list.length == 0,
-                    isLoading: false,
-                    color: Colors.white,
-                  );
-                }
 
-                final history = list[i];
-                TxDexIncentiveData detail =
-                    TxDexIncentiveData.fromHistory(history, widget.plugin);
+            final list;
+            switch (filterString) {
+              case TxDexIncentiveData.actionStakeFilter:
+                list = originList
+                    .where((element) =>
+                        element.event == TxDexIncentiveData.actionStake)
+                    .toList();
+                break;
+              case TxDexIncentiveData.actionUnStakeFilter:
+                list = originList
+                    .where((element) =>
+                        element.event == TxDexIncentiveData.actionUnStake)
+                    .toList();
+                break;
+              case TxDexIncentiveData.actionClaimRewardsFilter:
+                list = originList
+                    .where((element) =>
+                        element.event == TxDexIncentiveData.actionClaimRewards)
+                    .toList();
+                break;
+              case TxDexIncentiveData.actionPayoutRewardsFilter:
+                list = originList
+                    .where((element) =>
+                        element.event == TxDexIncentiveData.actionPayoutRewards)
+                    .toList();
+                break;
+              default:
+                list = originList;
+            }
 
-                TransferIconType icon = TransferIconType.unstake;
-                switch (detail.event) {
-                  case TxDexIncentiveData.actionStake:
-                    icon = TransferIconType.stake;
-                    break;
-                  case TxDexIncentiveData.actionClaimRewards:
-                  case TxDexIncentiveData.actionPayoutRewards:
-                    icon = TransferIconType.claim_rewards;
-                    break;
-                  case TxDexIncentiveData.actionUnStake:
-                    break;
-                }
+            return Column(children: [
+              PluginFilterWidget(
+                options: [
+                  PluginFilterWidget.pluginAllFilter,
+                  TxDexIncentiveData.actionStakeFilter,
+                  TxDexIncentiveData.actionUnStakeFilter,
+                  TxDexIncentiveData.actionClaimRewardsFilter,
+                ],
+                filter: (option) {
+                  setState(() {
+                    filterString = option;
+                  });
+                },
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: list.length + 1,
+                  itemBuilder: (BuildContext context, int i) {
+                    if (i == list.length) {
+                      return ListTail(
+                        isEmpty: list.length == 0,
+                        isLoading: false,
+                        color: Colors.white,
+                      );
+                    }
 
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Color(0x14ffffff),
-                    border: Border(
-                        bottom:
-                            BorderSide(width: 0.5, color: Color(0x24ffffff))),
-                  ),
-                  child: ListTile(
-                    dense: true,
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          dic[earn_actions_map[detail.event]] ?? "",
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline5
-                              ?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600),
+                    final history = list[i];
+                    final detail =
+                        TxDexIncentiveData.fromHistory(history, widget.plugin);
+
+                    TransferIconType icon = TransferIconType.unstake;
+                    switch (detail.event) {
+                      case TxDexIncentiveData.actionStake:
+                        icon = TransferIconType.stake;
+                        break;
+                      case TxDexIncentiveData.actionClaimRewards:
+                      case TxDexIncentiveData.actionPayoutRewards:
+                        icon = TransferIconType.claim_rewards;
+                        break;
+                      case TxDexIncentiveData.actionUnStake:
+                        break;
+                    }
+
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Color(0x14ffffff),
+                        border: Border(
+                            bottom: BorderSide(
+                                width: 0.5, color: Color(0x24ffffff))),
+                      ),
+                      child: ListTile(
+                        dense: true,
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              dic[earn_actions_map[detail.event]] ?? "",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline5
+                                  ?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600),
+                            ),
+                            Text(history.message ?? "",
+                                textAlign: TextAlign.start,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline5
+                                    ?.copyWith(color: Colors.white))
+                          ],
                         ),
-                        Text(history.message ?? "",
-                            textAlign: TextAlign.start,
+                        subtitle: Text(
+                            Fmt.dateTime(DateFormat("yyyy-MM-ddTHH:mm:ss")
+                                .parse(detail.time, true)),
                             style: Theme.of(context)
                                 .textTheme
                                 .headline5
-                                ?.copyWith(color: Colors.white))
-                      ],
-                    ),
-                    subtitle: Text(
-                        Fmt.dateTime(DateFormat("yyyy-MM-ddTHH:mm:ss")
-                            .parse(detail.time, true)),
-                        style: Theme.of(context).textTheme.headline5?.copyWith(
-                            color: Colors.white,
-                            fontSize: UI.getTextSize(10, context))),
-                    leading:
-                        TransferIcon(type: icon, bgColor: Color(0x57FFFFFF)),
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        EarnTxDetailPage.route,
-                        arguments: detail,
-                      );
-                    },
-                  ),
-                );
-              },
-            );
+                                ?.copyWith(
+                                    color: Colors.white,
+                                    fontSize: UI.getTextSize(10, context))),
+                        leading: TransferIcon(
+                            type: icon, bgColor: Color(0x57FFFFFF)),
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            EarnTxDetailPage.route,
+                            arguments: detail,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ]);
           },
         ),
       ),

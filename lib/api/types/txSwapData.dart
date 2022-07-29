@@ -6,6 +6,11 @@ import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
 class TxSwapData extends _TxSwapData {
+  static const String actionTypeSwapFilter = 'Swap';
+  static const String actionTypeAddLiquidityFilter = 'Add Liquidity';
+  static const String actionTypeRemoveLiquidityFilter = 'Remove Liquidity';
+  static const String actionTypeAddProvisionFilter = 'Add Provision';
+
   static TxSwapData fromJson(Map json, PluginAcala plugin) {
     final data = TxSwapData();
     data.action = json['type'];

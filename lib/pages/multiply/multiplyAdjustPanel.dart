@@ -7,10 +7,6 @@ import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/loanNew/loanPage.dart';
 import 'package:polkawallet_plugin_acala/pages/multiply/multiplyCreatePage.dart';
-import 'package:polkawallet_plugin_acala/pages/multiply/slider/multiplySliderOverlayShape.dart';
-import 'package:polkawallet_plugin_acala/pages/multiply/slider/multiplySliderThumbShape.dart';
-import 'package:polkawallet_plugin_acala/pages/multiply/slider/multiplySliderTickMarkShape.dart';
-import 'package:polkawallet_plugin_acala/pages/multiply/slider/multiplySliderTrackShape.dart';
 import 'package:polkawallet_plugin_acala/pages/swapNew/bootstrapPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
@@ -23,10 +19,10 @@ import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTextTag.dart';
+import 'package:polkawallet_ui/components/v3/plugin/slider/PluginSlider.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
-import 'package:polkawallet_ui/utils/index.dart';
 
 class MultiplyAdjustPanel extends StatefulWidget {
   MultiplyAdjustPanel(this.plugin, this.keyring, this.loanType, this.onRefresh);
@@ -280,80 +276,32 @@ class _MultiplyAdjustPanelState extends State<MultiplyAdjustPanel> {
                   children: [
                     Stack(
                       children: [
-                        SliderTheme(
-                          data: SliderThemeData(
-                              trackHeight: 12,
-                              activeTrackColor: Color(0xFFB9B9B9),
-                              disabledActiveTrackColor: Color(0xFFB9B9B9),
-                              inactiveTrackColor: Color(0x4DFFFFFF),
-                              disabledInactiveTrackColor: Color(0x4DFFFFFF),
-                              overlayColor: Colors.transparent,
-                              trackShape: const MultiplySliderTrackShape(),
-                              thumbShape:
-                                  MultiplySliderThumbShape(isShow: false),
-                              tickMarkShape:
-                                  const MultiplySliderTickMarkShape(),
-                              overlayShape: const MultiplySliderOverlayShape(),
-                              valueIndicatorColor: Color(0xFFC9C9C9),
-                              valueIndicatorTextStyle: Theme.of(context)
-                                  .textTheme
-                                  .headline3
-                                  ?.copyWith(
-                                      color: Colors.black,
-                                      fontSize: UI.getTextSize(14, context))),
-                          child: Slider(
-                            min: 0,
-                            max: ratioLeft - ratioRight,
-                            divisions: steps.toInt(),
-                            value: _oldSlider,
-                            label: Fmt.ratio(loan?.collateralRatio ?? 2),
-                            activeColor: PluginColorsDark.headline2,
-                            inactiveColor: PluginColorsDark.headline2,
-                            onChanged: (v) => null,
-                          ),
+                        PluginSlider(
+                          max: ratioLeft - ratioRight,
+                          divisions: steps.toInt(),
+                          value: _oldSlider,
+                          label: Fmt.ratio(loan?.collateralRatio ?? 2),
+                          enabled: false,
                         ),
-                        SliderTheme(
-                            data: SliderThemeData(
-                                trackHeight: 12,
-                                activeTrackColor: PluginColorsDark.green,
-                                disabledActiveTrackColor:
-                                    PluginColorsDark.primary,
-                                inactiveTrackColor: Color(0x4DFFFFFF),
-                                disabledInactiveTrackColor: Color(0x4DFFFFFF),
-                                overlayColor: Colors.transparent,
-                                trackShape: const MultiplySliderTrackShape(),
-                                thumbShape: MultiplySliderThumbShape(),
-                                tickMarkShape:
-                                    const MultiplySliderTickMarkShape(),
-                                overlayShape:
-                                    const MultiplySliderOverlayShape(),
-                                valueIndicatorColor: Color(0xFF7D7D7D),
-                                valueIndicatorTextStyle: Theme.of(context)
-                                    .textTheme
-                                    .headline3
-                                    ?.copyWith(
-                                        color: PluginColorsDark.headline1,
-                                        fontSize: UI.getTextSize(14, context))),
-                            child: Slider(
-                              min: 0,
-                              max: ratioLeft - ratioRight,
-                              divisions: steps.toInt(),
-                              value: _slider,
-                              label:
-                                  '${dic['loan.ratio']} ${(ratioLeft - _slider).toStringAsFixed(1)}%\n(${dic['liquid.price']} \$${Fmt.priceFloorBigInt(liquidationPriceNew, acala_price_decimals)})',
-                              onChanged: (value) {
-                                if (_slider != value) {
-                                  if (value > _slider) {
-                                    _updateDexBuyingPrice();
-                                  } else {
-                                    _updateDexSellingPrice();
-                                  }
-                                  setState(() {
-                                    _slider = value;
-                                  });
-                                }
-                              },
-                            )),
+                        PluginSlider(
+                          max: ratioLeft - ratioRight,
+                          divisions: steps.toInt(),
+                          value: _slider,
+                          label:
+                              '${dic['loan.ratio']} ${(ratioLeft - _slider).toStringAsFixed(1)}%\n(${dic['liquid.price']} \$${Fmt.priceFloorBigInt(liquidationPriceNew, acala_price_decimals)})',
+                          onChanged: (value) {
+                            if (_slider != value) {
+                              if (value > _slider) {
+                                _updateDexBuyingPrice();
+                              } else {
+                                _updateDexSellingPrice();
+                              }
+                              setState(() {
+                                _slider = value;
+                              });
+                            }
+                          },
+                        ),
                       ],
                     ),
                     Row(

@@ -286,10 +286,7 @@ class _TransferFormXCMState extends State<TransferFormXCM> {
 
   Future<XcmTxConfirmParams?> _getTxParams(
       Widget? chainFromIcon, TokenBalanceData feeToken) async {
-    if (_accountToError == null &&
-        _formKey.currentState!.validate() &&
-        !_submitting &&
-        !_connecting) {
+    if (_formKey.currentState!.validate() && !_submitting && !_connecting) {
       final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common')!;
       final dicAcala = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala');
       final tokenView = PluginFmt.tokenView(_token!.symbol);
@@ -351,6 +348,9 @@ class _TransferFormXCMState extends State<TransferFormXCM> {
   }
 
   void _fetchData() {
+    if (_chainFrom != plugin_name_acala && _connecting == true) {
+      _updateFromChain(_chainFrom);
+    }
     if (_token != null) {
       _getTxFee();
     }

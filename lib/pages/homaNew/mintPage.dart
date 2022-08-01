@@ -412,7 +412,7 @@ class _MintPageState extends State<MintPage> {
                                           subtitle: Container(
                                             margin: EdgeInsets.only(top: 8),
                                             child: Text(
-                                              '(${dic['v3.homa.stake.apy.protocol']} ${baseApy.toStringAsFixed(2)}% ${taigaApr == 0 ? '' : '+ ${dic['v3.homa.stake.apy.reward']} ${(taigaApr * 100).toStringAsFixed(2)}%'})',
+                                              '(${dic['v3.homa.stake.apy.protocol']} ${baseApy.toStringAsFixed(2)}%${taigaApr == 0 ? '' : ' + ${dic['v3.homa.stake.apy.reward']} ${(taigaApr * 100).toStringAsFixed(2)}%'})',
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .headline6

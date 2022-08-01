@@ -154,7 +154,10 @@ const swapTaigaQuery = r'''
           outputAmount
           outputAsset
           extrinsicId
-          blockId
+          block {
+            id 
+            liquidExchangeRate
+          }
           timestamp
         }
       }
@@ -164,7 +167,10 @@ const swapTaigaQuery = r'''
           inputAmounts
           poolId
           extrinsicId
-          blockId
+          block {
+            id 
+            liquidExchangeRate
+          }
           timestamp
         }
       }
@@ -175,7 +181,10 @@ const swapTaigaQuery = r'''
           poolId
           timestamp
           extrinsicId
-          blockId
+          block {
+            id 
+            liquidExchangeRate
+          }
         }
       }
       singleRedeems(filter: {addressId: {equalTo: $address}}, first: 20, orderBy: TIMESTAMP_DESC){
@@ -184,7 +193,10 @@ const swapTaigaQuery = r'''
           inputAmount
           poolId
           extrinsicId
-          blockId
+          block {
+            id 
+            liquidExchangeRate
+          }
           timestamp
         }
       }
@@ -194,7 +206,10 @@ const swapTaigaQuery = r'''
           inputAmount
           poolId
           extrinsicId
-          blockId
+          block {
+            id 
+            liquidExchangeRate
+          }
           timestamp
         }
       }

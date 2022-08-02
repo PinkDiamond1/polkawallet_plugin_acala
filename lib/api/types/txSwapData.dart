@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_plugin_acala/utils/format.dart';
@@ -120,12 +121,13 @@ class TxSwapData extends _TxSwapData {
         break;
       case "mint":
         final taigaData = plugin.store!.earn.taigaTokenPairs.firstWhere(
-            (element) => element.tokenNameId == "sa://${json['poolId']}");
-        final tokenPair = taigaData.tokens!
-            .map((e) => AssetsUtils.tokenDataFromCurrencyId(plugin, e))
+            (element) => element.tokenNameId == "sa://${json['poolId']}",
+            orElse: () => DexPoolData());
+        final tokenPair = taigaData.tokens
+            ?.map((e) => AssetsUtils.tokenDataFromCurrencyId(plugin, e))
             .toList();
 
-        tokenPair.forEach((element) {
+        tokenPair?.forEach((element) {
           final index = tokenPair.indexOf(element);
           final amount;
           if (element.symbol == 'LDOT') {

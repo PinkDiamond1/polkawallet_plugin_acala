@@ -42,49 +42,61 @@ class _SwapHistoryPageState extends State<SwapHistoryPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final client = clientFor(uri: GraphQLConfig['defiUri']!);
-
-      final result = await client.value.query(QueryOptions(
-        document: gql(swapQuery),
-        variables: <String, String?>{
-          'account': widget.keyring.current.address,
-        },
-      ));
-
-      List<TxSwapData> list = [];
-      if (result.data != null) {
-        list = List.of(result.data!['dexActions']['nodes'])
-            .map((i) => TxSwapData.fromJson(i as Map, widget.plugin))
-            .toList();
-      }
-
-      await _queryTaigaPoolInfo();
-
-      final clientTaiga = clientFor(uri: GraphQLConfig['taigaUri']!);
-
-      final resultTaiga = await clientTaiga.value.query(QueryOptions(
-        document: gql(swapTaigaQuery),
-        variables: <String, String?>{
-          'address': widget.keyring.current.address,
-        },
-      ));
-      if (resultTaiga.data != null) {
-        resultTaiga.data!.forEach((key, value) {
-          if (value is Map && value['nodes'] != null) {
-            list.addAll(List.of(value['nodes'])
-                .map((i) => TxSwapData.fromTaigaJson(i as Map, widget.plugin))
-                .toList());
-          }
-        });
-      }
-
-      list.sort((left, right) => right.time.compareTo(left.time));
-
+      List<List<TxSwapData>> orgin =
+          await Future.wait([querySwapHistory(), queryTaigaHistory()]);
+      List<TxSwapData> list = orgin.expand((element) => element).toList()
+        ..sort((left, right) => right.time.compareTo(left.time));
       setState(() {
         _isLoading = false;
-        _list.addAll(list);
+        _list = list;
       });
     });
+  }
+
+  Future<List<TxSwapData>> querySwapHistory() async {
+    final client = clientFor(uri: GraphQLConfig['defiUri']!);
+
+    final result = await client.value.query(QueryOptions(
+      document: gql(swapQuery),
+      fetchPolicy: FetchPolicy.noCache,
+      variables: <String, String?>{
+        'account': widget.keyring.current.address,
+      },
+    ));
+
+    List<TxSwapData> list = [];
+    if (result.data != null) {
+      list = List.of(result.data!['dexActions']['nodes'])
+          .map((i) => TxSwapData.fromJson(i as Map, widget.plugin))
+          .toList();
+    }
+    return list;
+  }
+
+  Future<List<TxSwapData>> queryTaigaHistory() async {
+    List<TxSwapData> list = [];
+
+    await _queryTaigaPoolInfo();
+
+    final clientTaiga = clientFor(uri: GraphQLConfig['taigaUri']!);
+
+    final resultTaiga = await clientTaiga.value.query(QueryOptions(
+      document: gql(swapTaigaQuery),
+      fetchPolicy: FetchPolicy.noCache,
+      variables: <String, String?>{
+        'address': widget.keyring.current.address,
+      },
+    ));
+    if (resultTaiga.data != null) {
+      resultTaiga.data!.forEach((key, value) {
+        if (value is Map && value['nodes'] != null) {
+          list.addAll(List.of(value['nodes'])
+              .map((i) => TxSwapData.fromTaigaJson(i as Map, widget.plugin))
+              .toList());
+        }
+      });
+    }
+    return list;
   }
 
   Future<void> _queryTaigaPoolInfo() async {
@@ -248,6 +260,9 @@ class _SwapHistoryPageState extends State<SwapHistoryPage> {
                                 type: detail.isSuccess == false
                                     ? TransferIconType.failure
                                     : type,
+                                darkBgColor: detail.isTaiga
+                                    ? Color(0xFF974DE4)
+                                    : Color(0xFF494a4c),
                                 bgColor: detail.isTaiga
                                     ? Color(0xFF974DE4)
                                     : detail.isSuccess == false

@@ -270,7 +270,7 @@ async function getTaigaPoolInfo(api: ApiPromise, address: string) {
   return {
     "sa://0": {
       apy: tDOTApy,
-      reward: tDOTReward.claimable,
+      reward: tDOTReward?.claimable || ["0"],
       rewardTokens: ["sa://0"],
       userShares: tDOTshares.shares,
       totalShares: tDOTshares.sharesTotal,

@@ -135,9 +135,8 @@ class ServiceEarn {
       await getDexPools();
     }
 
-    await plugin.service!.assets.queryMarketPrices();
-
-    await queryDexPoolInfo();
+    await Future.wait(
+        [queryDexPoolInfo(), plugin.service!.assets.queryMarketPrices()]);
 
     queryIncentives();
   }

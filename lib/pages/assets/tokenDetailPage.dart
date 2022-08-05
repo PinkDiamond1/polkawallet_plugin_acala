@@ -356,7 +356,9 @@ class BalanceCard extends StatelessWidget {
     double? tokenValue;
     if (tokenPrice != null) {
       tokenValue = (tokenPrice ?? 0) > 0
-          ? tokenPrice! * Fmt.bigIntToDouble(total, decimals)
+          ? tokenPrice! *
+              Fmt.bigIntToDouble(total, decimals) *
+              (tokenBalance?.priceRate ?? 1.0)
           : 0;
     }
 
@@ -409,7 +411,7 @@ class BalanceCard extends StatelessWidget {
                       Visibility(
                         visible: tokenValue != null,
                         child: Text(
-                          '≈ \$ ${Fmt.priceFloor(tokenValue)}',
+                          '≈ ${Fmt.priceCurrencySymbol(tokenBalance?.priceCurrency)} ${Fmt.priceFloor(tokenValue)}',
                           style: Theme.of(context)
                               .textTheme
                               .headline6

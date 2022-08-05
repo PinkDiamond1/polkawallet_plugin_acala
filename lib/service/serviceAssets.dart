@@ -23,12 +23,14 @@ class ServiceAssets {
   final AcalaApi? api;
   final PluginStore? store;
 
-  Future<void> queryMarketPrices() async {
+  Future<void> queryMarketPrices({bool withDexPrice = true}) async {
     if (store!.earn.dexPools.length == 0) {
       await plugin.service?.earn.getDexPools();
     }
 
-    queryDexPrices();
+    if (withDexPrice) {
+      queryDexPrices();
+    }
 
     final prices = await plugin.api!.assets.getTokenPrices(
         plugin.store!.assets.allTokens.map((e) => e.symbol ?? '').toList());
@@ -44,12 +46,9 @@ class ServiceAssets {
 
     final output = await plugin.sdk.webView?.evalJavascript(
         'Promise.all([${tokens.map((e) => 'acala.calcTokenSwapAmount(apiRx, 1, null, ${jsonEncode([
-              e?.tokenNameId,
-              acala_stable_coin
-            ].map((e) {
-              final token = AssetsUtils.getBalanceFromTokenNameId(plugin, e);
-              return {...token.currencyId!, 'decimals': token.decimals};
-            }).toList())}, "0.05")').join(',')}])');
+                  e?.tokenNameId,
+                  acala_stable_coin
+                ])}, "0.05")').join(',')}])');
 
     final Map<String, double> prices = {};
     output.asMap().forEach((k, v) {

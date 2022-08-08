@@ -18,12 +18,14 @@ class LoanTxDetailPage extends StatelessWidget {
   final PluginAcala plugin;
   final Keyring keyring;
 
-  static final String route = '/karura/loan/tx';
+  static final String route = '/acala/loan/tx';
 
   @override
   Widget build(BuildContext context) {
     final Map<String, String> dic =
         I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
+    final Map<String, String> dicCommon =
+        I18n.of(context)!.getDic(i18n_full_dic_acala, 'common')!;
     final amountStyle = TextStyle(
         fontSize: UI.getTextSize(16, context),
         fontWeight: FontWeight.bold,
@@ -35,41 +37,55 @@ class LoanTxDetailPage extends StatelessWidget {
     final List<TxDetailInfoItem> items = [
       TxDetailInfoItem(
         label: 'Event',
-        content: Text(tx.event!,
-            style: tx.isSuccess == null
-                ? TextStyle(
-                    fontFamily: UI.getFontFamily('TitilliumWeb', context),
-                    fontSize: UI.getTextSize(30, context),
-                    fontWeight: FontWeight.w600,
-                    color: PluginColorsDark.headline1)
-                : amountStyle),
+        content: Text(
+            tx.event!.replaceAll('loans.', '').replaceAll('cdpEngine.', ''),
+            style: amountStyle),
       ),
       TxDetailInfoItem(
         label: dic['txs.action'],
-        content: Text(
-            dic['loan.${tx.actionType}']! +
-                (tx.actionType == TxLoanData.actionTypeBorrow ||
-                        tx.actionType == TxLoanData.actionTypePayback
-                    ? ' $acala_stable_coin_view'
-                    : ' ${PluginFmt.tokenView(tx.token)}'),
-            style: amountStyle),
+        content: Text(dic['loan.${tx.actionType}']!, style: amountStyle),
       )
     ];
-    if (tx.collateral != BigInt.zero) {
+
+    if (tx.actionType == TxLoanData.actionLiquidate) {
+      if (tx.collateral != BigInt.zero) {
+        items.add(TxDetailInfoItem(
+          label: dicCommon['amount'],
+          content: Text(
+              '${tx.amountCollateral} ${PluginFmt.tokenView(tx.token)}',
+              style: amountStyle),
+        ));
+      }
+    } else if (tx.actionType == TxLoanData.actionClose) {
       items.add(TxDetailInfoItem(
-        label: tx.collateral! > BigInt.zero
-            ? dic['loan.deposit']
-            : dic['loan.withdraw'],
+        label: dic['loan.return'],
         content: Text('${tx.amountCollateral} ${PluginFmt.tokenView(tx.token)}',
             style: amountStyle),
       ));
-    }
-    if (tx.debit != BigInt.zero) {
       items.add(TxDetailInfoItem(
-        label: tx.debit! < BigInt.zero ? dic['loan.payback'] : dic['loan.mint'],
+        label: dic['loan.payback'],
         content: Text('${tx.amountDebit} $acala_stable_coin_view',
             style: amountStyle),
       ));
+    } else {
+      if (tx.collateral != BigInt.zero) {
+        items.add(TxDetailInfoItem(
+          label: tx.collateral! > BigInt.zero
+              ? dic['loan.deposit']
+              : dic['loan.withdraw'],
+          content: Text(
+              '${tx.amountCollateral} ${PluginFmt.tokenView(tx.token)}',
+              style: amountStyle),
+        ));
+      }
+      if (tx.debit != BigInt.zero) {
+        items.add(TxDetailInfoItem(
+          label:
+              tx.debit! < BigInt.zero ? dic['loan.payback'] : dic['loan.mint'],
+          content: Text('${tx.amountDebit} $acala_stable_coin_view',
+              style: amountStyle),
+        ));
+      }
     }
 
     String? networkName = plugin.basic.name;
@@ -81,6 +97,7 @@ class LoanTxDetailPage extends StatelessWidget {
       action: dic['loan.${tx.actionType}'],
       // blockNum: int.parse(tx.block),
       hash: tx.hash,
+      resolveLinks: tx.resolveLinks,
       blockTime:
           Fmt.dateTime(DateFormat("yyyy-MM-ddTHH:mm:ss").parse(tx.time, true)),
       networkName: networkName,

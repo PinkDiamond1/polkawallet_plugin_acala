@@ -23,40 +23,17 @@ class ServiceAssets {
   final AcalaApi? api;
   final PluginStore? store;
 
-  Future<void> queryMarketPrices() async {
+  Future<void> queryMarketPrices({bool withDexPrice = true}) async {
     if (store!.earn.dexPools.length == 0) {
       await plugin.service?.earn.getDexPools();
     }
 
-    queryDexPrices();
-
-    final all =
-        PluginFmt.getAllDexTokens(plugin).map((e) => e!.symbol).toList();
-    all.removeWhere((e) =>
-        e!.contains('USD') ||
-        e.toLowerCase().contains('tai') ||
-        (e != relay_chain_token_symbol &&
-            e.contains(relay_chain_token_symbol)));
-    if (all.length == 0) return;
-
-    final Map? res = await WalletApi.getTokenPrice(all);
-    final Map<String, double> prices = {
-      acala_stable_coin: 1.0,
-      'USDT': 1.0,
-      ...(res ?? {})
-    };
-
-    try {
-      if (prices[relay_chain_token_symbol] != null &&
-          await (api!.homa.isHomaAlive() as Future<bool>)) {
-        final homaEnv = await plugin.service!.homa.queryHomaEnv();
-        prices['L$relay_chain_token_symbol'] =
-            prices[relay_chain_token_symbol]! * homaEnv.exchangeRate;
-      }
-    } catch (err) {
-      print(err);
-      // ignore
+    if (withDexPrice) {
+      queryDexPrices();
     }
+
+    final prices = await plugin.api!.assets.getTokenPrices(
+        plugin.store!.assets.allTokens.map((e) => e.symbol ?? '').toList());
 
     store!.assets.setMarketPrices(prices);
   }
@@ -68,13 +45,10 @@ class ServiceAssets {
         (e?.symbol ?? '').toLowerCase().contains('tai'));
 
     final output = await plugin.sdk.webView?.evalJavascript(
-        'Promise.all([${tokens.map((e) => 'acala.calcTokenSwapAmount(api, 1, null, ${jsonEncode([
-              e?.tokenNameId,
-              acala_stable_coin
-            ].map((e) {
-              final token = AssetsUtils.getBalanceFromTokenNameId(plugin, e);
-              return {...token.currencyId!, 'decimals': token.decimals};
-            }).toList())}, "0.05")').join(',')}])');
+        'Promise.all([${tokens.map((e) => 'acala.calcTokenSwapAmount(apiRx, 1, null, ${jsonEncode([
+                  e?.tokenNameId,
+                  acala_stable_coin
+                ])}, "0.05")').join(',')}])');
 
     final Map<String, double> prices = {};
     output.asMap().forEach((k, v) {
@@ -104,7 +78,12 @@ class ServiceAssets {
         locked: res['frozen'].toString(),
         reserved: res['reserved'].toString(),
         detailPageRoute: token.detailPageRoute,
-        price: store!.assets.marketPrices[token.symbol]);
+        price: AssetsUtils.getMarketPrice(plugin, token.symbol ?? ''),
+        getPrice: () {
+          return AssetsUtils.getMarketPrice(plugin, token.symbol ?? '');
+        },
+        priceCurrency: token.priceCurrency,
+        priceRate: token.priceRate);
     balances[token.tokenNameId] = data;
 
     store!.assets

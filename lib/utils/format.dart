@@ -13,6 +13,9 @@ class PluginFmt {
     if (token == acala_token_lc_dot) {
       return acala_token_lc_dot_view;
     }
+    if (token == acala_token_usdc) {
+      return acala_token_usdc_view;
+    }
     if (token?.contains('-') ?? false) {
       return '${token!.split('-').map((e) => PluginFmt.tokenView(e)).join('-')} LP';
     }

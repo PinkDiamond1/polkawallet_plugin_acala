@@ -18,9 +18,11 @@ import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginOutlinedButtonSmall.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginTokenIcon.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
@@ -46,6 +48,7 @@ class _SwapFormState extends State<SwapForm>
 
   String? _error;
   String? _errorReceive;
+  String? _interfaceError;
   double _slippage = 0.005;
   bool _slippageSettingVisible = false;
   String? _slippageError;
@@ -98,6 +101,9 @@ class _SwapFormState extends State<SwapForm>
   }
 
   bool _onCheckBalance() {
+    if (_interfaceError != null) {
+      return false;
+    }
     final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common');
     final v = _amountPayCtrl.text.trim();
     final balancePair =
@@ -201,8 +207,9 @@ class _SwapFormState extends State<SwapForm>
 
   Future<void> _calcSwapAmount(String? supply, String? target) async {
     if (_swapPair.length < 2) return;
+    _interfaceError = null;
 
-    widget.plugin.service!.assets.queryMarketPrices();
+    widget.plugin.service!.assets.queryMarketPrices(withDexPrice: false);
 
     try {
       if (supply == null) {
@@ -212,11 +219,7 @@ class _SwapFormState extends State<SwapForm>
         final output = await widget.plugin.api!.swap.queryTokenSwapAmount(
           supply,
           target.isEmpty ? '1' : target,
-          _swapPair.map((e) {
-            final token =
-                AssetsUtils.getBalanceFromTokenNameId(widget.plugin, e);
-            return {...token.currencyId!, 'decimals': token.decimals};
-          }).toList(),
+          _swapPair,
           _slippage.toString(),
         );
         if (mounted) {
@@ -240,11 +243,7 @@ class _SwapFormState extends State<SwapForm>
         final output = await widget.plugin.api!.swap.queryTokenSwapAmount(
           supply.isEmpty ? '1' : supply,
           target,
-          _swapPair.map((e) {
-            final token =
-                AssetsUtils.getBalanceFromTokenNameId(widget.plugin, e);
-            return {...token.currencyId!, 'decimals': token.decimals};
-          }).toList(),
+          _swapPair,
           _slippage.toString(),
         );
         if (mounted) {
@@ -264,7 +263,7 @@ class _SwapFormState extends State<SwapForm>
       }
     } on Exception catch (err) {
       setState(() {
-        _error = err.toString().split(':')[1];
+        _interfaceError = err.toString().split(':')[1];
       });
     }
   }
@@ -277,6 +276,13 @@ class _SwapFormState extends State<SwapForm>
 
   void _onSlippageChange(String v) {
     final Map? dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala');
+    if (v.trim().isEmpty) {
+      setState(() {
+        _slippageError = null;
+      });
+      _updateSlippage(0.005, custom: true);
+      return;
+    }
     try {
       double value = double.parse(v.trim());
       if (value >= 50 || value < 0.1) {
@@ -321,7 +327,13 @@ class _SwapFormState extends State<SwapForm>
         ? max - nativeKeepAlive
         : max;
 
-    final amount = Fmt.bigIntToDouble(input, decimals).toStringAsFixed(6);
+    var amount = Fmt.bigIntToDouble(input, decimals).toStringAsFixed(6);
+
+    final inputString =
+        Fmt.bigIntToDouble(input, decimals).toString().split(".");
+    if (inputString.length > 1 && inputString[1].length > 6) {
+      amount = "${inputString[0]}.${inputString[1].substring(0, 6)}";
+    }
     setState(() {
       _swapMode = 0;
       _amountPayCtrl.text = amount;
@@ -329,7 +341,7 @@ class _SwapFormState extends State<SwapForm>
       _error = null;
       _errorReceive = null;
     });
-    _onInputChange(amount);
+    _onInputChange(Fmt.bigIntToDouble(input, decimals).toStringAsFixed(20));
   }
 
   Future<void> _onSubmit(List<int?> pairDecimals, double minMax) async {
@@ -338,35 +350,10 @@ class _SwapFormState extends State<SwapForm>
 
       final pay = _amountPayCtrl.text.trim();
       final receive = _amountReceiveCtrl.text.trim();
-
-      BigInt? input = Fmt.tokenInt(_swapMode == 0 ? pay : receive,
-          pairDecimals[_swapMode == 0 ? 0 : 1]!);
-      if (_maxInput != null) {
-        input = _maxInput;
-        // keep tx fee for ACA swap
-        if (_swapMode == 0 &&
-            (_swapPair[0] == widget.plugin.networkState.tokenSymbol![0])) {
-          input =
-              input! - BigInt.two * Fmt.balanceInt(_fee!.partialFee.toString());
-        }
-      }
-
-      final params = [
-        _swapOutput.path!
-            .map((e) =>
-                AssetsUtils.getBalanceFromTokenNameId(widget.plugin, e['name'])
-                    .currencyId)
-            .toList(),
-        input.toString(),
-        Fmt.tokenInt(minMax.toString(), pairDecimals[_swapMode == 0 ? 1 : 0]!)
-            .toString(),
-      ];
       final res = await Navigator.of(context).pushNamed(TxConfirmPage.route,
           arguments: TxConfirmParams(
-              module: 'dex',
-              call: _swapMode == 0
-                  ? 'swapWithExactSupply'
-                  : 'swapWithExactTarget',
+              module: _swapOutput.tx!["section"],
+              call: _swapOutput.tx!["method"],
               txTitle: dic['dex.title'],
               txDisplayBold: {
                 dic['dex.pay']!: Text(
@@ -384,7 +371,7 @@ class _SwapFormState extends State<SwapForm>
                       ?.copyWith(color: Colors.white),
                 ),
               },
-              params: params,
+              params: _swapOutput.tx!["params"],
               isPlugin: true,
               onStatusChange: (status) {
                 if (status ==
@@ -526,11 +513,12 @@ class _SwapFormState extends State<SwapForm>
             _amountPayCtrl.text.isNotEmpty &&
             _amountReceiveCtrl.text.isNotEmpty;
 
-        final grey = Theme.of(context).unselectedWidgetColor;
         final labelStyle = Theme.of(context)
             .textTheme
-            .headline4
+            .headline5
             ?.copyWith(color: Colors.white);
+
+        final tokensAll = ['ACA', 'KAR', 'DOT', 'KSM', 'AUSD'];
 
         return ListView(
           padding: EdgeInsets.all(16),
@@ -539,45 +527,27 @@ class _SwapFormState extends State<SwapForm>
               visible: isNativeTokenLow,
               child: InsufficientACAWarn(),
             ),
-            Visibility(
-                visible: Fmt.balanceInt(balancePair[0].amount) > BigInt.zero &&
-                    balancePair[0].symbol != acala_token_ids[0],
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Padding(
-                        padding: EdgeInsets.only(bottom: 6),
-                        child: GestureDetector(
-                          child: Text(dic['v3.swap.max']!,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline5
-                                  ?.copyWith(
-                                      color: Color(0x88ffffff),
-                                      fontSize: UI.getTextSize(12, context),
-                                      fontWeight: FontWeight.w600)),
-                          onTap: () {
-                            _onSetMax(Fmt.balanceInt(balancePair[0].amount),
-                                balancePair[0].decimals!,
-                                nativeKeepAlive: nativeKeepAlive);
-                          },
-                        ))
-                  ],
-                )),
-            Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                Column(
-                  children: [
-                    PluginInputBalance(
+            Stack(alignment: Alignment.center, children: [
+              Column(
+                children: [
+                  PluginInputBalance(
+                      key: Key("1"),
+                      titleTag: dic['dex.pay'],
                       tokenViewFunction: (value) {
                         return PluginFmt.tokenView(value);
                       },
                       margin: EdgeInsets.only(bottom: 7),
                       inputCtrl: _amountPayCtrl,
                       tokenOptions: currencyOptionsLeft,
+                      quickTokenOptions: currencyOptionsLeft
+                          .where((element) => (tokensAll
+                                  .contains(element?.symbol?.toUpperCase()) ||
+                              tokensAll.contains(element?.name?.toUpperCase())))
+                          .toList(),
                       tokenSelectTitle: dic['v3.swap.selectToken']!,
-                      marketPrices: widget.plugin.store!.assets.marketPrices,
+                      getMarketPrice: (tokenSymbol) =>
+                          AssetsUtils.getMarketPrice(
+                              widget.plugin, tokenSymbol),
                       onInputChange: _onSupplyAmountChange,
                       onTokenChange: (token) {
                         setState(() {
@@ -598,114 +568,137 @@ class _SwapFormState extends State<SwapForm>
                       },
                       balance: balancePair[0],
                       tokenIconsMap: widget.plugin.tokenIcons,
-                    ),
-                    PluginInputBalance(
-                      tokenViewFunction: (value) {
-                        return PluginFmt.tokenView(value);
-                      },
-                      inputCtrl: _amountReceiveCtrl,
-                      tokenOptions: currencyOptionsRight,
-                      tokenSelectTitle: dic['v3.swap.selectToken']!,
-                      marketPrices: widget.plugin.store!.assets.marketPrices,
-                      onInputChange: _onTargetAmountChange,
-                      onTokenChange: (token) {
-                        setState(() {
-                          _swapPair = token.tokenNameId == swapPair[0]
-                              ? [swapPair[1], token.tokenNameId]
-                              : [swapPair[0], token.tokenNameId];
-                          _maxInput = null;
-                        });
-                        widget.plugin.store!.swap.setSwapPair(
-                            _swapPair, widget.keyring.current.pubKey);
-                        _updateSwapAmount();
-                      },
-                      // onSetMax: Fmt.balanceInt(balancePair[0]!.amount) > BigInt.zero
-                      //     ? (v) => _onSetMax(v, balancePair[0]!.decimals!,
-                      //         nativeKeepAlive: nativeKeepAlive)
-                      //     : null,
-                      onClear: () {
-                        setState(() {
-                          _maxInput = null;
-                          _amountReceiveCtrl.text = '';
-                        });
-                      },
-                      balance: balancePair[1],
-                      tokenIconsMap: widget.plugin.tokenIcons,
-                    ),
-                  ],
-                ),
-                GestureDetector(
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 45),
-                    child: Image.asset(
-                        'packages/polkawallet_plugin_acala/assets/images/swap_switch.png',
-                        width: 39),
+                      onSetMax:
+                          Fmt.balanceInt(balancePair[0].amount) > BigInt.zero &&
+                                  balancePair[0].symbol != acala_token_ids[0]
+                              ? (max) {
+                                  _onSetMax(
+                                      Fmt.balanceInt(balancePair[0].amount),
+                                      balancePair[0].decimals!,
+                                      nativeKeepAlive: nativeKeepAlive);
+                                }
+                              : null,
+                      type: InputBalanceType.swapType,
+                      bgBorderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(4),
+                          topRight: Radius.circular(4))),
+                  PluginInputBalance(
+                    key: Key("2"),
+                    margin: EdgeInsets.zero,
+                    titleTag: dic['dex.receiveEstimate'],
+                    tokenViewFunction: (value) {
+                      return PluginFmt.tokenView(value);
+                    },
+                    inputCtrl: _amountReceiveCtrl,
+                    tokenOptions: currencyOptionsRight,
+                    quickTokenOptions: currencyOptionsRight
+                        .where((element) => (tokensAll
+                                .contains(element?.symbol?.toUpperCase()) ||
+                            tokensAll.contains(element?.name?.toUpperCase())))
+                        .toList(),
+                    tokenSelectTitle: dic['v3.swap.selectToken']!,
+                    getMarketPrice: (tokenSymbol) =>
+                        AssetsUtils.getMarketPrice(widget.plugin, tokenSymbol),
+                    onInputChange: _onTargetAmountChange,
+                    onTokenChange: (token) {
+                      setState(() {
+                        _swapPair = token.tokenNameId == swapPair[0]
+                            ? [swapPair[1], token.tokenNameId]
+                            : [swapPair[0], token.tokenNameId];
+                        _maxInput = null;
+                      });
+                      widget.plugin.store!.swap.setSwapPair(
+                          _swapPair, widget.keyring.current.pubKey);
+                      _updateSwapAmount();
+                    },
+                    // onSetMax: Fmt.balanceInt(balancePair[0]!.amount) > BigInt.zero
+                    //     ? (v) => _onSetMax(v, balancePair[0]!.decimals!,
+                    //         nativeKeepAlive: nativeKeepAlive)
+                    //     : null,
+                    onClear: () {
+                      setState(() {
+                        _maxInput = null;
+                        _amountReceiveCtrl.text = '';
+                      });
+                    },
+                    balance: balancePair[1],
+                    tokenIconsMap: widget.plugin.tokenIcons,
+                    type: InputBalanceType.swapType,
+                    bgBorderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(4),
+                        bottomRight: Radius.circular(4)),
                   ),
-                  onTap: _swapPair.length > 1 ? () => _switchPair() : null,
-                ),
-              ],
-            ),
+                ],
+              ),
+              GestureDetector(
+                child: Image.asset(
+                    'packages/polkawallet_plugin_acala/assets/images/swap_switch.png',
+                    width: 39),
+                onTap: _swapPair.length > 1 ? () => _switchPair() : null,
+              ),
+            ]),
             ErrorMessage(
-              _error ?? _errorReceive,
+              _error ?? _errorReceive ?? _interfaceError,
               margin: EdgeInsets.symmetric(vertical: 2),
             ),
             Visibility(
-                visible: showExchangeRate,
+                visible: showExchangeRate && _interfaceError == null,
                 child: Container(
-                  margin: EdgeInsets.only(top: 7, right: 1, bottom: 7),
+                  margin: EdgeInsets.only(top: 16),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      Text(
-                        '1 ${PluginFmt.tokenView(balancePair[rateReversed ? 1 : 0].symbol)} = ${(rateReversed ? 1 / _swapRatio! : _swapRatio)!.toStringAsFixed(6)} ${PluginFmt.tokenView(balancePair[rateReversed ? 0 : 1].symbol)}',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline5
-                            ?.copyWith(color: Colors.white),
-                      ),
-                      GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              rateReversed = !rateReversed;
-                            });
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(left: 4),
-                            child: Image.asset(
-                                'packages/polkawallet_plugin_acala/assets/images/swap_repeat.png',
-                                width: 20),
-                          )),
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("${dic['collateral.price']}:", style: labelStyle),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Text(
+                            '1 ${PluginFmt.tokenView(balancePair[rateReversed ? 1 : 0].symbol)} = ${(rateReversed ? 1 / _swapRatio! : _swapRatio)!.toStringAsFixed(6)} ${PluginFmt.tokenView(balancePair[rateReversed ? 0 : 1].symbol)}',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline5
+                                ?.copyWith(color: Colors.white),
+                          ),
+                          GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  rateReversed = !rateReversed;
+                                });
+                              },
+                              child: Container(
+                                margin: EdgeInsets.only(left: 4),
+                                child: Image.asset(
+                                    'packages/polkawallet_plugin_acala/assets/images/swap_repeat.png',
+                                    width: 20),
+                              )),
+                        ],
+                      )
                     ],
                   ),
                 )),
             Container(
-              margin: EdgeInsets.only(right: 1, bottom: 7, top: 5),
+              margin: EdgeInsets.only(right: 1, bottom: 7, top: 16),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text("${dic['dex.slippage']!}:",
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline5
-                          ?.copyWith(color: Colors.white)),
+                  Text("${dic['dex.slippage']!}:", style: labelStyle),
                   GestureDetector(
-                      child: Container(
-                        margin: EdgeInsets.only(left: 3),
-                        padding: EdgeInsets.symmetric(
-                            horizontal: _slippage == 0.01 ? 8 : 5),
-                        decoration: BoxDecoration(
-                            color: Color(0xFFFF7849),
-                            borderRadius: BorderRadius.circular(4)),
-                        child: Text(
-                          Fmt.ratio(_slippage),
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline4
-                              ?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600),
-                        ),
-                      ),
+                      child: Padding(
+                          padding: EdgeInsets.all(5),
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(right: 4),
+                                child: Text(
+                                  Fmt.ratio(_slippage),
+                                  style: labelStyle,
+                                ),
+                              ),
+                              Image.asset(
+                                  "packages/polkawallet_plugin_acala/assets/images/swap_set.png",
+                                  width: 18)
+                            ],
+                          )),
                       onTap: _onSetSlippage),
                 ],
               ),
@@ -713,38 +706,41 @@ class _SwapFormState extends State<SwapForm>
             Visibility(
                 visible: _slippageSettingVisible,
                 child: Container(
-                  margin: EdgeInsets.only(left: 8, top: 3, bottom: 3),
+                  margin: EdgeInsets.only(left: 8, top: 24, bottom: 3),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
                       PluginOutlinedButtonSmall(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                            EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                         color: Color(0xFFFF7849),
                         unActiveTextcolor: Colors.white,
                         activeTextcolor: Colors.white,
                         content: '0.1 %',
+                        minSize: 24,
                         active: _slippage == 0.001,
                         onPressed: () => _updateSlippage(0.001),
                       ),
                       PluginOutlinedButtonSmall(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                            EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                         color: Color(0xFFFF7849),
                         unActiveTextcolor: Colors.white,
                         activeTextcolor: Colors.white,
                         content: '0.5 %',
+                        minSize: 24,
                         active: _slippage == 0.005,
                         onPressed: () => _updateSlippage(0.005),
                       ),
                       PluginOutlinedButtonSmall(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            EdgeInsets.symmetric(horizontal: 8, vertical: 1),
                         color: Color(0xFFFF7849),
                         unActiveTextcolor: Colors.white,
                         activeTextcolor: Colors.white,
                         content: '1 %',
+                        minSize: 24,
                         active: _slippage == 0.01,
                         onPressed: () => _updateSlippage(0.01),
                       ),
@@ -769,14 +765,15 @@ class _SwapFormState extends State<SwapForm>
                                   .textTheme
                                   .headline4
                                   ?.copyWith(
-                                      color: grey, fontWeight: FontWeight.w300),
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400),
                               inputFormatters: [UI.decimalInputFormatter(6)!],
                               keyboardType: TextInputType.numberWithOptions(
                                   decimal: true),
                               decoration: BoxDecoration(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(4)),
-                                border: Border.all(color: Color(0xFF979797)),
+                                color: Color(0x24FFFFFF),
                               ),
                               controller: _amountSlippageCtrl,
                               focusNode: _slippageFocusNode,
@@ -807,60 +804,60 @@ class _SwapFormState extends State<SwapForm>
                   ),
                 )),
             Visibility(
-                visible: showExchangeRate && _swapOutput.amount != null,
-                child: Row(children: [
-                  GestureDetector(
-                    child: Container(
-                        color: Colors.transparent,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              dicGov['detail']!,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline4
-                                  ?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  left: 6, top: 5, bottom: 5, right: 10),
-                              child: Transform.rotate(
-                                  angle: angle,
-                                  child: SvgPicture.asset(
-                                    "packages/polkawallet_ui/assets/images/triangle_bottom.svg",
-                                    color: Color(0xFFFF7849),
-                                  )),
-                            )
-                          ],
-                        )),
-                    onTap: () {
-                      if (!_detailShow) {
-                        _animationController!.forward();
-                      } else {
-                        _animationController!.reverse();
-                      }
-                      setState(() {
-                        _detailShow = !_detailShow;
-                      });
-                    },
-                  )
-                ])),
+                visible: showExchangeRate &&
+                    _swapOutput.amount != null &&
+                    _interfaceError == null,
+                child: Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: Row(children: [
+                      GestureDetector(
+                        child: Container(
+                            color: Colors.transparent,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  dicGov['detail']!,
+                                  style: labelStyle,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 6, top: 5, bottom: 5, right: 10),
+                                  child: Transform.rotate(
+                                      angle: angle,
+                                      child: SvgPicture.asset(
+                                        "packages/polkawallet_ui/assets/images/triangle_bottom.svg",
+                                        color: Color(0xFFFF7849),
+                                      )),
+                                )
+                              ],
+                            )),
+                        onTap: () {
+                          if (!_detailShow) {
+                            _animationController!.forward();
+                          } else {
+                            _animationController!.reverse();
+                          }
+                          setState(() {
+                            _detailShow = !_detailShow;
+                          });
+                        },
+                      )
+                    ]))),
             Visibility(
-                visible: _detailShow,
+                visible: _detailShow && _interfaceError == null,
                 child: Container(
-                  decoration: BoxDecoration(
-                      color: Color(0x24FFFFFF),
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(8),
-                          topRight: Radius.circular(8),
-                          bottomRight: Radius.circular(8))),
+                  // decoration: BoxDecoration(
+                  //     color: Color(0x24FFFFFF),
+                  //     borderRadius: BorderRadius.only(
+                  //         bottomLeft: Radius.circular(8),
+                  //         topRight: Radius.circular(8),
+                  //         bottomRight: Radius.circular(8))),
                   margin: EdgeInsets.only(top: 12),
-                  padding:
-                      EdgeInsets.only(left: 10, right: 10, bottom: 32, top: 12),
+                  // padding:
+                  //     EdgeInsets.only(left: 10, right: 10, bottom: 32, top: 12),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
                       Container(
                         margin: EdgeInsets.only(bottom: 8),
@@ -887,21 +884,9 @@ class _SwapFormState extends State<SwapForm>
                               child:
                                   Text(dic['dex.impact']!, style: labelStyle),
                             ),
-                            Text('<${Fmt.ratio(_swapOutput.priceImpact ?? 0)}',
+                            Text(
+                                '<${_swapOutput.priceImpact?.map((e) => Fmt.ratio(e)).toList().join("~")}',
                                 style: labelStyle),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Expanded(
-                              child:
-                                  Text(dic['dex.slippage']!, style: labelStyle),
-                            ),
-                            Text(Fmt.ratio(_slippage), style: labelStyle),
                           ],
                         ),
                       ),
@@ -916,14 +901,20 @@ class _SwapFormState extends State<SwapForm>
                                   child:
                                       Text(dic['dex.fee']!, style: labelStyle),
                                 ),
-                                Text(
-                                    '${_swapOutput.fee} ${PluginFmt.tokenView(swapPair.length > 1 ? balancePair[0].symbol : '')}',
-                                    style: labelStyle),
+                                Column(
+                                  children: (_swapOutput.fee ?? []).map((e) {
+                                    final index = _swapOutput.fee!.indexOf(e);
+                                    return Text(
+                                        "$e ${PluginFmt.tokenView(AssetsUtils.getBalanceFromTokenNameId(widget.plugin, _swapOutput.feeToken?[index]).symbol).toString()}",
+                                        style:
+                                            labelStyle?.copyWith(height: 1.4));
+                                  }).toList(),
+                                )
                               ],
                             ),
                           )),
                       Visibility(
-                          visible: (_swapOutput.path?.length ?? 0) > 2,
+                          visible: (_swapOutput.path?.length ?? 0) > 0,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -931,26 +922,61 @@ class _SwapFormState extends State<SwapForm>
                                 child:
                                     Text(dic['dex.route']!, style: labelStyle),
                               ),
-                              Text(
-                                  _swapOutput.path != null
-                                      ? _swapOutput.path!
-                                          .map((i) => PluginFmt.tokenView(
-                                              AssetsUtils
-                                                      .getBalanceFromTokenNameId(
-                                                          widget.plugin,
-                                                          i['name'])
-                                                  .symbol))
-                                          .toList()
-                                          .join(' > ')
-                                      : "",
-                                  style: labelStyle),
+                              v3.PopupMenuButton(
+                                  offset: Offset(0, 35),
+                                  color: Color(0xFF404142),
+                                  padding: EdgeInsets.zero,
+                                  elevation: 3,
+                                  itemWidth:
+                                      _getRouteWidth(_swapOutput.path ?? []),
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(10),
+                                    ),
+                                  ),
+                                  itemBuilder: (BuildContext context) {
+                                    return <v3.PopupMenuEntry<String>>[
+                                      v3.PopupMenuItem(
+                                        padding: EdgeInsets.all(12),
+                                        child: RouteWidget(widget.plugin,
+                                            path: _swapOutput.path),
+                                        value: '0',
+                                      ),
+                                    ];
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        color: Color(0x1AFFFFFF),
+                                        border: Border.all(
+                                            color: const Color(0x59FFFFFF),
+                                            width: 0.58),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15.05))),
+                                    child: Row(
+                                      children: [
+                                        PluginTokenIcon(balancePair[0].symbol!,
+                                            widget.plugin.tokenIcons,
+                                            size: 21),
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 3),
+                                          child: Image.asset(
+                                              "packages/polkawallet_plugin_acala/assets/images/swap_to.png",
+                                              width: 14),
+                                        ),
+                                        PluginTokenIcon(balancePair[1].symbol!,
+                                            widget.plugin.tokenIcons,
+                                            size: 21)
+                                      ],
+                                    ),
+                                  )),
                             ],
                           ))
                     ],
                   ),
                 )),
             Padding(
-                padding: EdgeInsets.only(bottom: 38, top: 100),
+                padding: EdgeInsets.only(bottom: 18, top: 130),
                 child: PluginButton(
                   title: dic['dex.title']!,
                   onPressed: _swapRatio == 0
@@ -961,6 +987,70 @@ class _SwapFormState extends State<SwapForm>
           ],
         );
       },
+    );
+  }
+
+  double _getRouteWidth(List<PathData> path) {
+    double width = 0;
+    path.forEach((element) {
+      final iconsWidth = element.path!.length * 20 + 7;
+      var networkWidth = 18 / 63.0 * 259; //acala
+      if (element.dex == "nuts") {
+        networkWidth = 18 / 213.0 * 625;
+      }
+      width += iconsWidth > networkWidth ? iconsWidth : networkWidth;
+    });
+    return width + (path.length - 1) * 35 + 24;
+  }
+}
+
+class RouteWidget extends StatelessWidget {
+  RouteWidget(this.plugin, {this.path, Key? key}) : super(key: key);
+
+  final PluginAcala plugin;
+  List<PathData>? path;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 70,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: (path ?? []).length,
+        separatorBuilder: (context, index) => Container(width: 35),
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 5),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Image.asset(
+                    "packages/polkawallet_plugin_acala/assets/images/swapRoute/${path![index].dex == "acala" ? "acala" : "${path![index].dex}-tapio-icon"}.png",
+                    height: 18),
+                Padding(
+                    padding: EdgeInsets.only(top: 15),
+                    child: Stack(
+                      children: path![index].path!.map((i) {
+                        final indexI = path![index].path!.indexOf(i);
+                        final balancePair =
+                            AssetsUtils.getBalancePairFromTokenNameId(
+                                plugin, [i]);
+                        return Padding(
+                          child: PluginTokenIcon(
+                              balancePair[0].symbol!, plugin.tokenIcons,
+                              size: 27),
+                          padding: EdgeInsets.only(left: indexI == 0 ? 0 : 20),
+                        );
+                      }).toList(),
+                    ))
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

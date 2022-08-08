@@ -18,6 +18,7 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/tapTooltip.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginInfoItem.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginOutlinedButtonSmall.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
@@ -243,25 +244,25 @@ class EarnDetailPage extends StatelessWidget {
                                         content: Fmt.ratio(
                                             rewardAPR + savingRewardAPR),
                                       ),
-                                      PluginInfoItem(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        title: dic['v3.earn.extraEarn'],
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline5
-                                            ?.copyWith(
-                                                color: Colors.white,
-                                                fontSize:
-                                                    UI.getTextSize(12, context),
-                                                fontWeight: FontWeight.w600),
-                                        titleStyle: Theme.of(context)
-                                            .textTheme
-                                            .headline5
-                                            ?.copyWith(color: Colors.white),
-                                        content: Fmt.ratio(
-                                            plugin.service!.earn.getSwapFee()),
-                                      ),
+                                      // PluginInfoItem(
+                                      //   crossAxisAlignment:
+                                      //       CrossAxisAlignment.center,
+                                      //   title: dic['v3.earn.extraEarn'],
+                                      //   style: Theme.of(context)
+                                      //       .textTheme
+                                      //       .headline5
+                                      //       ?.copyWith(
+                                      //           color: Colors.white,
+                                      //           fontSize:
+                                      //               UI.getTextSize(12, context),
+                                      //           fontWeight: FontWeight.w600),
+                                      //   titleStyle: Theme.of(context)
+                                      //       .textTheme
+                                      //       .headline5
+                                      //       ?.copyWith(color: Colors.white),
+                                      //   content: Fmt.ratio(
+                                      //       plugin.service!.earn.getSwapFee()),
+                                      // ),
                                       PluginInfoItem(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
@@ -482,7 +483,7 @@ class _UserCard extends StatelessWidget {
       showCupertinoDialog(
           context: context,
           builder: (_) {
-            return CupertinoAlertDialog(
+            return PolkawalletAlertDialog(
               title: Text(dic['earn.claim']!),
               content: Text.rich(TextSpan(children: [
                 TextSpan(
@@ -519,11 +520,12 @@ class _UserCard extends StatelessWidget {
                     : TextSpan(),
               ])),
               actions: <Widget>[
-                CupertinoDialogAction(
+                PolkawalletActionSheetAction(
                   child: Text(dic['homa.redeem.cancel']!),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
-                CupertinoDialogAction(
+                PolkawalletActionSheetAction(
+                  isDefaultAction: true,
                   child: Text(dic['homa.confirm']!),
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -584,7 +586,6 @@ class _UserCard extends StatelessWidget {
         stableCoinDecimal!);
     canClaim = rewardSaving > savingRewardTokenMin;
     var rewardPrice = 0.0;
-    TokenBalanceData? edErrorToken;
     final String rewardV2 = poolInfo!.reward!.incentive.map((e) {
       double amount = double.parse(e['amount']);
       if (amount < 0) {
@@ -597,11 +598,6 @@ class _UserCard extends StatelessWidget {
           AssetsUtils.getBalanceFromTokenNameId(plugin, e['tokenNameId']);
       rewardPrice +=
           AssetsUtils.getMarketPrice(plugin, rewardToken.symbol ?? '') * amount;
-      if (rewardToken.amount == BigInt.zero.toString() &&
-          BigInt.parse(rewardToken.minBalance!) >
-              Fmt.tokenInt(amount.toString(), rewardToken.decimals!)) {
-        edErrorToken = rewardToken;
-      }
       return Fmt.priceFloor(amount, lengthMax: 4) +
           ' ${PluginFmt.tokenView(rewardToken.symbol)}';
     }).join(' + ');
@@ -621,13 +617,8 @@ class _UserCard extends StatelessWidget {
 
     if (rewardSaving > 0) {
       reward =
-          "$reward + ${Fmt.priceFloor(rewardSaving, lengthMax: 2)} $stableCoinSymbol";
+          "$reward + ${Fmt.priceFloor(rewardSaving, lengthMax: 4)} $stableCoinSymbol";
       rewardPrice += rewardSaving;
-      if (plugin.store!.assets.tokenBalanceMap[stableCoinSymbol]!.amount ==
-              BigInt.zero.toString() &&
-          rewardSaving < savingRewardTokenMin) {
-        edErrorToken = plugin.store!.assets.tokenBalanceMap[stableCoinSymbol]!;
-      }
     }
 
     return Visibility(
@@ -639,12 +630,16 @@ class _UserCard extends StatelessWidget {
               margin: EdgeInsets.zero,
               child: Column(
                 children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.only(bottom: 12),
-                    child: Image.asset(
-                      "packages/polkawallet_plugin_acala/assets/images/lp_detail_rewards.png",
-                      width: 100,
-                    ),
+                  Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(bottom: 12),
+                        child: Image.asset(
+                          "packages/polkawallet_plugin_acala/assets/images/lp_detail_reward.png",
+                          width: 150,
+                        ),
+                      ),
+                    ],
                   ),
                   Text(
                     "\$ ${Fmt.doubleFormat(rewardPrice)}",
@@ -672,19 +667,6 @@ class _UserCard extends StatelessWidget {
                                 context, rewardV2, rewardSaving, blocksToEnd)
                             : null),
                   ),
-                  edErrorToken != null
-                      ? Padding(
-                          padding: EdgeInsets.only(top: 16),
-                          child: Text(
-                            "${dic['earn.dex.edError1']} ${Fmt.priceFloorBigIntFormatter(BigInt.parse(edErrorToken!.minBalance!), edErrorToken!.decimals!, lengthMax: 6)} ${PluginFmt.tokenView(edErrorToken!.symbol)} ${dic['earn.dex.edError2']}",
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline5
-                                ?.copyWith(
-                                    color: Colors.white,
-                                    fontSize: UI.getTextSize(10, context)),
-                          ))
-                      : Container()
                 ],
               ),
             )));

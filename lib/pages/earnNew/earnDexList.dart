@@ -12,7 +12,10 @@ import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/listTail.dart';
+import 'package:polkawallet_ui/components/connectionChecker.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginIconButton.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginPopLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTokenIcon.dart';
 import 'package:polkawallet_ui/components/v3/plugin/roundedPluginCard.dart';
 import 'package:polkawallet_ui/utils/consts.dart';
@@ -42,24 +45,14 @@ class _EarnDexListState extends State<EarnDexList> {
     await widget.plugin.service!.earn.updateAllDexPoolInfo();
 
     widget.plugin.service!.gov.updateBestNumber();
+    _loading = false;
     if (mounted) {
-      setState(() {
-        _loading = false;
-      });
+      setState(() {});
 
       _timer = Timer(Duration(seconds: 30), () {
         _fetchData();
       });
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchData();
-    });
   }
 
   @override
@@ -116,7 +109,7 @@ class _EarnDexListState extends State<EarnDexList> {
 
           if (dexPools[i].provisioning == null &&
               (incentive > 0 || userReward > 0)) {
-            if (_search.isNotEmpty) {
+            if (_search.trim().isNotEmpty) {
               final balancePair = dexPools[i]
                   .tokens!
                   .map((e) =>
@@ -126,7 +119,7 @@ class _EarnDexListState extends State<EarnDexList> {
               var tokenSymbol = balancePair.map((e) => e.symbol).join('-');
               if (!PluginFmt.tokenView(tokenSymbol)
                   .toUpperCase()
-                  .contains(_search.toUpperCase())) {
+                  .contains(_search.trim().toUpperCase())) {
                 continue;
               }
             }
@@ -250,6 +243,7 @@ class _EarnDexListState extends State<EarnDexList> {
             BigInt.zero);
       }
       return Column(children: [
+        ConnectionChecker(widget.plugin, onConnected: _fetchData),
         Container(
             margin: EdgeInsets.only(left: 16, right: 16, bottom: 14, top: 5),
             padding: EdgeInsets.only(left: 8, top: 4, bottom: 5, right: 8),
@@ -279,6 +273,11 @@ class _EarnDexListState extends State<EarnDexList> {
                   onSubmitted: (value) {
                     setState(() {
                       _search = value;
+                    });
+                  },
+                  onChanged: (value) {
+                    setState(() {
+                      _search = _controller.text;
                     });
                   },
                 )),
@@ -335,12 +334,13 @@ class _EarnDexListState extends State<EarnDexList> {
                     });
                   },
                 ),
-                GestureDetector(
-                  child: Image.asset(
-                    "assets/images/icon_assetsType.png",
-                    width: 28,
+                PluginIconButton(
+                  icon: SvgPicture.asset(
+                    'assets/images/icon_screening.svg',
+                    color: PluginColorsDark.headline1,
+                    width: 22,
                   ),
-                  onTap: () {
+                  onPressed: () {
                     showCupertinoModalPopup(
                       context: context,
                       builder: (context) {
@@ -350,11 +350,11 @@ class _EarnDexListState extends State<EarnDexList> {
                           dic['earn.dex.sort2'],
                           dic['earn.dex.sort3']
                         ];
-                        return CupertinoActionSheet(
+                        return PolkawalletActionSheet(
                           actions: <Widget>[
                             ...sortType.map((element) {
                               final index = sortType.indexOf(element);
-                              return CupertinoActionSheetAction(
+                              return PolkawalletActionSheetAction(
                                 onPressed: () {
                                   if ('earn.dex.sort$index' != _sort) {
                                     setState(() {
@@ -382,21 +382,7 @@ class _EarnDexListState extends State<EarnDexList> {
             )),
         Expanded(
             child: dexPools.length == 0
-                ? ListView(
-                    padding: EdgeInsets.all(16),
-                    children: [
-                      Center(
-                        child: Container(
-                          height: MediaQuery.of(context).size.width,
-                          child: ListTail(
-                            isEmpty: true,
-                            isLoading: _loading,
-                            color: Colors.white,
-                          ),
-                        ),
-                      )
-                    ],
-                  )
+                ? PluginPopLoadingContainer(loading: _loading)
                 : GridView.builder(
                     padding: EdgeInsets.all(16),
                     itemCount: dexPools.length,
@@ -511,7 +497,7 @@ class _EarnDexListState extends State<EarnDexList> {
                                                       EdgeInsets.only(left: 4),
                                                   child: Image.asset(
                                                     "packages/polkawallet_plugin_acala/assets/images/unstaked.png",
-                                                    width: 24,
+                                                    width: 22,
                                                   ))),
                                           Visibility(
                                               visible: (poolInfo?.shares ??
@@ -520,10 +506,9 @@ class _EarnDexListState extends State<EarnDexList> {
                                               child: Padding(
                                                   padding:
                                                       EdgeInsets.only(left: 4),
-                                                  child: SvgPicture.asset(
-                                                    "packages/polkawallet_plugin_acala/assets/images/staked.svg",
-                                                    color: Colors.white,
-                                                    width: 24,
+                                                  child: Image.asset(
+                                                    "packages/polkawallet_plugin_acala/assets/images/staked_1.png",
+                                                    width: 22,
                                                   ))),
                                           Visibility(
                                               visible: canClaim,
@@ -532,7 +517,7 @@ class _EarnDexListState extends State<EarnDexList> {
                                                       EdgeInsets.only(left: 4),
                                                   child: Image.asset(
                                                     "packages/polkawallet_plugin_acala/assets/images/rewards.png",
-                                                    width: 24,
+                                                    width: 22,
                                                   ))),
                                         ],
                                       )

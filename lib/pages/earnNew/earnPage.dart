@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/earnDexList.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/earnHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earnNew/earnLoanList.dart';
+import 'package:polkawallet_plugin_acala/pages/earnNew/earnTaigaList.dart';
 import 'package:polkawallet_plugin_acala/pages/types/earnPageParams.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/connectionChecker.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginIconButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginPageTitleTaps.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
@@ -25,9 +28,12 @@ class EarnPage extends StatefulWidget {
 class _EarnPageState extends State<EarnPage> {
   int _tab = 0;
 
+  Future<void> _fetchData() async {
+    widget.plugin.service!.earn.getDexIncentiveLoyaltyEndBlock();
+  }
+
   @override
   void initState() {
-    widget.plugin.service!.earn.getDexIncentiveLoyaltyEndBlock();
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -50,27 +56,32 @@ class _EarnPageState extends State<EarnPage> {
         title: Text(dic['earn.title']!),
         centerTitle: true,
         actions: [
+          ConnectionChecker(
+            widget.plugin,
+            onConnected: _fetchData,
+          ),
           Container(
-            padding: EdgeInsets.only(right: 16),
+            padding: EdgeInsets.only(right: 12),
             child: PluginIconButton(
-              icon: Icon(
-                Icons.history,
-                size: 22,
-                color: Color(0xFF17161F),
+              icon: Image.asset(
+                'packages/polkawallet_plugin_acala/assets/images/history.png',
+                width: 16,
               ),
               onPressed: () =>
                   Navigator.of(context).pushNamed(EarnHistoryPage.route),
             ),
-          )
+          ),
+          PluginAccountInfoAction(widget.keyring)
         ],
       ),
       body: SafeArea(
         child: Column(
           children: [
             Container(
-              margin: EdgeInsets.fromLTRB(16, 16, 0, 16),
+              margin: EdgeInsets.all(16),
               child: PluginPageTitleTaps(
-                names: [dic['earn.dex']!, dic['earn.loan']!],
+                names: [dic['earn.dex']!, dic['earn.loan']!, dic['airdrop']!],
+                isSpaceBetween: true,
                 activeTab: _tab,
                 // fontSize: 20,
                 // lineWidth: 6,
@@ -84,7 +95,9 @@ class _EarnPageState extends State<EarnPage> {
             Expanded(
               child: _tab == 0
                   ? EarnDexList(widget.plugin)
-                  : EarnLoanList(widget.plugin, widget.keyring),
+                  : _tab == 1
+                      ? EarnLoanList(widget.plugin, widget.keyring)
+                      : EarnTaigaList(widget.plugin, widget.keyring),
             )
           ],
         ),

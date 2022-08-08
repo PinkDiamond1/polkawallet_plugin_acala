@@ -21,23 +21,22 @@ const transferQuery = r'''
     }
   }
 ''';
-const loanQuery = r'''
+const loanQuery = r'''  
   query ($account: String) {
-    loanActions(filter: {accountId: {equalTo: $account}},
-      orderBy: TIMESTAMP_DESC, first: 20) {
-      nodes {
-        id
-        type
-        data
-        timestamp
-        extrinsic {
-          id
-          method
-          isSuccess
+   updatePositions(first:20,orderBy: TIMESTAMP_DESC, filter: {ownerId: {equalTo: $account}}) {
+          nodes{
+            collateralId
+            collateralAdjustment
+            debitAdjustment
+            timestamp
+            extrinsicId
+            debitExchangeRate
+            extrinsic {
+              method
+            }
+          }
         }
-      }
-    }
-  }
+}
 ''';
 const swapQuery = r'''
   query ($account: String) {
@@ -117,4 +116,116 @@ const queryPoolDetail = r'''
 
     }
   }
+''';
+
+const multiplyQuery = r'''
+query ($senderId: String) {
+    extrinsics(filter: {
+      section :{equalTo :"honzon"},
+      or:[{method:{equalTo:"expandPositionCollateral"}}, {method:{equalTo:"shrinkPositionDebit"}}],
+      senderId: {equalTo: $senderId}},
+      first: 20,orderBy:BLOCK_ID_DESC) {
+      nodes {
+        id
+        method
+        section
+        updatePositions {
+          nodes{
+            collateralId
+            collateralAdjustment
+            debitAdjustment
+            timestamp
+            extrinsicId
+            debitExchangeRate
+          }
+        }
+      }
+    }
+}
+''';
+
+const swapTaigaQuery = r'''
+    query ($address: String) {
+      swaps(filter: {addressId: {equalTo: $address}}, first: 20, orderBy: TIMESTAMP_DESC){
+        nodes {
+          id
+          inputAmount
+          inputAsset
+          outputAmount
+          outputAsset
+          extrinsicId
+          block {
+            id 
+            liquidExchangeRate
+          }
+          timestamp
+        }
+      }
+      mints(filter: {addressId: {equalTo: $address}}, first: 20, orderBy: TIMESTAMP_DESC){
+        nodes {
+          id
+          inputAmounts
+          poolId
+          extrinsicId
+          block {
+            id 
+            liquidExchangeRate
+          }
+          timestamp
+        }
+      }
+      proportionRedeems(filter: {addressId: {equalTo: $address}}, first: 20, orderBy: TIMESTAMP_DESC){
+        nodes {
+          id
+          inputAmount
+          poolId
+          timestamp
+          extrinsicId
+          block {
+            id 
+            liquidExchangeRate
+          }
+        }
+      }
+      singleRedeems(filter: {addressId: {equalTo: $address}}, first: 20, orderBy: TIMESTAMP_DESC){
+        nodes {
+          id
+          inputAmount
+          poolId
+          extrinsicId
+          block {
+            id 
+            liquidExchangeRate
+          }
+          timestamp
+        }
+      }
+      multiRedeems(filter: {addressId: {equalTo: $address}}, first: 20, orderBy: TIMESTAMP_DESC){
+        nodes {
+          id
+          inputAmount
+          poolId
+          extrinsicId
+          block {
+            id 
+            liquidExchangeRate
+          }
+          timestamp
+        }
+      }
+    }
+''';
+
+const queryCollaterals = r'''
+query {
+      collaterals {
+        nodes{
+          id
+          name
+          decimals
+          depositAmount
+          debitAmount
+        }
+      }
+    }
 ''';

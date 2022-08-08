@@ -16,7 +16,7 @@ class EarnTxDetailPage extends StatelessWidget {
   final PluginAcala plugin;
   final Keyring keyring;
 
-  static final String route = '/karura/earn/incentive/tx';
+  static final String route = '/acala/earn/incentive/tx';
 
   @override
   Widget build(BuildContext context) {
@@ -36,27 +36,23 @@ class EarnTxDetailPage extends StatelessWidget {
     return PluginTxDetail(
       current: keyring.current,
       success: tx.isSuccess,
-      action: dic['earn.${tx.event}'],
+      action: dic[earn_actions_map[tx.event]] ?? "",
       // blockNum: int.parse(tx.block),
       hash: tx.hash,
+      resolveLinks: tx.resolveLinks,
       blockTime:
           Fmt.dateTime(DateFormat("yyyy-MM-ddTHH:mm:ss").parse(tx.time, true)),
       networkName: networkName,
       infoItems: [
         TxDetailInfoItem(
           label: 'Event',
-          content: Text(tx.event!,
-              style: tx.isSuccess == null
-                  ? TextStyle(
-                      fontFamily: UI.getFontFamily('TitilliumWeb', context),
-                      fontSize: UI.getTextSize(30, context),
-                      fontWeight: FontWeight.w600,
-                      color: PluginColorsDark.headline1)
-                  : amountStyle),
+          content: Text(tx.event?.replaceAll('incentives.', '') ?? "",
+              style: amountStyle),
         ),
         TxDetailInfoItem(
           label: dic['txs.action'],
-          content: Text(dic['earn.${tx.event}']!, style: amountStyle),
+          content:
+              Text(dic[earn_actions_map[tx.event]] ?? "", style: amountStyle),
         ),
         TxDetailInfoItem(
           label: dic['earn.stake.pool'],

@@ -42,12 +42,6 @@ class AcalaServiceHoma {
     return res;
   }
 
-  Future<bool?> isHomaAlive() async {
-    final bool? res = await plugin.sdk.webView!
-        .evalJavascript('!!api.consts.homa;', wrapPromise: false);
-    return res;
-  }
-
   Future<dynamic> queryHomaNewEnv() async {
     final dynamic res =
         await plugin.sdk.webView!.evalJavascript('acala.queryHomaNewEnv(api)');

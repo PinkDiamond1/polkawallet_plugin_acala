@@ -7,6 +7,8 @@ const acala_stable_coin = 'AUSD';
 const acala_stable_coin_view = 'aUSD';
 const acala_token_lc_dot = 'LCDOT';
 const acala_token_lc_dot_view = 'lcDOT';
+const acala_token_usdc = 'USDCET';
+const acala_token_usdc_view = 'USDCet';
 
 const relay_chain_name = 'polkadot';
 const relay_chain_token_symbol = 'DOT';

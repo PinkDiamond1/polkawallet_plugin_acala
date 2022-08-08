@@ -1,27 +1,34 @@
 import { createDexShareName, FixedPointNumber, forceToCurrencyId, forceToCurrencyName, Token } from "@acala-network/sdk-core";
+import { ApiPromise, ApiRx } from "@polkadot/api";
 import { SwapPromise } from "@acala-network/sdk-swap";
-import { ApiPromise } from "@polkadot/api";
 import { hexToString } from "@polkadot/util";
 import { nft_image_config } from "../constants/acala";
 import { BN } from "@polkadot/util/bn/bn";
-import { Wallet } from "@acala-network/sdk";
+import { AcalaDex, AggregateDex, NutsDex, Wallet, History } from "@acala-network/sdk";
 import { Homa } from "@acala-network/sdk";
 import { OraclePriceProvider } from "@acala-network/sdk/wallet/price-provider/oracle-price-provider";
 import axios from "axios";
-import { IncentiveResult } from "../types/acalaTypes";
-import { firstValueFrom } from "rxjs";
+import { IncentiveResult, TaigaUserReward } from "../types/acalaTypes";
+import { firstValueFrom, take, throttleTime } from "rxjs";
 import { HomaEnvironment } from "@acala-network/sdk/homa/types";
 import { BalanceData } from "@acala-network/sdk/wallet/type";
+import { StableAssetRx } from "@nuts-finance/sdk-stable-asset";
+import { BigNumber } from "bignumber.js";
+import { data } from "@acala-network/sdk/cross-chain/configs/chains";
+import subscan from "../utils/config/links/subscan";
+import { HistoryRecord } from "@acala-network/sdk/history/types";
 
 const ONE = FixedPointNumber.ONE;
 const SECONDS_OF_YEAR = new BN(365 * 24 * 3600);
 const DOT_DECIMAL = 10;
 const native_token = "ACA";
 const native_token_list = [native_token, "DOT", "LDOT", "AUSD", "lc://13"];
+const taigaPoolApy: Record<string, number> = {};
 
 let ACA_SYS_BLOCK_TIME = new BN(12000);
 
 let homa: Homa;
+let stableAssetApi: StableAssetRx;
 let oracle: OraclePriceProvider;
 
 function _computeExchangeFee(path: Token[], fee: FixedPointNumber) {
@@ -53,47 +60,86 @@ function _getTokenSymbol(allTokens: any[], tokenNameId: string): string {
 // }
 // _fetchBlockDuration();
 
-// let swapper: SwapPromise;
+let swapper: AggregateDex;
+async function _initDexSDK(api: ApiRx) {
+  const wallet = (<any>window).wallet;
+  swapper = new AggregateDex({
+    api,
+    wallet,
+    providers: [new AcalaDex({ api, wallet }), new NutsDex({ api, wallet })],
+  });
+
+  await swapper.isReady;
+}
+async function getSwapTokens(apiRx: ApiRx) {
+  if (!swapper) {
+    await _initDexSDK(apiRx);
+  }
+
+  const tokens = await firstValueFrom(swapper.tradableTokens$.pipe(take(1)));
+  return tokens.map((e) => {
+    return {
+      type: _getTokenType(e),
+      tokenNameId: e.name,
+      symbol: e.symbol === "aUSD" ? e.name : e.symbol,
+      id: Object.values(e.toChainData())[0].toString(),
+      src: e.locations,
+      currencyId: e.toChainData(),
+      decimals: e.decimals,
+      minBalance: e.ed.toChainData().toString(),
+    };
+  });
+}
+
 /**
  * calc token swap amount
  */
-async function calcTokenSwapAmount(api: ApiPromise, input: number, output: number, swapPair: Object[], slippage: number) {
-  // if (!swapper) {
-  //   swapper = new SwapPromise(api);
-  // }
-  const swapper = new SwapPromise(api);
+async function calcTokenSwapAmount(apiRx: ApiRx, input: number, output: number, swapPair: string[], slippage: number) {
+  if (!swapper) {
+    await _initDexSDK(apiRx);
+  }
 
-  const inputToken = Token.fromCurrencyId(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, swapPair[0]), {
-    decimal: swapPair[0]["decimals"],
-  });
-  const outputToken = Token.fromCurrencyId(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, swapPair[1]), {
-    decimal: swapPair[1]["decimals"],
-  });
+  const inputToken = await ((<any>window).wallet as Wallet).getToken(swapPair[0]);
+  const outputToken = await ((<any>window).wallet as Wallet).getToken(swapPair[1]);
   const i = new FixedPointNumber(input || 0, inputToken.decimals);
   const o = new FixedPointNumber(output || 0, outputToken.decimals);
 
   const mode = output === null ? "EXACT_INPUT" : "EXACT_OUTPUT";
 
-  return new Promise((resolve, reject) => {
-    const exchangeFee = api.consts.dex.getExchangeFee as any;
+  try {
+    const result = await firstValueFrom(
+      swapper
+        .swap({
+          source: "aggregate",
+          mode,
+          path: [inputToken, outputToken],
+          input: output === null ? i : o,
+          acceptiveSlippage: slippage,
+        })
+        .pipe(throttleTime(100))
+    );
 
-    swapper
-      .swap([inputToken, outputToken], output === null ? i : o, mode)
-      .then((res: any) => {
-        const feeRate = new FixedPointNumber(exchangeFee[0].toString()).div(new FixedPointNumber(exchangeFee[1].toString()));
-        if (res.input) {
-          resolve({
-            amount: output === null ? res.output.balance.toNumber(6) : res.input.balance.toNumber(6),
-            priceImpact: res.naturalPriceImpact.toNumber(6),
-            fee: res.input.balance.times(_computeExchangeFee(res.path, feeRate)).toNumber(6),
-            path: res.path,
-          });
-        }
-      })
-      .catch((err) => {
-        resolve({ error: err });
-      });
-  });
+    const res = result.result;
+    const path = result.tracker;
+    if (res.input) {
+      const tx = swapper.getTradingTx(result);
+      return {
+        amount: output === null ? res.output.amount.toNumber(6) : res.input.amount.toNumber(6),
+        priceImpact: path.map((e) => e.naturalPriceImpact.toNumber(6)),
+        fee: path.map((e) => e.exchangeFee.toNumber(6)),
+        feeToken: path.map((e) => (e.source === "acala" ? e.input.token.name : e.output.token.name)),
+        path: res.path.map((e) => ({ dex: e[0], path: e[1].map((i) => i.name) })),
+        tx: {
+          section: tx.method.section,
+          method: tx.method.method,
+          params: tx.args.map((e) => e.toJSON()),
+        },
+      };
+    }
+    return { error: "dex error" };
+  } catch (err) {
+    return { error: err };
+  }
 }
 
 /**
@@ -118,16 +164,24 @@ async function getAllTokens(api: ApiPromise) {
     .filter((e) => e.tokenNameId !== native_token && e.type !== "DexShare");
 }
 
+/**
+ * getTokensPrices
+ */
+async function getTokenPrices(tokens: string[]) {
+  const prices = await Promise.all(tokens.map((e) => ((<any>window).wallet as Wallet).getPrice(e === "LCDOT" ? "lcDOT" : e).catch(_ => new BN(0))));
+  return prices.reduce((res, e, i) => ({ ...res, [tokens[i]]: e.toNumber(6) }), {});
+}
+
 function _getTokenType(token: Token) {
   return native_token_list.includes(token.name)
     ? "Token"
     : token.name.startsWith("lp")
-    ? "DexShare"
-    : token.name.startsWith("erc20")
-    ? "Erc20"
-    : token.name.startsWith("sa") || token.name === "TAI"
-    ? "TaigaAsset"
-    : "ForeignAsset";
+      ? "DexShare"
+      : token.name.startsWith("erc20")
+        ? "Erc20"
+        : token.name.startsWith("sa") || token.name === "TAI"
+          ? "TaigaAsset"
+          : "ForeignAsset";
 }
 
 /**
@@ -166,6 +220,126 @@ async function getTokenPairs(api: ApiPromise) {
       tokens: item.toJSON(),
       tokenNameId: createDexShareName(forceToCurrencyName(item[0]), forceToCurrencyName(item[1])),
     }));
+}
+
+async function getTaigaTokenPairs() {
+  _ensureTaigaEnv();
+
+  const [stablePools, homaEnv] = await Promise.all([firstValueFrom(stableAssetApi.subscribeAllPools().pipe(take(1))), homa.getEnv()]);
+  return stablePools.map(({ poolAsset, assets, balances, precisions }) => {
+    if (assets[1].toJSON()["token"] === "LDOT") {
+      balances[1] = balances[1].div(new BigNumber(homaEnv.exchangeRate.toNumber()));
+    }
+    return {
+      tokens: assets,
+      balances: balances.map((e, i) => e.div(precisions[i])),
+      tokenNameId: forceToCurrencyName(poolAsset),
+    };
+  });
+}
+
+async function _queryTaigaPoolApy(network: string, pool: number) {
+  const key = `${network}-${pool}`;
+
+  if (taigaPoolApy[key]) {
+    return taigaPoolApy[key];
+  }
+
+  const result = await axios.get(`https://api.taigaprotocol.io/rewards/apr?network=${network}&pool=${pool}`);
+
+  if (result.status === 200 && Object.keys(result.data).length > 0) {
+    taigaPoolApy[key] = result.data as number;
+  }
+
+  return taigaPoolApy[key];
+}
+
+async function _queryTaigaUserRewards(network: string, pool: number, user: string) {
+  const result = await axios.get(`https://api.taigaprotocol.io/rewards/user/${user}?network=${network}&pool=${pool}`);
+
+  if (result.status === 200 && Object.keys(result.data).length > 0) {
+    return result.data as TaigaUserReward;
+  }
+}
+
+async function getTaigaPoolInfo(api: ApiPromise, address: string) {
+  const [tDOTApy] = await Promise.all([0].map((i) => _queryTaigaPoolApy("acala", i)));
+  const [tDOTReward] = await Promise.all([0].map((i) => _queryTaigaUserRewards("acala", i, address)));
+  const tDOTshares = await _fetchCollateralRewards(api, { StableAssetPoolToken: 0 }, address);
+  const [tDOTIssurance] = await Promise.all([0].map((i) => (<any>window).wallet.getIssuance(`sa://${i}`)));
+  return {
+    "sa://0": {
+      apy: tDOTApy,
+      reward: tDOTReward?.claimable || ["0"],
+      rewardTokens: ["sa://0"],
+      userShares: tDOTshares.shares,
+      totalShares: tDOTshares.sharesTotal,
+      issurance: tDOTIssurance.toChainData(),
+    },
+    // "sa://1": {
+    //   apy: threeUSDApy,
+    //   reward: threeUSDReward.claimable,
+    //   rewardTokens: ["sa://1", "TAI", "sa://0", "LKSM", "KAR"],
+    //   userShares: "0",
+    //   totalShares: threeUSDshares.toChainData(),
+    // },
+  };
+}
+
+async function getTaigaMintAmount(poolNameId: string, input: string[], slippage: number) {
+  _ensureTaigaEnv();
+
+  const [stablePools, homaEnv] = await Promise.all([firstValueFrom(stableAssetApi.subscribeAllPools().pipe(take(1))), homa.getEnv()]);
+  const pool = stablePools.find((e) => forceToCurrencyName(e.poolAsset) === poolNameId);
+  const poolTokens = pool.assets.map((e) => (<any>window).wallet.__getToken(e));
+  const adjustedExchangeRate = homaEnv.exchangeRate.times(new FixedPointNumber(0.9999));
+  const res = await firstValueFrom(
+    stableAssetApi
+      .getMintAmount(
+        poolNameId.match("sa://0") ? 0 : 1,
+        input.map((e, i) => FixedPointNumber.fromInner(e, poolTokens[i].decimals)) as any[],
+        slippage,
+        adjustedExchangeRate as any
+      )
+      .pipe(take(1))
+  );
+  return {
+    output: res.outputAmount.toChainData(),
+    minAmount: res.getMinMintAmount().toChainData(),
+    params: res.toChainData(),
+  };
+}
+
+async function getTaigaRedeemAmount(poolNameId: string, input: string, slippage: number) {
+  _ensureTaigaEnv();
+
+  const [stablePools, homaEnv] = await Promise.all([firstValueFrom(stableAssetApi.subscribeAllPools().pipe(take(1))), homa.getEnv()]);
+  const pool = stablePools.find((e) => forceToCurrencyName(e.poolAsset) === poolNameId);
+  const adjustedExchangeRate = homaEnv.exchangeRate.times(new FixedPointNumber(0.9999));
+  const res = await firstValueFrom(
+    stableAssetApi
+      .getRedeemProportionAmount(
+        poolNameId.match("sa://0") ? 0 : 1,
+        FixedPointNumber.fromInner(input, (<any>window).wallet.__getToken(pool.poolAsset).decimals) as any,
+        slippage,
+        adjustedExchangeRate as any
+      )
+      .pipe(take(1))
+  );
+  return {
+    output: res.outputAmounts.map((e) => e.toChainData()),
+    minAmount: res.getMinOutputAmounts().map((e) => e.toChainData()),
+    params: res.toChainData(),
+  };
+}
+
+function _ensureTaigaEnv() {
+  if (!stableAssetApi) {
+    stableAssetApi = new StableAssetRx((<any>window).apiRx);
+  }
+  if (!homa) {
+    homa = new Homa((<any>window).api, (<any>window).wallet);
+  }
 }
 
 /**
@@ -229,16 +403,16 @@ async function _fetchCollateralRewards(api: ApiPromise, pool: any, address: stri
   const incentives = Array.from(res[0].rewards.entries()).map((e: any) => {
     const currencyId = forceToCurrencyId(api, e[0]);
     const tokenNameId = forceToCurrencyName(currencyId);
+
     return {
       tokenNameId,
       currencyId,
-      amount: (
+      amount:
         FPNum(e[1][0], _getTokenDecimal(res[2], tokenNameId))
           .times(proportion)
           .minus(withdrawns.find((i) => i.tokenNameId === tokenNameId)?.amount || new FixedPointNumber(0))
           .plus(pendings.find((i) => i.tokenNameId === tokenNameId)?.amount || new FixedPointNumber(0))
-          .toNumber() || 0
-      ).toString(),
+          .toNumber() || 0,
     };
   });
   pendings.forEach((e) => {
@@ -246,7 +420,7 @@ async function _fetchCollateralRewards(api: ApiPromise, pool: any, address: stri
       incentives.push({
         tokenNameId: e.tokenNameId,
         currencyId: e.currencyId,
-        amount: e.amount.toNumber().toString(),
+        amount: e.amount.toNumber(),
       });
     }
   });
@@ -256,7 +430,7 @@ async function _fetchCollateralRewards(api: ApiPromise, pool: any, address: stri
     sharesTotal: res[0].totalShares,
     shares: res[1][0],
     proportion: proportion.toNumber() || 0,
-    reward: incentives,
+    reward: incentives.filter((e) => !!e.amount && e.amount > 0),
   };
 }
 
@@ -460,7 +634,7 @@ async function queryIncentives(api: ApiPromise) {
     api.query.incentives.incentiveRewardAmounts.entries(),
     api.query.incentives.claimRewardDeductionRates.entries(),
     api.query.incentives.dexSavingRewardRates.entries(),
-    getAllTokens(api),
+    ((<any>window).wallet as Wallet).getTokens(),
   ]);
   const res: IncentiveResult = {
     Dex: {},
@@ -478,9 +652,9 @@ async function queryIncentives(api: ApiPromise) {
     const idString =
       incentiveType === "Dex"
         ? createDexShareName(
-            forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, id["DexShare"][0])),
-            forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, id["DexShare"][1]))
-          )
+          forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, id["DexShare"][0])),
+          forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, id["DexShare"][1]))
+        )
         : forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, id));
 
     return { incentiveType, idString, value: FPNum(e[1], 18).toString() };
@@ -492,13 +666,13 @@ async function queryIncentives(api: ApiPromise) {
     const idString =
       incentiveType === "Dex"
         ? createDexShareName(
-            forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, id["DexShare"][0])),
-            forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, id["DexShare"][1]))
-          )
+          forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, id["DexShare"][0])),
+          forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, id["DexShare"][1]))
+        )
         : forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, id));
     const incentiveToken = e[0].args[1];
     const incentiveTokenNameId = forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, incentiveToken));
-    const incentiveTokenDecimal = _getTokenDecimal(pools[3], incentiveTokenNameId);
+    const incentiveTokenDecimal = Object.values(pools[3]).find(e => e.name === incentiveTokenNameId).decimals;
 
     if (!res[incentiveType][idString]) {
       res[incentiveType][idString] = [];
@@ -595,9 +769,9 @@ function _calcLoanAssets(api: ApiPromise, allTokens: any[], loanTypes: any[], lo
       res,
       acala_stable_coin,
       0 -
-        FPNum(e.debit, _getTokenDecimal(allTokens, acala_stable_coin))
-          .times(FPNum(loanTypes.find((t) => t.currency == e.currency).debitExchangeRate))
-          .toNumber()
+      FPNum(e.debit, _getTokenDecimal(allTokens, acala_stable_coin))
+        .times(FPNum(loanTypes.find((t) => t.currency.toString() == e.currency.toString()).debitExchangeRate))
+        .toNumber()
     );
 
     const reward = loanRewards.find((e) => e.tokenNameId === tokenNameId);
@@ -662,11 +836,11 @@ function _calcLPAssets(api: ApiPromise, allTokens: any[], poolInfos: any[], lpTo
             _getTokenSymbol(allTokens, tokenNameId),
             index === 0
               ? FPNum(e.pool[0], decimalPair[0])
-                  .times(proportion)
-                  .toNumber()
+                .times(proportion)
+                .toNumber()
               : FPNum(e.pool[1], decimalPair[1])
-                  .times(proportion)
-                  .toNumber()
+                .times(proportion)
+                .toNumber()
           );
         });
       }
@@ -684,12 +858,12 @@ function _calcLPAssets(api: ApiPromise, allTokens: any[], poolInfos: any[], lpTo
   return [res, lpTokensFree, lpRewards];
 }
 
-function _formatHomaEnv(env: HomaEnvironment) {
+function _formatHomaEnv(env: HomaEnvironment, apy: number) {
   return {
     totalStaking: env.totalStaking.toNumber(),
     totalLiquidity: env.totalLiquidity.toNumber(),
     exchangeRate: env.exchangeRate.toNumber(),
-    apy: env.apy || 0,
+    apy,
     fastMatchFeeRate: env.fastMatchFeeRate.toNumber(),
     mintThreshold: env.mintThreshold.toNumber(),
     redeemThreshold: env.redeemThreshold.toNumber(),
@@ -703,8 +877,8 @@ async function queryHomaNewEnv(api: ApiPromise) {
     homa = new Homa(api, (<any>window).wallet);
   }
 
-  const result = await homa.getEnv();
-  return _formatHomaEnv(result);
+  const [homaEnv, apy] = await Promise.all([homa.getEnv(), axios.get("https://api.polkawallet.io/height-time-avg/apr?network=acala")]);
+  return _formatHomaEnv(homaEnv, (apy.data as number) || 0);
 }
 
 async function calcHomaNewMintAmount(api: ApiPromise, amount: number) {
@@ -778,7 +952,7 @@ async function queryDexIncentiveLoyaltyEndBlock(api: ApiPromise) {
             if (ratio === "0") {
               loyalty.push({
                 blockNumber,
-                pool: api.createType("ModuleIncentivesPoolId", item[0]),
+                pool: item[0],
               });
             }
           });
@@ -796,7 +970,7 @@ async function queryDexIncentiveLoyaltyEndBlock(api: ApiPromise) {
             if (amount === "0") {
               result.push({
                 blockNumber,
-                pool: api.createType("ModuleIncentivesPoolId", item[0]),
+                pool: item[0],
               });
             }
           });
@@ -815,11 +989,75 @@ async function queryDexIncentiveLoyaltyEndBlock(api: ApiPromise) {
   return { result, loyalty };
 }
 
+async function getHistory(api: ApiPromise, type: string, address: string, params: Object) {
+
+  const history = new History({
+    fetchEndpoints: {
+      transfer: "https://api.subquery.network/sq/AcalaNetwork/acala-transfer",
+      swap: "https://api.subquery.network/sq/AcalaNetwork/acala-dex",
+      earn: "https://api.subquery.network/sq/AcalaNetwork/acala-incentives",
+      loan: "https://api.subquery.network/sq/AcalaNetwork/acala-loans",
+      homa: "https://api.subquery.network/sq/AcalaNetwork/acala-homa"
+    },
+    wallet: (<any>window).wallet as Wallet,
+    poolInterval: 5 * 60 * 1000
+  });
+
+  var record: HistoryRecord[];
+  switch (type) {
+    case 'transfer':
+      record = await history.transfer.getHistories({
+        address: address,
+        token: params.token ?? ''
+      });
+      break;
+    case 'swap':
+      record = await history.swap.getHistories({
+        address: address
+      });
+      break;
+    case 'earn':
+      record = await history.earn.getHistories({
+        address: address
+      });
+      break;
+    case 'loan':
+      record = await history.loan.getHistories({
+        address: address
+      });
+      break;
+    case 'homa':
+      record = await history.homa.getHistories({
+        address: address
+      });
+      break;
+    default:
+      record = null;
+      break;
+  }
+  return record.map((e) => {
+    return {
+      message: e.message,
+      data: e.data,
+      hash: e.extrinsicHash,
+      resolveLinks: e.resolveLinks.subscan,
+      event: e.method
+    }
+  });
+
+}
+
 export default {
+  getSwapTokens,
   calcTokenSwapAmount,
   getAllTokens,
+  getTokenPrices,
   getTokenBalance,
   getTokenPairs,
+  getTaigaTokenPairs,
+  getTaigaPoolInfo,
+  getTaigaMintAmount,
+  getTaigaRedeemAmount,
   getBootstraps,
   fetchCollateralRewards,
   fetchDexPoolInfo,
@@ -828,7 +1066,7 @@ export default {
   queryIncentives,
   queryTokenPriceFromOracle,
   queryAggregatedAssets,
-
+  getHistory,
   // homa
   queryHomaNewEnv,
   calcHomaNewMintAmount,

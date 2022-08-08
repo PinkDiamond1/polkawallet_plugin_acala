@@ -24,7 +24,7 @@ abstract class _AssetsStore with Store {
   Map<String?, BigInt> prices = {};
 
   @observable
-  ObservableMap<String, double> marketPrices = ObservableMap();
+  ObservableMap<String, num> marketPrices = ObservableMap();
 
   @observable
   Map<String, double> dexPrices = {};
@@ -80,7 +80,7 @@ abstract class _AssetsStore with Store {
   }
 
   @action
-  void setMarketPrices(Map<String, double> data) {
+  void setMarketPrices(Map<String, num> data) {
     marketPrices.addAll(data);
   }
 

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/common/components/videoPlayerContainer.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/api/types/nftData.dart';
@@ -10,7 +11,10 @@ import 'package:polkawallet_plugin_acala/pages/nftNew/nftTransferPage.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/connectionChecker.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
+import 'package:polkawallet_ui/components/v3/dialog.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginIconButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
@@ -173,23 +177,22 @@ class _NftPageState extends State<NftPage> {
           title: Text('NFTs'),
           actions: [
             Padding(
-                padding: EdgeInsets.only(right: 16),
+                padding: EdgeInsets.only(right: 12),
                 child: PluginIconButton(
-                  icon: Center(
-                      child: Image.asset(
-                    'packages/polkawallet_plugin_acala/assets/images/screening.png',
-                    color: Colors.black,
-                    width: 25,
-                  )),
+                  icon: SvgPicture.asset(
+                    'assets/images/icon_screening.svg',
+                    color: PluginColorsDark.headline1,
+                    width: 22,
+                  ),
                   onPressed: () {
                     showCupertinoModalPopup(
                       context: context,
                       barrierDismissible: true,
                       builder: (BuildContext context) {
-                        return CupertinoActionSheet(
+                        return PolkawalletActionSheet(
                           actions: [
                             ...filtersAll
-                                .map((e) => CupertinoActionSheetAction(
+                                .map((e) => PolkawalletActionSheetAction(
                                       child: Text(dic!['nft.$e']!),
                                       onPressed: () {
                                         Navigator.of(context).pop();
@@ -200,7 +203,7 @@ class _NftPageState extends State<NftPage> {
                                     ))
                                 .toList(),
                           ],
-                          cancelButton: CupertinoActionSheetAction(
+                          cancelButton: PolkawalletActionSheetAction(
                             onPressed: () {
                               Navigator.pop(context);
                             },
@@ -211,7 +214,8 @@ class _NftPageState extends State<NftPage> {
                       },
                     );
                   },
-                ))
+                )),
+            PluginAccountInfoAction(widget.keyring)
           ],
         ),
         body: SafeArea(
@@ -263,7 +267,10 @@ class _NftPageState extends State<NftPage> {
                     ?.copyWith(color: PluginColorsDark.headline1);
                 return Stack(
                   children: [
+                    ConnectionChecker(widget.plugin, onConnected: _queryNFTs),
                     RefreshIndicator(
+                        color: Colors.black,
+                        backgroundColor: Colors.white,
                         key: _refreshKey,
                         onRefresh: _queryNFTs,
                         child: SingleChildScrollView(
@@ -447,6 +454,15 @@ class _tabBarState extends State<_tabBar> {
 
   @override
   Widget build(BuildContext context) {
+    final TextPainter textPainter = TextPainter(
+        textDirection: TextDirection.ltr,
+        text: TextSpan(
+            text: widget.nfts[0].metadata!['name'],
+            style: Theme.of(context).textTheme.headline5?.copyWith(
+                fontSize: UI.getTextSize(12, context),
+                fontWeight: FontWeight.w600,
+                color: PluginColorsDark.headline1)))
+      ..layout();
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 6, vertical: 7),
       decoration: BoxDecoration(
@@ -457,7 +473,8 @@ class _tabBarState extends State<_tabBar> {
         children: [
           Expanded(
               child: Container(
-                  constraints: BoxConstraints(maxHeight: _isOpen ? 1000 : 28),
+                  constraints: BoxConstraints(
+                      maxHeight: _isOpen ? 1000 : textPainter.size.height + 10),
                   child: Wrap(
                       spacing: 10,
                       runSpacing: 10,

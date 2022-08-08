@@ -87,12 +87,6 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
                       element.actionType == TxLoanData.actionLiquidate)
                   .toList();
               break;
-            case TxLoanData.actionTypeCreateFilter:
-              list = historylist
-                  .where((element) =>
-                      element.actionType == TxLoanData.actionTypeCreate)
-                  .toList();
-              break;
             default:
               list = historylist;
           }
@@ -101,7 +95,6 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
             PluginFilterWidget(
               options: [
                 PluginFilterWidget.pluginAllFilter,
-                TxLoanData.actionTypeCreateFilter,
                 TxLoanData.actionTypeDepositFilter,
                 TxLoanData.actionTypeWithdrawFilter,
                 TxLoanData.actionTypeBorrowFilter,

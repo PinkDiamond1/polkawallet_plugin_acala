@@ -21,6 +21,7 @@ import 'package:polkawallet_ui/components/v3/plugin/pluginLinearProgressBar.dart
 import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTokenIcon.dart';
 import 'package:polkawallet_ui/components/v3/plugin/roundedPluginCard.dart';
+import 'package:polkawallet_ui/utils/consts.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
@@ -129,7 +130,10 @@ class _BootstrapListState extends State<BootstrapList> {
         txDisplayBold: {
           dic['loan.amount']!: Text(
             '${Fmt.priceFloorBigInt(amount, decimals, lengthMax: 8)} LP',
-            style: Theme.of(context).textTheme.headline1,
+            style: Theme.of(context)
+                .textTheme
+                .headline1
+                ?.copyWith(color: PluginColorsDark.headline1),
           ),
         },
         params: [],

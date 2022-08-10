@@ -275,7 +275,7 @@ packages:
     source: hosted
     version: "0.5.6"
   decimal:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: decimal
       url: "https://pub.dartlang.org"
@@ -813,7 +813,7 @@ packages:
       path: "../sdk"
       relative: true
     source: path
-    version: "0.4.8"
+    version: "0.4.9"
   polkawallet_ui:
     dependency: "direct main"
     description:

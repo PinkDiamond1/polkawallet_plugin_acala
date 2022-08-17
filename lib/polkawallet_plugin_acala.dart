@@ -167,7 +167,7 @@ class PluginAcala extends PolkawalletPlugin {
       // final total = data.map((e) => e.value).reduce((a, b) => a + b);
       // return Text('total: ${hideBalance ? '***' : total}');
       return InstrumentWidget(
-        instrumentData(data, context, priceCurrency: priceCurrency),
+        instrumentData(data, context, priceCurrency: priceCurrency, rate: rate),
         onSwitchBack!,
         onSwitchHideBalance!,
         hideBalance: hideBalance,
@@ -177,7 +177,7 @@ class PluginAcala extends PolkawalletPlugin {
 
   List<InstrumentData> instrumentData(
       List<AggregatedAssetsData> data, BuildContext context,
-      {String priceCurrency = 'USD'}) {
+      {String priceCurrency = 'USD', double rate = 1.0}) {
     final List<InstrumentData> datas = [];
     InstrumentData totalBalance1 = InstrumentData(0, [],
         title: I18n.of(context)!
@@ -185,7 +185,7 @@ class PluginAcala extends PolkawalletPlugin {
     datas.add(totalBalance1);
 
     final total = data.map((e) => e.value).reduce((a, b) => a! + b!);
-    InstrumentData totalBalance = InstrumentData(total ?? 0, [],
+    InstrumentData totalBalance = InstrumentData((total ?? 0) * rate, [],
         currencySymbol: Fmt.priceCurrencySymbol(priceCurrency),
         title: I18n.of(context)!
             .getDic(i18n_full_dic_acala, 'acala')!["v3.myDefi"]!);
@@ -193,7 +193,7 @@ class PluginAcala extends PolkawalletPlugin {
       totalBalance.items.add(InstrumentItemData(
           _instrumentColor(element.category),
           element.category == "LP Staking" ? "LP Stake" : element.category!,
-          element.value!));
+          (element.value ?? 0) * rate));
     });
     datas.add(totalBalance);
     datas.add(totalBalance1);

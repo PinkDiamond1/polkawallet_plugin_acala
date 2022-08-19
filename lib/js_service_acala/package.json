@@ -19,6 +19,7 @@
   },
   "resolutions": {
     "@polkadot/api": "^8.14.1",
+    "@polkadot/api-derive": "^8.14.1",
     "@polkadot/rpc-core": "^8.14.1",
     "@polkadot/rpc-augment": "^8.14.1",
     "@polkadot/types": "^8.14.1",

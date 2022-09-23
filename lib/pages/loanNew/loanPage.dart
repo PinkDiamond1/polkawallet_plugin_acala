@@ -31,7 +31,6 @@ import 'package:polkawallet_ui/components/v3/infoItemRow.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginAccountInfoAction.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginIconButton.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginPopLoadingWidget.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginTokenIcon.dart';
@@ -532,32 +531,6 @@ class _LoanPageState extends State<LoanPage> {
                                         title:
                                             "${dic['loan.mint']}/${dic['loan.payback']}",
                                         onPressed: () async {
-                                          if (loan.type
-                                                  .maximumTotalDebitValue ==
-                                              BigInt.zero) {
-                                            showCupertinoDialog(
-                                                context: context,
-                                                builder: (_) {
-                                                  return PolkawalletAlertDialog(
-                                                    content: Text(
-                                                        '${PluginFmt.tokenView(loan.token!.symbol)} ${dic['v3.loan.unavailable']}'),
-                                                    actions: [
-                                                      CupertinoButton(
-                                                          child: Text(I18n.of(
-                                                                      context)!
-                                                                  .getDic(
-                                                                      i18n_full_dic_acala,
-                                                                      'common')![
-                                                              'cancel']!),
-                                                          onPressed: () =>
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop())
-                                                    ],
-                                                  );
-                                                });
-                                            return;
-                                          }
                                           final res =
                                               await Navigator.of(context)
                                                   .pushNamed(

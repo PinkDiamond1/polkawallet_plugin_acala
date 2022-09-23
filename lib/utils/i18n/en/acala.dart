@@ -74,6 +74,7 @@ const Map<String, String> enDex = {
   'loan.amount.debit': 'How much would you like to mint?',
   'loan.amount.collateral': 'How much would you deposit as collateral?',
   'loan.max': 'Max',
+  'loan.max.sys': 'Amount exceeds system limit',
   'loan.txs': 'History',
   'loan.warn':
       'Debt should be greater than 1 aUSD or payback all, this action will have 1 aUSD debt left. Are you sure to continue?',

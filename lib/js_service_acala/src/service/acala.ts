@@ -1,6 +1,5 @@
 import { createDexShareName, FixedPointNumber, forceToCurrencyId, forceToCurrencyName, Token } from "@acala-network/sdk-core";
 import { ApiPromise, ApiRx } from "@polkadot/api";
-import { SwapPromise } from "@acala-network/sdk-swap";
 import { hexToString } from "@polkadot/util";
 import { nft_image_config } from "../constants/acala";
 import { BN } from "@polkadot/util/bn/bn";
@@ -14,8 +13,6 @@ import { HomaEnvironment } from "@acala-network/sdk/homa/types";
 import { BalanceData } from "@acala-network/sdk/wallet/type";
 import { StableAssetRx } from "@nuts-finance/sdk-stable-asset";
 import { BigNumber } from "bignumber.js";
-import { data } from "@acala-network/sdk/cross-chain/configs/chains";
-import subscan from "../utils/config/links/subscan";
 import { HistoryRecord } from "@acala-network/sdk/history/types";
 
 const ONE = FixedPointNumber.ONE;

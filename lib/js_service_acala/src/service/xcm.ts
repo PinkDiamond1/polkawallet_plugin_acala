@@ -132,7 +132,7 @@ async function _getTokenBalance(chain: string, address: string, tokenNameId: str
   };
 }
 
-async function getTransferParams(
+async function getTransferTx(
   chainFrom: ChainData,
   chainTo: ChainData,
   tokenName: string,
@@ -253,6 +253,27 @@ async function getTransferParams(
   }
 
   return null;
+}
+
+async function getTransferParams(
+  chainFrom: ChainData,
+  chainTo: ChainData,
+  tokenName: string,
+  amount: string,
+  addressTo: string,
+  sendFee: any
+) {
+  const res = await getTransferTx(chainFrom, chainTo, tokenName, amount, addressTo, sendFee);
+  if (!res) return null;
+
+  const {module, call, params} = res;
+  const tx = (chainFrom.name === 'acala' ? (<any>window).api : getApi(chainFrom.name)).tx[module][call](...params);
+  return {
+    module,
+    call,
+    params: tx.args.map(e => e.toHuman()),
+    txHex: tx.toHex()
+  };
 }
 
 export default { getApi, connectFromChain, disconnectFromChain, getBalances, getTransferParams };

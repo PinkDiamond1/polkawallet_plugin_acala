@@ -161,6 +161,7 @@ class _TaigaWithdrawLiquidityPageState
           ),
         },
         params: _redeemAmount!["params"],
+        txHex: _redeemAmount!["txHex"],
         isPlugin: true,
       );
 
@@ -328,11 +329,11 @@ class _TaigaWithdrawLiquidityPageState
                                                           .locale
                                                           .toString()
                                                           .contains('zh')
-                                                      ? 60
-                                                      : 80,
+                                                      ? 45
+                                                      : 70,
                                                   right: 12),
                                               title:
-                                                  "${PluginFmt.tokenView(balance.symbol)}",
+                                                  "${PluginFmt.tokenView(balance.symbol)}66",
                                               backgroundColor:
                                                   Color(0xFF974DE4),
                                               style: Theme.of(context)

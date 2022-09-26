@@ -62,7 +62,7 @@ const Map<String, String> enDex = {
   'liquid.price.new': 'New Liquidation Price',
   'liquid.ratio.current': 'Current Ratio',
   'liquid.ratio.new': 'New Collateral Ratio',
-  'collateral.price': 'Price',
+  'collateral.exchangeRate': 'Exchange rate',
   'collateral.price.current': 'Current Price',
   'collateral.interest': 'Stability Fee',
   'collateral.require': 'Required',
@@ -74,6 +74,7 @@ const Map<String, String> enDex = {
   'loan.amount.debit': 'How much would you like to mint?',
   'loan.amount.collateral': 'How much would you deposit as collateral?',
   'loan.max': 'Max',
+  'loan.max.sys': 'Amount exceeds system limit',
   'loan.txs': 'History',
   'loan.warn':
       'Debt should be greater than 1 aUSD or payback all, this action will have 1 aUSD debt left. Are you sure to continue?',
@@ -356,4 +357,5 @@ const Map<String, String> enDex = {
   'v3.loan.ableWithdraw': 'Able to withdraw',
   'loan.return': 'Return',
   'loan.update': 'Update Vault',
+  'v3.loan.amountLowError': 'amount too low to swap'
 };

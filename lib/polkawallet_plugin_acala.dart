@@ -34,6 +34,7 @@ import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
@@ -167,7 +168,7 @@ class PluginAcala extends PolkawalletPlugin {
       // final total = data.map((e) => e.value).reduce((a, b) => a + b);
       // return Text('total: ${hideBalance ? '***' : total}');
       return InstrumentWidget(
-        instrumentData(data, context, priceCurrency: priceCurrency),
+        instrumentData(data, context, priceCurrency: priceCurrency, rate: rate),
         onSwitchBack!,
         onSwitchHideBalance!,
         hideBalance: hideBalance,
@@ -177,7 +178,7 @@ class PluginAcala extends PolkawalletPlugin {
 
   List<InstrumentData> instrumentData(
       List<AggregatedAssetsData> data, BuildContext context,
-      {String priceCurrency = 'USD'}) {
+      {String priceCurrency = 'USD', double rate = 1.0}) {
     final List<InstrumentData> datas = [];
     InstrumentData totalBalance1 = InstrumentData(0, [],
         title: I18n.of(context)!
@@ -185,7 +186,7 @@ class PluginAcala extends PolkawalletPlugin {
     datas.add(totalBalance1);
 
     final total = data.map((e) => e.value).reduce((a, b) => a! + b!);
-    InstrumentData totalBalance = InstrumentData(total ?? 0, [],
+    InstrumentData totalBalance = InstrumentData((total ?? 0) * rate, [],
         currencySymbol: Fmt.priceCurrencySymbol(priceCurrency),
         title: I18n.of(context)!
             .getDic(i18n_full_dic_acala, 'acala')!["v3.myDefi"]!);
@@ -193,7 +194,7 @@ class PluginAcala extends PolkawalletPlugin {
       totalBalance.items.add(InstrumentItemData(
           _instrumentColor(element.category),
           element.category == "LP Staking" ? "LP Stake" : element.category!,
-          element.value!));
+          (element.value ?? 0) * rate));
     });
     datas.add(totalBalance);
     datas.add(totalBalance1);
@@ -307,6 +308,7 @@ class PluginAcala extends PolkawalletPlugin {
       _store!.earn.setBootstraps([]);
       _store!.homa.setUserInfo(null);
       _store!.history.loadCache(acc.pubKey);
+      _store!.accounts.loadCache(acc);
       print('acala plugin cache data loaded');
     } catch (err) {
       print(err);
@@ -342,18 +344,36 @@ class PluginAcala extends PolkawalletPlugin {
     if (keyring.current.address != null) {
       await _store?.swap.initDexTokens(this);
       _subscribeTokenBalances(keyring.current);
+      _getEvmAccount(keyring.current);
     }
   }
 
   @override
   Future<void> onAccountChanged(KeyPairData acc) async {
+    store!.accounts.setEthWalletData(null, acc);
     _loadCacheData(acc);
-
     if (_service!.connected) {
       _api!.assets.unsubscribeTokenBalances(acc.address);
       _service?.loan.unsubscribeAccountLoans();
 
       _subscribeTokenBalances(acc);
+      _getEvmAccount(acc);
+    }
+  }
+
+  Future<void> _getEvmAccount(KeyPairData acc) async {
+    if (store?.accounts.ethWalletData != null) return;
+    final data = await sdk.api.service.webView!
+        .evalJavascript('api.query.evmAccounts.evmAddresses("${acc.address}")');
+    if (data != null) {
+      try {
+        final icons = await sdk.api.eth.account.service.getAddressIcons([data]);
+        store!.accounts.setEthWalletData(
+            EthWalletData()
+              ..address = data
+              ..icon = (icons!.last as List).last.toString(),
+            acc);
+      } catch (_) {}
     }
   }
 
